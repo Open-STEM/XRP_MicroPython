@@ -9,7 +9,7 @@ class HCSR04:
     Timeouts will return a MAX_VALUE (65535) instead of raising an exception.
     """
 
-    def __init__(self, trigger_pin:int, echo_pin:int, timeout_us=500*2*30:int):
+    def __init__(self, trigger_pin:int, echo_pin:int, timeout_us:int=500*2*30):
         """
         :param trigger_pin: The number of the pin on the microcontroller that's connected
             to the ``Trig`` pin on the HC-SR04.
