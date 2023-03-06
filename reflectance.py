@@ -7,7 +7,7 @@ class Reflectance:
     Reads from analog in and converts to a float from 0 (white) to 1 (black)
     """
 
-    def __init__(self, leftPin, rightPin):
+    def __init__(self, leftPin:int, rightPin:int):
         self._leftReflectance = ADC(Pin(leftPin))
         self._rightReflectance = ADC(Pin(rightPin))
 

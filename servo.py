@@ -6,14 +6,14 @@ class Servo:
     A simple class for interacting with a servo through PWM
     """
 
-    def __init__(self, signalPin):
+    def __init__(self, signalPin:int):
         self.servo = PWM(Pin(signalPin, Pin.OUT))
         # Initialize base frequency for the PWM
         self.servo.freq(50)
         self.MICROSEC_PER_DEGREE: int = 10000
         self.LOW_ANGLE_OFFSET: int = 1000000
 
-    def set_angle(self, degrees):
+    def set_angle(self, degrees: float):
         """
         Sets the angle of the servo
         :param degrees: The angle to set the servo to [0,135]

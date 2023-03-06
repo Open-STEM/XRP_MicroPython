@@ -47,10 +47,9 @@ class HCSR04:
         except OSError as exception:
             raise exception
 
-    def distance(self):
+    def distance(self) -> float:
         """
-        Get the distance in centimeters with floating point operations.
-        It returns a float
+        Get the distance in centimeters by measuring the echo pulse time
         """
         try:
             pulse_time = self._send_pulse_and_wait()
