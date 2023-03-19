@@ -12,3 +12,6 @@ class EncodedMotor(Motor):
         else:
             invert = 1
         return self._encoder.get_position()*invert
+
+    def reset_encoder_position(self):
+        self._encoder.reset_encoder_position()

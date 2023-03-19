@@ -4,6 +4,7 @@ from micropython import const
 class Encoder:
     def __init__(self, aPin:int, bPin:int, ticks_per_revolution:int = 544):
         self.currentPosition = 0
+        self.ticks_per_rev = ticks_per_revolution
         # Set pins as inputs
         self._aPin = Pin(aPin, Pin.IN)
         self._bPin = Pin(bPin, Pin.IN)
@@ -18,7 +19,10 @@ class Encoder:
 
 
     def get_position(self):
-        return self.currentPosition
+        return self.currentPosition/self.ticks_per_rev
+
+    def reset_encoder_position(self):
+        self.currentPosition = 0
 
     def isr(self):
         aState = self._aPin.value()
