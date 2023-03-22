@@ -53,6 +53,9 @@ class IMU():
         self.acc_scale('2g')
         self.gyro_scale('125')
 
+        self.gyro_offsets = [0,0,0]
+        self.acc_offsets = [0,0,0]
+
 
     """
         The following are private helper methods to read and write registers, as well as to convert the read values to the correct unit.
@@ -91,37 +94,37 @@ class IMU():
         """
             Individual axis read for the Accelerometer's X-axis, in mg
         """
-        return self._mg(LSM6DSO_OUTX_L_A)
+        return self._mg(LSM6DSO_OUTX_L_A) - self.acc_offsets[0]
 
     def acc_y(self):
         """
             Individual axis read for the Accelerometer's Y-axis, in mg
         """
-        return self._mg(LSM6DSO_OUTY_L_A)
+        return self._mg(LSM6DSO_OUTY_L_A) - self.acc_offsets[1]
 
     def acc_z(self):
         """
             Individual axis read for the Accelerometer's Z-axis, in mg
         """
-        return self._mg(LSM6DSO_OUTZ_L_A)
+        return self._mg(LSM6DSO_OUTZ_L_A) - self.acc_offsets[2]
 
     def gyro_x(self):
         """
             Individual axis read for the Gyroscope's X-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTX_L_G)
+        return self._mdps(LSM6DSO_OUTX_L_G) - self.gyro_offsets[0]
 
     def gyro_y(self):
         """
             Individual axis read for the Gyroscope's Y-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTY_L_G)
+        return self._mdps(LSM6DSO_OUTY_L_G) - self.gyro_offsets[1]
 
     def gyro_z(self):
         """
             Individual axis read for the Gyroscope's Z-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTZ_L_G)
+        return self._mdps(LSM6DSO_OUTZ_L_G) - self.gyro_offsets[2]
 
     def get_acc(self):
         """
@@ -219,7 +222,36 @@ class IMU():
                 self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
 
+    def calibrate(self, calibration_time=3, vertical_axis = 2):
+        """
+            Collect readings for 3 seconds and calibrate the IMU based on those readings
+            Do not move the robot during this time
+            Assumes the board to be parallel to the group. Please use the vertical_axis parameter if that is not correct
+        """
+        start_time = time.time()
+        avg_vals = [[0,0,0],[0,0,0]]
+        num_vals = 0
+        while time.time() < start_time + calibration_time:
+            cur_vals = self.get()
+            # Accelerometer averages
+            avg_vals[0][0] = (avg_vals[0][0]*num_vals+cur_vals[0][0])/(num_vals+1)
+            avg_vals[0][1] = (avg_vals[0][1]*num_vals+cur_vals[0][1])/(num_vals+1)
+            avg_vals[0][2] = (avg_vals[0][2]*num_vals+cur_vals[0][2])/(num_vals+1)
+            # Gyroscope averages
+            avg_vals[1][0] = (avg_vals[1][0]*num_vals+cur_vals[1][0])/(num_vals+1)
+            avg_vals[1][1] = (avg_vals[1][1]*num_vals+cur_vals[1][1])/(num_vals+1)
+            avg_vals[1][2] = (avg_vals[1][2]*num_vals+cur_vals[1][2])/(num_vals+1)
+            time.sleep(0.05)
+
+        avg_vals[0][vertical_axis] -= 1000 #in mg
+
+        self.acc_offsets = avg_vals[0]
+        self.gyro_offsets = avg_vals[1]
+
+
+#start_time = time.time()
 #lsm = IMU()
-#while(True):
+#lsm.calibrate()
+#while time.time() < start_time+10:
 #    print("%i\t%i\t%i\t%i\t%i\t%i\t%i" % (lsm.acc_x(), lsm.acc_y(), lsm.acc_z(), lsm.gyro_x(), lsm.gyro_y(), lsm.gyro_z(), lsm.temperature()))
-#    time.sleep(0.1)
+#    time.sleep(0.005)
