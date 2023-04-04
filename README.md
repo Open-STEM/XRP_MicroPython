@@ -9,19 +9,19 @@
 
 Connect the small end of your micro USB cable to the Raspberry Pi Pico W.
 
-![](https://projects-static.raspberrypi.org/projects/get-started-pico-w/0b627b5c80e71000b5116ecc35acaa49094aef84/en/images/pico-top-plug.png)
+![A Raspberry Pi Pico W connected to the small end of a micro USB cable.](https://projects-static.raspberrypi.org/projects/get-started-pico-w/0b627b5c80e71000b5116ecc35acaa49094aef84/en/images/pico-top-plug.png)
 
 Hold down the BOOTSEL button on your Raspberry Pi Pico W.
 
-![](https://projects-static.raspberrypi.org/projects/get-started-pico-w/0b627b5c80e71000b5116ecc35acaa49094aef84/en/images/bootsel.png)
+![A Raspberry Pi Pico W with the BOOTSEL button highlighted](https://projects-static.raspberrypi.org/projects/get-started-pico-w/0b627b5c80e71000b5116ecc35acaa49094aef84/en/images/bootsel.png)
 
 Connect the other end to your desktop computer, laptop, or Raspberry Pi.
 
-![](https://projects-static.raspberrypi.org/projects/get-started-pico-w/0b627b5c80e71000b5116ecc35acaa49094aef84/en/images/plug-in-pico.png)
+![A Raspberry Pi Pico W connected to a laptop via a micro USB cable.](https://projects-static.raspberrypi.org/projects/get-started-pico-w/0b627b5c80e71000b5116ecc35acaa49094aef84/en/images/plug-in-pico.png)
 
 Your file manager should open up, with Raspberry Pi Pico being show as an externally connected drive. Drag and drop the firmware file you downloaded into the file manager. Your Raspberry Pi Pico should disconnect and the file manager will close.
 
-![](https://projects-static.raspberrypi.org/projects/get-started-pico-w/0b627b5c80e71000b5116ecc35acaa49094aef84/en/images/file_manager.png)
+![Image of the Windows file manager opened, showing Raspberry Pi Pico connected as an external drive](https://projects-static.raspberrypi.org/projects/get-started-pico-w/0b627b5c80e71000b5116ecc35acaa49094aef84/en/images/file_manager.png)
 
 
 # Step 2: Installing dev environment (Mu)
