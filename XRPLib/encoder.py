@@ -2,7 +2,7 @@ from machine import Pin
 from micropython import const
 
 class Encoder:
-    def __init__(self, aPin:int, bPin:int, ticks_per_revolution:int = 544):
+    def __init__(self, aPin:int, bPin:int, ticks_per_revolution:int = 585):
         self.currentPosition = 0
         self.ticks_per_rev = ticks_per_revolution
         # Set pins as inputs
