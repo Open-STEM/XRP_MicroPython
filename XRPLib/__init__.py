@@ -11,7 +11,7 @@ from .servo import Servo
 class XRPBot:
     def __init__(self):
         # Default Robot Configuration
-        self.left_motor = EncodedMotor(Motor(6,7),4,5)
+        self.left_motor = EncodedMotor(Motor(6,7, flip_dir=True),4,5)
         self.right_motor = EncodedMotor(Motor(14,15),12,13)
         self.drivetrain = Drivetrain(self.left_motor, self.right_motor)
         self.servo = Servo(16)

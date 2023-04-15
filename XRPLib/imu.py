@@ -226,7 +226,7 @@ class IMU():
         """
             Collect readings for 3 seconds and calibrate the IMU based on those readings
             Do not move the robot during this time
-            Assumes the board to be parallel to the group. Please use the vertical_axis parameter if that is not correct
+            Assumes the board to be parallel to the ground. Please use the vertical_axis parameter if that is not correct
         """
         start_time = time.time()
         avg_vals = [[0,0,0],[0,0,0]]

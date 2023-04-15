@@ -3,6 +3,7 @@ from micropython import const
 
 class Encoder:
     def __init__(self, aPin:int, bPin:int, ticks_per_revolution:int = 585):
+        # TODO: Look into PIO implementation as to not take CPU time
         self.currentPosition = 0
         self.ticks_per_rev = ticks_per_revolution
         # Set pins as inputs
