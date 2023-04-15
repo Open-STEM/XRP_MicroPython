@@ -2,9 +2,9 @@ from motor import Motor
 from encoder import Encoder
 from machine import Timer
 
-class EncodedMotor(Motor):
-    def __init__(self, direction_pin: int, speed_pin: int, enc_pin_a:int, enc_pin_b:int, ticks_per_revolution:int = 544, flip_dir:bool=False, kp:float = 5, ki:float = 0.25):
-        super().__init__(direction_pin, speed_pin, flip_dir)
+class EncodedMotor():
+    def __init__(self, motor: Motor, enc_pin_a:int, enc_pin_b:int, ticks_per_revolution:int = 544, kp:float = 5, ki:float = 0.25):
+        self._motor = motor
         self._encoder = Encoder(enc_pin_a,enc_pin_b,ticks_per_revolution)
         self.kp = kp
         self.ki = ki
@@ -15,8 +15,11 @@ class EncodedMotor(Motor):
         # Use a virtual timer so we can leave the hardware timers up for the user
         self.updateTimer = Timer(-1)
 
+    def set_effort(self, effort: float):
+        self._motor.set_effort(effort)
+
     def get_position(self):
-        if self.flip_dir:
+        if self._motor.flip_dir:
             invert = -1
         else:
             invert = 1
@@ -53,7 +56,7 @@ class EncodedMotor(Motor):
         if self.target_speed is not None:
             error = self.target_speed - self.speed
             self.errorSum += error
-            self.set_effort(self.kp * error + self.ki * self.errorSum)
+            self._motor.set_effort(self.kp * error + self.ki * self.errorSum)
         else:
             self.errorSum = 0
             self.updateTimer.deinit()
