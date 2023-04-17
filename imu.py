@@ -219,7 +219,7 @@ class IMU():
                 self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
 
-#lsm = IMU()
-#while(True):
-#    print("%i\t%i\t%i\t%i\t%i\t%i\t%i" % (lsm.acc_x(), lsm.acc_y(), lsm.acc_z(), lsm.gyro_x(), lsm.gyro_y(), lsm.gyro_z(), lsm.temperature()))
-#    time.sleep(0.1)
+lsm = IMU()
+while(True):
+    print("%i\t%i\t%i\t%i\t%i\t%i\t%i" % (lsm.acc_x(), lsm.acc_y(), lsm.acc_z(), lsm.gyro_x(), lsm.gyro_y(), lsm.gyro_z(), lsm.temperature()))
+    time.sleep(0.1)
