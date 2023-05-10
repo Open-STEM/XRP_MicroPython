@@ -8,8 +8,8 @@ class LED:
     Default pin on the XRP Controller is Pin 25
     """
 
-    def __init__(self):
-        self._led = Pin("LED", Pin.OUT)
+    def __init__(self, ledPin="LED"):
+        self._led = Pin(ledPin, Pin.OUT)
         # A timer ID of -1 is a virtual timer.
         # Leaves the hardware timers for more important uses
         self._virt_timer = Timer(-1)

@@ -1,0 +1,10 @@
+{
+    "urls": [
+      ["XRPLib/__init__.py", "github:OpenSTEM/XRP_Micropython/XRPLib/__init__.py"]
+    ],
+    "deps": [
+      ["collections-defaultdict", "latest"],
+      ["os-path", "latest"]
+    ],
+    "version": "0.1.0"
+  }

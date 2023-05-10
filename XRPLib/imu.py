@@ -53,6 +53,17 @@ class IMU():
         self.acc_scale('2g')
         self.gyro_scale('125')
 
+        self.gyro_offsets = [0,0,0]
+        self.acc_offsets = [0,0,0]
+
+        self.sensivity = 8.75
+        self.update_time = 0.004
+        self.gyro_pitch_bias = 0
+        self.gyro_pitch_bias = 0
+        self.adjusted_pitch = 0
+
+        self.update_timer = Timer(-1)
+
 
     """
         The following are private helper methods to read and write registers, as well as to convert the read values to the correct unit.
@@ -91,37 +102,37 @@ class IMU():
         """
             Individual axis read for the Accelerometer's X-axis, in mg
         """
-        return self._mg(LSM6DSO_OUTX_L_A)
+        return self._mg(LSM6DSO_OUTX_L_A) - self.acc_offsets[0]
 
     def acc_y(self):
         """
             Individual axis read for the Accelerometer's Y-axis, in mg
         """
-        return self._mg(LSM6DSO_OUTY_L_A)
+        return self._mg(LSM6DSO_OUTY_L_A) - self.acc_offsets[1]
 
     def acc_z(self):
         """
             Individual axis read for the Accelerometer's Z-axis, in mg
         """
-        return self._mg(LSM6DSO_OUTZ_L_A)
+        return self._mg(LSM6DSO_OUTZ_L_A) - self.acc_offsets[2]
 
     def gyro_x(self):
         """
             Individual axis read for the Gyroscope's X-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTX_L_G)
+        return self._mdps(LSM6DSO_OUTX_L_G) - self.gyro_offsets[0]
 
     def gyro_y(self):
         """
             Individual axis read for the Gyroscope's Y-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTY_L_G)
+        return self._mdps(LSM6DSO_OUTY_L_G) - self.gyro_offsets[1]
 
     def gyro_z(self):
         """
             Individual axis read for the Gyroscope's Z-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTZ_L_G)
+        return self._mdps(LSM6DSO_OUTZ_L_G) - self.gyro_offsets[2]
 
     def get_acc(self):
         """
@@ -219,7 +230,59 @@ class IMU():
                 self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
 
-lsm = IMU()
-while(True):
-    print("%i\t%i\t%i\t%i\t%i\t%i\t%i" % (lsm.acc_x(), lsm.acc_y(), lsm.acc_z(), lsm.gyro_x(), lsm.gyro_y(), lsm.gyro_z(), lsm.temperature()))
-    time.sleep(0.1)
+    def calibrate(self, calibration_time=3, vertical_axis = 2, update_time=4):
+        """
+            Collect readings for 3 seconds and calibrate the IMU based on those readings
+            Do not move the robot during this time
+            Assumes the board to be parallel to the ground. Please use the vertical_axis parameter if that is not correct
+        """
+        self.update_timer.deinit()
+        start_time = time.time()
+        avg_vals = [[0,0,0],[0,0,0]]
+        num_vals = 0
+        while time.time() < start_time + calibration_time:
+            cur_vals = self.get()
+            # Accelerometer averages
+            avg_vals[0][0] = (avg_vals[0][0]*num_vals+cur_vals[0][0])/(num_vals+1)
+            avg_vals[0][1] = (avg_vals[0][1]*num_vals+cur_vals[0][1])/(num_vals+1)
+            avg_vals[0][2] = (avg_vals[0][2]*num_vals+cur_vals[0][2])/(num_vals+1)
+            # Gyroscope averages
+            avg_vals[1][0] = (avg_vals[1][0]*num_vals+cur_vals[1][0])/(num_vals+1)
+            avg_vals[1][1] = (avg_vals[1][1]*num_vals+cur_vals[1][1])/(num_vals+1)
+            avg_vals[1][2] = (avg_vals[1][2]*num_vals+cur_vals[1][2])/(num_vals+1)
+            time.sleep(0.05)
+
+        avg_vals[0][vertical_axis] -= 1000 #in mg
+
+        self.acc_offsets = avg_vals[0]
+        self.gyro_offsets = avg_vals[1]
+        self._virt_timer.init(period=update_time, callback=lambda t:self.adjust_pitch_for_bias())
+        self.update_time = update_time/1000
+
+    def adjust_pitch_for_bias(self):
+        # We have two ways of obtaining the pitch of the robot:
+        #   - A noisy but accurate reading from the gyroscope
+        #   - A more consistent reading from the accelerometer that is affected by linear acceleration
+        # We use a complementary filter to combine these two readings into a steady accurate signal.
+
+        scale = self.sensivity * self.update_time
+        measured_angle = math.atan2(self.acc_x(), self.acc_z())
+
+        self.gyro_pitch_running_total += (-self.gyro_y()-self.gyro_pitch_bias) * scale
+
+        if self.gyro_pitch_running_total > math.pi:
+            self.gyro_pitch_running_total -= 2*math.pi
+        elif self.gyro_pitch_running_total < -math.pi:
+            self.gyro_pitch_running_total += 2*math.pi
+
+        possible_error = measured_angle - self.gyro_pitch_running_total
+
+        # The comp factor is the main tuning value of the complementary filter. A value 0 to 1
+        # Skews the adjusted pitch to either the gyro total (closer to 0) or the accelerometer (closer to 1)
+        comp_factor = 0.8
+        self.adjusted_pitch = self.gyro_pitch_running_total + comp_factor * possible_error
+
+        # Bias growth factor
+        epsilon = 0.01
+        self.gyro_pitch_bias -= epsilon / scale * possible_error
+

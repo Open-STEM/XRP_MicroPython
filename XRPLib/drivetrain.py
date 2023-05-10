@@ -136,12 +136,12 @@ class Drivetrain:
             leftDelta = leftPosition - startingLeft
             rightDelta = rightPosition - startingRight
 
-            if _isTimeout(startTime, timeout) or abs(leftDelta - rightDelta)/2 >= rotationsToDo:
+            if _isTimeout(startTime, timeout) or abs(leftDelta + rightDelta)/2 >= rotationsToDo:
                 break
 
-            error = KP * (leftDelta + rightDelta)
+            error = KP * (leftDelta - rightDelta)
 
-            self.set_effort(speed - error, -speed - error)
+            self.set_effort(speed - error, speed + error)
 
             time.sleep(0.01)
 
