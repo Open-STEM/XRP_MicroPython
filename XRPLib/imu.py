@@ -271,7 +271,7 @@ class IMU():
         self.running_heading += self.gyro_z()*self.update_time / 1000
 
         scale = self.update_time
-        measured_angle = math.atan2(self.acc_y(), self.acc_z()) * 1000
+        measured_angle = math.atan2(self.acc_y(), self.acc_z()) *180/math.pi * 1000
 
         self.gyro_pitch_running_total += (self.gyro_y()-self.gyro_pitch_bias) * scale
 
