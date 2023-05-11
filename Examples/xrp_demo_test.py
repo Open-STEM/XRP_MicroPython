@@ -36,6 +36,7 @@ def log_accelerometer():
 
 # value is a lambda. threshold is a constant value
 # wait until value is [GREATER/LESS] than threshold
+# numTimes is the number of consecutive times the condition must be met before exiting
 GREATER_THAN = 1
 LESS_THAN = 2
 def wait_until(value, comparator, threshold, numTimes = 1):
@@ -49,14 +50,14 @@ def wait_until(value, comparator, threshold, numTimes = 1):
     
     times = 0
     while True:
-
-        if compare(value(), threshold, comparator):
+        v = value()
+        if compare(v, threshold, comparator):
             times += 1
             if times >= numTimes:
                 break
         else:
             times = 0
-
+        print(v)
         time.sleep(0.01)
 
 def go_forward():
@@ -68,9 +69,9 @@ def go_forward():
 
 def ramp_demo():
 
-    SPEED = 0.7
+    SPEED = 0.65
 
-    Z_PARALLEL = 990 # z acceleration when parallel to ground
+    Z_PARALLEL = 1000 # z acceleration when parallel to ground
     Z_CLIMBING = 970 # z acceleration when climbing ramp
 
     z = lambda: xrp.imu.get_acc()[2] # get z acceleration
