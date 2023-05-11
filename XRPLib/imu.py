@@ -271,7 +271,7 @@ class IMU():
         self.running_heading += self.gyro_z()*self.update_time / 1000
 
         scale = self.update_time
-        measured_angle = math.atan2(self.acc_x(), self.acc_z()) * 1000
+        measured_angle = math.atan2(self.acc_y(), self.acc_z()) * 1000
 
         self.gyro_pitch_running_total += (-self.gyro_y()-self.gyro_pitch_bias) * scale
 
@@ -284,7 +284,7 @@ class IMU():
 
         # The comp factor is the main tuning value of the complementary filter. A value 0 to 1
         # Skews the adjusted pitch to either the gyro total (closer to 0) or the accelerometer (closer to 1)
-        comp_factor = 0.8
+        comp_factor = 1
         self.adjusted_pitch = (self.gyro_pitch_running_total + comp_factor * possible_error) / 1000
 
         # Bias growth factor
