@@ -233,7 +233,7 @@ class IMU():
                 self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
 
-    def calibrate(self, calibration_time=5, vertical_axis = 2, update_time=4):
+    def calibrate(self, calibration_time=7, vertical_axis = 2, update_time=4):
         """
             Collect readings for 3 seconds and calibrate the IMU based on those readings
             Do not move the robot during this time
@@ -273,7 +273,7 @@ class IMU():
         scale = self.update_time
         measured_angle = math.atan2(self.acc_y(), self.acc_z()) *180/math.pi * 1000
 
-        self.gyro_pitch_running_total += (self.gyro_y()-self.gyro_pitch_bias) * scale
+        self.gyro_pitch_running_total += (self.gyro_x()-self.gyro_pitch_bias) * scale
 
         if self.gyro_pitch_running_total > math.pi:
             self.gyro_pitch_running_total -= 2*math.pi
@@ -284,7 +284,7 @@ class IMU():
 
         # The comp factor is the main tuning value of the complementary filter. A value 0 to 1
         # Skews the adjusted pitch to either the gyro total (closer to 0) or the accelerometer (closer to 1)
-        comp_factor = 0.8
+        comp_factor = 0.7
         self.adjusted_pitch = (self.gyro_pitch_running_total + comp_factor * possible_error) / 1000
 
         # Bias growth factor
