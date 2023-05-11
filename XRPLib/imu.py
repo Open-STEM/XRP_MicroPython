@@ -62,6 +62,10 @@ class IMU():
         self.gyro_pitch_bias = 0
         self.adjusted_pitch = 0
 
+        self.gyro_pitch_running_total = 0
+        self.running_heading = 0
+
+
         self.update_timer = Timer(-1)
 
 
@@ -264,6 +268,8 @@ class IMU():
         #   - A noisy but accurate reading from the gyroscope
         #   - A more consistent reading from the accelerometer that is affected by linear acceleration
         # We use a complementary filter to combine these two readings into a steady accurate signal.
+
+        self.running_heading += self.gyro_z()
 
         scale = self.update_time
         measured_angle = math.atan2(self.acc_x(), self.acc_z())
