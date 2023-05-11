@@ -1,8 +1,11 @@
 import uos
 
-
+def list_files():
+    path = uos.getcwd()
+    list_files_recursive(path)
 
 def list_files_recursive(path):
+
     try:
         items = uos.listdir(path)
     except OSError:
@@ -18,7 +21,4 @@ def list_files_recursive(path):
         except OSError:
             pass
 
-
-
-current_directory = uos.getcwd()
-list_files_recursive(current_directory)
+print("in module dir")

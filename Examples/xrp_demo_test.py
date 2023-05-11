@@ -1,12 +1,12 @@
-from ..XRPLib.drivetrain import Drivetrain
-from ..XRPLib.motor import Motor
-from ..XRPLib.encoder import Encoder
-from ..XRPLib.encoded_motor import EncodedMotor
-from ..XRPLib.hcsr04 import HCSR04
-from ..XRPLib.imu import IMU
-from ..XRPLib.led import LED
-from ..XRPLib.reflectance import Reflectance
-from ..XRPLib.servo import Servo
+from XRPLib.drivetrain import Drivetrain
+from XRPLib.motor import Motor
+from XRPLib.encoder import Encoder
+from XRPLib.encoded_motor import EncodedMotor
+from XRPLib.hcsr04 import HCSR04
+from XRPLib.imu import IMU
+from XRPLib.led import LED
+from XRPLib.reflectance import Reflectance
+from XRPLib.servo import Servo
 import math
 import time
 
