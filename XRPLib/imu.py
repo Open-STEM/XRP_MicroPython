@@ -273,7 +273,7 @@ class IMU():
         scale = self.update_time
         measured_angle = math.atan2(self.acc_y(), self.acc_z()) * 1000
 
-        self.gyro_pitch_running_total += (-self.gyro_y()-self.gyro_pitch_bias) * scale
+        self.gyro_pitch_running_total += (self.gyro_y()-self.gyro_pitch_bias) * scale
 
         if self.gyro_pitch_running_total > math.pi:
             self.gyro_pitch_running_total -= 2*math.pi
