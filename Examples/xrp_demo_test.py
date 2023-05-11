@@ -1,5 +1,3 @@
-print("xrp demo test module before xrplib import")
-
 from XRPLib.drivetrain import Drivetrain
 from XRPLib.motor import Motor
 from XRPLib.encoder import Encoder
@@ -11,8 +9,6 @@ from XRPLib.reflectance import Reflectance
 from XRPLib.servo import Servo
 import math
 import time
-
-print("xrp demo test module after xrplib import")
 
 class XRPBot:
     def __init__(self):
@@ -29,56 +25,73 @@ class XRPBot:
 xrp = XRPBot()
 xrp.imu.calibrate()
 
-def pitch():
-    accReadings = xrp.imu.get_acc()
-    return math.atan2(accReadings[1],accReadings[2])*180/math.pi
-
+# print out x, y, z, accelerometer readings
 def logAccelerometer():
     while True:
         accReadings = xrp.imu.get_acc()
         print(accReadings)
         time.sleep(0.1)
 
-def balance(seconds = -1):
-    start_time = time.time()
-    while (seconds == -1) or (time.time() < start_time + seconds):
-        kp = 1/40 # set so that robot will go max speed at 40 degrees
-        effort = kp * pitch()
-        xrp.drivetrain.set_effort(effort, effort)
-        time.sleep(0.05)
-    xrp.drivetrain.stop()
-
-def drive_until_change(effort:float, boundary: float, comparator: int, tolerance:float = 0):
-    # 0 - within tolerance of the boundary
-    # 1 - less than boundary
-    # 2 - more than boundary
-    if comparator == 0:
-        compare_function = lambda pitch: abs(pitch - boundary) < tolerance
-    elif comparator == 1:
-        compare_function = lambda pitch: pitch < boundary
-    else:
-        compare_function = lambda pitch: pitch > boundary
-    while not compare_function(pitch()):
-        xrp.drivetrain.set_effort(effort, effort)
-        time.sleep(0.05)
-    xrp.drivetrain.stop()
+# value is a lambda. threshold is a constant value
+# wait until value is [GREATER/LESS] than threshold
+GREATER_THAN = 1
+LESS_THAN = 2
+def wait_until(value, comparator, threshold):
+    def compare(a, b, comparator):
+        if comparator == GREATER_THAN:
+            return a > b
+        elif comparator == LESS_THAN:
+            return a < b
+        else:
+            return False
+        
+    while not compare(value(), threshold, comparator):
+        time.sleep(0.01)
 
 def ramp_demo():
-    # Start by driving forwards
-    direction = 1
-    speed = 1
 
+    SPEED = 0.7
+
+    Z_PARALLEL = 990 # z acceleration when parallel to ground
+    Z_CLIMBING = 970
+
+    z = lambda: xrp.imu.get_acc()[2] # get z acceleration
+
+    direction = 1 # 1 for forward, -1 for backward
+
+    # start flat on the ground aimed at ramp
     while True:
-        # Drive until we get onto ramp
-        drive_until_change(direction*speed, direction*10, 2)
-        # Balance on ramp
-        balance(5)
-        # Wait a second before continuing
-        time.sleep(1)
-        # Drive until ramp tips
-        drive_until_change(direction*speed, direction*-10, 0,tolerance=0.5)
-        # Drive until back on flat ground
-        drive_until_change(direction*speed, 0, 0,tolerance=0.5)
-        # Wait a second before doing it again in the other direction
-        time.sleep(1)
+
+        speed = SPEED * direction
+
+        xrp.drivetrain.set_effort(speed, speed)
+        
+        # wait until going up ramp
+        wait_until(z, LESS_THAN, Z_CLIMBING)
+
+        # wait until on ramp
+        wait_until(z, GREATER_THAN, Z_PARALLEL)
+        
+        # go forward a little longer to get to center of ramp
+        time.sleep(0.2)
+
+        # stop on center of ramp and stay there for a few seconds
+        xrp.drivetrain.stop()
+        time.sleep(2)
+
+        # get off ramp
+        xrp.drivetrain.set_effort(speed, speed)
+        wait_until(z, LESS_THAN, Z_CLIMBING)
+
+        # get back to flat ground
+        wait_until(z, GREATER_THAN, Z_PARALLEL)
+        time.sleep(0.5) # wait a little longer to get some distance between robot and ramp
+
+        # stop for a few seconds
+        xrp.drivetrain.stop()
+        time.sleep(2)
+
+        # switch direction
         direction *= -1
+
+
