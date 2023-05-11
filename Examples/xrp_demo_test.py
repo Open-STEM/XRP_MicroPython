@@ -36,11 +36,15 @@ def log_accelerometer():
         print(accReadings)
         time.sleep(0.1)
 
+def pitch():
+    accReadings = xrp.imu.get_acc()
+    return math.atan2(accReadings[1],accReadings[2])*180/math.pi
+
 def log_imu():
 
 
     while True:
-        print(xrp.imu.adjusted_pitch, xrp.imu.running_heading)
+        print(f"{xrp.imu.adjusted_pitch:.2f} {xrp.imu.running_heading:.2f} {xrp.imu.gyro_pitch_bias:.2f}  {xrp.imu.gyro_pitch_running_total/1000:.2f}  {pitch():.2f}" )
         time.sleep(0.1)
 
 # value is a lambda. threshold is a constant value
