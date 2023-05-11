@@ -1,12 +1,12 @@
-from drivetrain import Drivetrain
-from motor import Motor
-from encoder import Encoder
-from encoded_motor import EncodedMotor
-from hcsr04 import HCSR04
-from imu import IMU
-from led import LED
-from reflectance import Reflectance
-from servo import Servo
+from ..XRPLib.drivetrain import Drivetrain
+from ..XRPLib.motor import Motor
+from ..XRPLib.encoder import Encoder
+from ..XRPLib.encoded_motor import EncodedMotor
+from ..XRPLib.hcsr04 import HCSR04
+from ..XRPLib.imu import IMU
+from ..XRPLib.led import LED
+from ..XRPLib.reflectance import Reflectance
+from ..XRPLib.servo import Servo
 import math
 import time
 
@@ -29,9 +29,15 @@ def pitch():
     accReadings = xrp.imu.get_acc()
     return math.atan2(accReadings[1],accReadings[2])*180/math.pi
 
-def balance():
+def logAccelerometer():
+    while True:
+        accReadings = xrp.imu.get_acc()
+        print(accReadings)
+        time.sleep(0.1)
+
+def balance(seconds = -1):
     start_time = time.time()
-    while time.time() < start_time+20:
+    while (seconds == -1) or (time.time() < start_time + seconds):
         kp = 1/40 # set so that robot will go max speed at 40 degrees
         effort = kp * pitch()
         xrp.drivetrain.set_effort(effort, effort)
@@ -56,19 +62,19 @@ def drive_until_change(effort:float, boundary: float, comparator: int, tolerance
 def ramp_demo():
     # Start by driving forwards
     direction = 1
+    speed = 1
 
     while True:
         # Drive until we get onto ramp
-        drive_until_change(direction*0.5, direction*10, 2)
+        drive_until_change(direction*speed, direction*10, 2)
         # Balance on ramp
-        balance()
+        balance(5)
         # Wait a second before continuing
         time.sleep(1)
         # Drive until ramp tips
-        drive_until_change(direction*0.5, direction*-10, 0,tolerance=0.5)
+        drive_until_change(direction*speed, direction*-10, 0,tolerance=0.5)
         # Drive until back on flat ground
-        drive_until_change(direction*0.5, 0, 0,tolerance=0.5)
+        drive_until_change(direction*speed, 0, 0,tolerance=0.5)
         # Wait a second before doing it again in the other direction
         time.sleep(1)
         direction *= -1
-
