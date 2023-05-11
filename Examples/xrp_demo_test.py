@@ -34,6 +34,11 @@ def log_accelerometer():
         print(accReadings)
         time.sleep(0.1)
 
+def log_imu():
+    while True:
+        print(xrp.imu.adjusted_pitch)
+        time.sleep(0.1)
+
 # value is a lambda. threshold is a constant value
 # wait until value is [GREATER/LESS] than threshold
 # numTimes is the number of consecutive times the condition must be met before exiting
