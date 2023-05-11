@@ -36,7 +36,7 @@ def log_accelerometer():
 
 def log_imu():
     while True:
-        print(xrp.imu.adjusted_pitch)
+        print(xrp.imu.adjusted_pitch, xrp.imu.running_heading)
         time.sleep(0.1)
 
 # value is a lambda. threshold is a constant value

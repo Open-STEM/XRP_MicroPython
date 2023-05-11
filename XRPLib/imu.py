@@ -59,7 +59,6 @@ class IMU():
         self.sensivity = 8.75
         self.update_time = 0.004
         self.gyro_pitch_bias = 0
-        self.gyro_pitch_bias = 0
         self.adjusted_pitch = 0
 
         self.gyro_pitch_running_total = 0
@@ -269,7 +268,7 @@ class IMU():
         #   - A more consistent reading from the accelerometer that is affected by linear acceleration
         # We use a complementary filter to combine these two readings into a steady accurate signal.
 
-        self.running_heading += self.gyro_z()
+        self.running_heading += self.gyro_z()*self.update_time
 
         scale = self.update_time
         measured_angle = math.atan2(self.acc_x(), self.acc_z())
