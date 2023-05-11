@@ -23,9 +23,11 @@ class XRPBot:
         self.led = LED()
 
 xrp = XRPBot()
+print("calibrating")
 time.sleep(0.1)
 xrp.imu.calibrate()
 time.sleep(0.5)
+print("calibrated")
 
 # print out x, y, z, accelerometer readings
 def log_accelerometer():
@@ -35,6 +37,8 @@ def log_accelerometer():
         time.sleep(0.1)
 
 def log_imu():
+
+
     while True:
         print(xrp.imu.adjusted_pitch, xrp.imu.running_heading)
         time.sleep(0.1)
