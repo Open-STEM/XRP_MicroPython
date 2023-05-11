@@ -23,10 +23,12 @@ class XRPBot:
         self.led = LED()
 
 xrp = XRPBot()
+time.sleep(0.1)
 xrp.imu.calibrate()
+time.sleep(0.5)
 
 # print out x, y, z, accelerometer readings
-def logAccelerometer():
+def log_accelerometer():
     while True:
         accReadings = xrp.imu.get_acc()
         print(accReadings)
@@ -36,7 +38,7 @@ def logAccelerometer():
 # wait until value is [GREATER/LESS] than threshold
 GREATER_THAN = 1
 LESS_THAN = 2
-def wait_until(value, comparator, threshold):
+def wait_until(value, comparator, threshold, numTimes = 1):
     def compare(a, b, comparator):
         if comparator == GREATER_THAN:
             return a > b
@@ -44,51 +46,78 @@ def wait_until(value, comparator, threshold):
             return a < b
         else:
             return False
-        
-    while not compare(value(), threshold, comparator):
+    
+    times = 0
+    while True:
+
+        if compare(value(), threshold, comparator):
+            times += 1
+            if times >= numTimes:
+                break
+        else:
+            times = 0
+
         time.sleep(0.01)
+
+def go_forward():
+    print("start go forward")
+    xrp.drivetrain.set_effort(0.5, 0.5)
+    time.sleep(2)
+    xrp.drivetrain.stop()
+    print("end go forward")
 
 def ramp_demo():
 
     SPEED = 0.7
 
     Z_PARALLEL = 990 # z acceleration when parallel to ground
-    Z_CLIMBING = 970
+    Z_CLIMBING = 970 # z acceleration when climbing ramp
 
     z = lambda: xrp.imu.get_acc()[2] # get z acceleration
 
     direction = 1 # 1 for forward, -1 for backward
 
+    time.sleep(2)
+
     # start flat on the ground aimed at ramp
     while True:
+
+        print("ramp begin")
 
         speed = SPEED * direction
 
         xrp.drivetrain.set_effort(speed, speed)
         
         # wait until going up ramp
-        wait_until(z, LESS_THAN, Z_CLIMBING)
+        wait_until(z, LESS_THAN, Z_CLIMBING, 5)
+
+        print("ramp climb")
 
         # wait until on ramp
-        wait_until(z, GREATER_THAN, Z_PARALLEL)
+        wait_until(z, GREATER_THAN, Z_PARALLEL, 5)
+        print("ramp top")
         
         # go forward a little longer to get to center of ramp
         time.sleep(0.2)
 
         # stop on center of ramp and stay there for a few seconds
         xrp.drivetrain.stop()
+        print("ramp stop")
         time.sleep(2)
 
         # get off ramp
         xrp.drivetrain.set_effort(speed, speed)
-        wait_until(z, LESS_THAN, Z_CLIMBING)
+        wait_until(z, LESS_THAN, Z_CLIMBING, 5)
+
+        print("ramp descend")
 
         # get back to flat ground
-        wait_until(z, GREATER_THAN, Z_PARALLEL)
+        wait_until(z, GREATER_THAN, Z_PARALLEL, 5)
         time.sleep(0.5) # wait a little longer to get some distance between robot and ramp
 
         # stop for a few seconds
         xrp.drivetrain.stop()
+        print("ramp stop")
         time.sleep(2)
 
         # switch direction

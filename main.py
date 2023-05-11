@@ -1,8 +1,5 @@
-from test import testFunction
-testFunction()
+from Examples.xrp_demo_test import ramp_demo, go_forward, log_accelerometer
 
-import Examples.xrp_demo_test
-print(Examples.xrp_demo_test)
-
-from Examples.xrp_demo_test import ramp_demo
-
+#log_accelerometer()
+ramp_demo()
+#go_forward()
