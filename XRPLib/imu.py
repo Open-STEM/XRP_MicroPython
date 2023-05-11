@@ -284,10 +284,10 @@ class IMU():
 
         # The comp factor is the main tuning value of the complementary filter. A value 0 to 1
         # Skews the adjusted pitch to either the gyro total (closer to 0) or the accelerometer (closer to 1)
-        comp_factor = 1
+        comp_factor = 0.8
         self.adjusted_pitch = (self.gyro_pitch_running_total + comp_factor * possible_error) / 1000
 
         # Bias growth factor
-        epsilon = 0.01
+        epsilon = 0.015
         self.gyro_pitch_bias -= epsilon / scale * possible_error
 
