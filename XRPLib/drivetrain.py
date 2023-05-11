@@ -1,4 +1,4 @@
-from encoded_motor import EncodedMotor
+from .encoded_motor import EncodedMotor
 import time
 import math
 

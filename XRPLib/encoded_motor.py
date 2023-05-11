@@ -1,5 +1,5 @@
-from motor import Motor
-from encoder import Encoder
+from .motor import Motor
+from .encoder import Encoder
 from machine import Timer
 
 class EncodedMotor():
