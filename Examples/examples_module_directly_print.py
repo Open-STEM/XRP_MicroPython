@@ -1,0 +1,1 @@
+print("EXAMPLES directly print at top level")

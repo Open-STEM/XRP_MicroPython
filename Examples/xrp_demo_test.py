@@ -1,3 +1,5 @@
+print("xrp demo test module before xrplib import")
+
 from XRPLib.drivetrain import Drivetrain
 from XRPLib.motor import Motor
 from XRPLib.encoder import Encoder
@@ -9,6 +11,8 @@ from XRPLib.reflectance import Reflectance
 from XRPLib.servo import Servo
 import math
 import time
+
+print("xrp demo test module after xrplib import")
 
 class XRPBot:
     def __init__(self):
