@@ -4,8 +4,8 @@
 # Author: shaoziyang (shaoziyang@micropython.org.cn)
 # v1.0 2019.7
 
-from machine import I2C,Pin
-import time
+from machine import I2C,Pin, Timer
+import time, math
 
 LSM6DSO_CTRL1_XL = const(0x10)
 LSM6DSO_CTRL2_G = const(0x11)
@@ -256,7 +256,7 @@ class IMU():
 
         self.acc_offsets = avg_vals[0]
         self.gyro_offsets = avg_vals[1]
-        self._virt_timer.init(period=update_time, callback=lambda t:self.adjust_pitch_for_bias())
+        self.update_timer.init(period=update_time, callback=lambda t:self.adjust_pitch_for_bias())
         self.update_time = update_time/1000
 
     def adjust_pitch_for_bias(self):
@@ -265,7 +265,7 @@ class IMU():
         #   - A more consistent reading from the accelerometer that is affected by linear acceleration
         # We use a complementary filter to combine these two readings into a steady accurate signal.
 
-        scale = self.sensivity * self.update_time
+        scale = self.update_time
         measured_angle = math.atan2(self.acc_x(), self.acc_z())
 
         self.gyro_pitch_running_total += (-self.gyro_y()-self.gyro_pitch_bias) * scale
