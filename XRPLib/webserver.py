@@ -57,27 +57,10 @@ class WebServer:
     def run(self):
 
         # start a new thread for the IO
-        _thread.start_new_thread(self._runUserThread, ())
+        #_thread.start_new_thread(self._runUserThread, ())
         self._runIOThread()
 
     
-    def _runUserThread(self):
-        print("run user thread")
-        while True:
-
-            # check if a function is ready to run and reset functionToRun shared variable
-            with self.lock:
-                function = self.functionToRun
-                self.functionToRun = None
-
-            # If so, run it.
-            if function is not None:
-                print("run function")
-                function()
-            else:
-                print("no function")
-
-            time.sleep(0.1)
 
 
     # run on a separate thread to handle IO
@@ -98,10 +81,17 @@ class WebServer:
 
                 if not result:
                     print("no function found")
+                print("before function to run")
+                    
+                if self.functionToRun is not None:
+                    self.functionToRun()
+                    self.functionToRun = None
+                print("after functio nto run")
 
                 cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
                 cl.send(self._generateHTML())
                 cl.close()
+                print("succesfully sent html")
             
             except OSError as e:
                 print('connection closed')
@@ -112,8 +102,7 @@ class WebServer:
 
     # called on the webserver thread.
     def _setFunctionToRun(self, function):
-        with self.lock:
-            self.functionToRun = function
+        self.functionToRun = function
 
     # returns wlan, socket
     def _initServer(self):
@@ -209,21 +198,21 @@ class WebServer:
         request = request[index + 1]
         print("Filtered request:", request)
 
-        userFunctionRequestSuccess = self._handleUserFunctionRequest(request)
+        userFunctionRequestSuccess = self._handleUserFunctionRequest(fullRequest)
 
         # if userFunctionRequestSuccess, then we don't need to check for arrow buttons
         if userFunctionRequestSuccess:
             return True
 
-        if "forwardbutton" in request:
+        if "forwardbutton" in fullRequest:
             self._setFunctionToRun(self.forwardCallback)
-        elif "leftbutton" in request:
+        elif "leftbutton" in fullRequest:
             self._setFunctionToRun(self.leftCallback)
-        elif "rightbutton" in request:
+        elif "rightbutton" in fullRequest:
             self._setFunctionToRun(self.rightCallback)
-        elif "backbutton" in request:
+        elif "backbutton" in fullRequest:
             self._setFunctionToRun(self.backCallback)
-        elif "stopbutton" in request:
+        elif "stopbutton" in fullRequest:
             self._setFunctionToRun(self.stopCallback)
         else:
             print("no function found")
@@ -288,3 +277,4 @@ _HTML2 = """
 
         </html>
 """
+
