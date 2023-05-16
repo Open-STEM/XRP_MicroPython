@@ -1,11 +1,33 @@
 from .encoded_motor import EncodedMotor
+from .imu import IMU
 import time
 import math
 
 class Drivetrain:
-    def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, wheel_diam:float = 6.5, wheel_track:float = 13.5):
+
+    _DEFAULT_DRIVETRAIN_INSTANCE =None
+
+    @classmethod
+    def get_default_drivetrain(cls):
+
+        """
+        Get the default XRP v2 drivetrain instance. This is a singleton, so only one instance of the drivetrain will ever exist.
+        """
+
+        if cls._DEFAULT_DRIVETRAIN_INSTANCE is None:
+            cls._DEFAULT_DRIVETRAIN_INSTANCE = cls(
+            EncodedMotor.get_default_left_motor(),
+            EncodedMotor.get_default_right_motor(),
+            IMU.get_default_imu()
+        )
+            
+        return cls._DEFAULT_DRIVETRAIN_INSTANCE
+
+    def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, imu: IMU | None = None, wheel_diam:float = 6.5, wheel_track:float = 13.5):
         self.left_motor = left_motor
         self.right_motor = right_motor
+        self.imu = imu
+
         self.wheel_diam = wheel_diam
         self.track_width = wheel_track
 

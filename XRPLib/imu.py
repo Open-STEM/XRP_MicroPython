@@ -28,7 +28,25 @@ LSM6DSO_SCALEA = ('2g', '16g', '4g', '8g')
 LSM6DSO_SCALEG = ('250', '125', '500', '', '1000', '', '2000')
 
 class IMU():
-    def __init__(self, scl_pin:int=19, sda_pin:int=18, addr = 0x6B):
+
+    _DEFAULT_IMU_INSTANCE = None
+
+    @classmethod
+    def get_default_imu(cls):
+        """
+        Get the default XRP v2 IMU instance. This is a singleton, so only one instance of the drivetrain will ever exist.
+        """
+
+        if cls._DEFAULT_IMU_INSTANCE is None:
+            cls._DEFAULT_IMU_INSTANCE = cls(
+                scl_pin=19,
+                sda_pin=18,
+                addr=0x6B
+            )
+
+        return cls._DEFAULT_IMU_INSTANCE
+
+    def __init__(self, scl_pin: int, sda_pin: int, addr):
         self.i2c = I2C(id=1, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=400000)
         self.addr = addr
         self.tb = bytearray(1)

@@ -2,16 +2,54 @@ from .motor import Motor
 from .encoder import Encoder
 from machine import Timer
 
-class EncodedMotor():
-    def __init__(self, motor: Motor, enc_pin_a:int, enc_pin_b:int, ticks_per_revolution:int = 544, kp:float = 5, ki:float = 0.25):
+class EncodedMotor:
+
+    _DEFAULT_LEFT_MOTOR_INSTANCE = None
+    _DEFAULT_RIGHT_MOTOR_INSTANCE = None
+
+    @classmethod
+    def get_default_left_motor(cls):
+        """
+        Get the default XRP v2 left motor instance. This is a singleton, so only one instance of the drivetrain will ever exist.
+        Motor pins set to 6 and 7 and the encoder pins set to 4 and 5
+        """
+
+        if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
+            cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
+                Motor(6, 7, flip_dir=True),
+                Encoder(4, 5, 544)
+            )
+
+        return cls._DEFAULT_LEFT_MOTOR_INSTANCE
+    
+    @classmethod
+    def get_default_right_motor(cls):
+        """
+        Get the default XRP v2 right motor instance. This is a singleton, so only one instance of the drivetrain will ever exist.
+        Motor pins set to 14 and 15 and the encoder pins set to 12 and 13
+        """
+
+        if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
+            cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
+                Motor(14, 15),
+                Encoder(12, 13, 544)
+            )
+
+        return cls._DEFAULT_RIGHT_MOTOR_INSTANCE
+    
+    def __init__(self, motor: Motor, encoder: Encoder):
+        
         self._motor = motor
-        self._encoder = Encoder(enc_pin_a,enc_pin_b,ticks_per_revolution)
-        self.kp = kp
-        self.ki = ki
+        self._encoder = encoder
+
+        # PI Control Constants for motor sped
+        self.kp = 5
+        self.ki = 0.25
+
         self.target_speed = None
         self.speed = 0
-        self.prev_position = 0;
-        self.errorSum = 0;
+        self.prev_position = 0
+        self.errorSum = 0
         # Use a virtual timer so we can leave the hardware timers up for the user
         self.updateTimer = Timer(-1)
 
