@@ -138,32 +138,38 @@ class Drivetrain:
         : rtype: bool
         """
 
-        # ensure distance is always positive while speed could be either positive or negative
-        if turn_degrees < 0:
+        if speed < 0:
             speed *= -1
             turn_degrees *= -1
 
-        rotationsToDo = (turn_degrees/360) * self.track_width / self.wheel_diam
+        #rotationsToDo = (turn_degrees/360) * self.track_width / self.wheel_diam
 
         startTime = time.time()
-        startingLeft = self.get_left_encoder_position()
-        startingRight = self.get_right_encoder_position()
+        #startingLeft = self.get_left_encoder_position()
+        #startingRight = self.get_right_encoder_position()
 
-        KP = 5
+        KP = 0.02
+        print("start turn")
 
+        self.imu.reset_yaw() 
         while True:
 
-            leftPosition = self.get_left_encoder_position()
-            rightPosition = self.get_right_encoder_position()
-            leftDelta = leftPosition - startingLeft
-            rightDelta = rightPosition - startingRight
+            currentHeading = self.imu.get_yaw()
+            deltaHeading = turn_degrees - currentHeading
 
-            if _isTimeout(startTime, timeout) or abs(leftDelta + rightDelta)/2 >= rotationsToDo:
+            print(deltaHeading)
+
+            if _isTimeout(startTime, timeout) or abs(deltaHeading) < 0.5:
                 break
 
-            error = KP * (leftDelta - rightDelta)
+            error = KP * deltaHeading
 
-            self.set_effort(speed - error, speed + error)
+            if error > speed:
+                error = speed
+            elif error < -speed:
+                error = -speed
+
+            self.set_effort(-error, error)
 
             time.sleep(0.01)
 

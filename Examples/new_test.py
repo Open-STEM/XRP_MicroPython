@@ -12,3 +12,23 @@ drivetrain = Drivetrain.get_default_drivetrain()
 left_motor = EncodedMotor.get_default_left_motor()
 right_motor = EncodedMotor.get_default_right_motor()
 imu = IMU.get_default_imu()
+
+imu.calibrate(5)
+
+print("start")
+
+imu.reset_pitch()
+imu.reset_yaw()
+imu.reset_roll()
+
+while False:
+    print(imu.get_pitch(), imu.get_yaw(), imu.get_roll())
+    time.sleep(0.1)
+
+while True:
+    drivetrain.turn(180)
+    time.sleep(1)
+    drivetrain.turn(-90)
+    time.sleep(1)
+    drivetrain.turn(-90)
+    time.sleep(1)

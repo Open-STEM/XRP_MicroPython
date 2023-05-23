@@ -80,8 +80,10 @@ class IMU():
         self.adjusted_pitch = 0
 
         self.gyro_pitch_running_total = 0
-        self.running_heading = 0
 
+        self.running_pitch = 0
+        self.running_yaw = 0
+        self.running_roll = 0
 
         self.update_timer = Timer(-1)
 
@@ -115,75 +117,129 @@ class IMU():
     def _mdps(self, reg):
         return round(self._int16(self._get2reg(reg)) * 4.375 * self._scale_g_c)
 
-    """
-        Public facing API Methods
-    """
-
-    def acc_x(self):
+    def _get_acc_x_rate(self):
         """
             Individual axis read for the Accelerometer's X-axis, in mg
         """
         return self._mg(LSM6DSO_OUTX_L_A) - self.acc_offsets[0]
 
-    def acc_y(self):
+    def _get_acc_y_rate(self):
         """
             Individual axis read for the Accelerometer's Y-axis, in mg
         """
         return self._mg(LSM6DSO_OUTY_L_A) - self.acc_offsets[1]
 
-    def acc_z(self):
+    def _get_acc_z_rate(self):
         """
             Individual axis read for the Accelerometer's Z-axis, in mg
         """
         return self._mg(LSM6DSO_OUTZ_L_A) - self.acc_offsets[2]
 
-    def gyro_x(self):
+    def _get_gyro_x_rate(self):
         """
             Individual axis read for the Gyroscope's X-axis, in mg
         """
         return self._mdps(LSM6DSO_OUTX_L_G) - self.gyro_offsets[0]
 
-    def gyro_y(self):
+    def _get_gyro_y_rate(self):
         """
             Individual axis read for the Gyroscope's Y-axis, in mg
         """
         return self._mdps(LSM6DSO_OUTY_L_G) - self.gyro_offsets[1]
 
-    def gyro_z(self):
+    def _get_gyro_z_rate(self):
         """
             Individual axis read for the Gyroscope's Z-axis, in mg
         """
         return self._mdps(LSM6DSO_OUTZ_L_G) - self.gyro_offsets[2]
 
-    def get_acc(self):
+    def _get_acc_rates(self):
         """
             Retrieves the array of readings from the Accelerometer, in mg
             The order of the values is x, y, z.
         """
-        self.irq_v[0][0] = self.acc_x()
-        self.irq_v[0][1] = self.acc_y()
-        self.irq_v[0][2] = self.acc_z()
+        self.irq_v[0][0] = self._get_acc_x_rate()
+        self.irq_v[0][1] = self._get_acc_y_rate()
+        self.irq_v[0][2] = self._get_acc_z_rate()
         return self.irq_v[0]
 
-    def get_gyro(self):
+    def _get_gyro_rates(self):
         """
             Retrieves the array of readings from the Gyroscope, in mdps
             The order of the values is x, y, z.
         """
-        self.irq_v[1][0] = self.gyro_x()
-        self.irq_v[1][1] = self.gyro_y()
-        self.irq_v[1][2] = self.gyro_z()
+        self.irq_v[1][0] = self._get_gyro_x_rate()
+        self.irq_v[1][1] = self._get_gyro_y_rate()
+        self.irq_v[1][2] = self._get_gyro_z_rate()
         return self.irq_v[1]
 
-    def get(self):
+    def _get_acc_gyro_rates(self):
         """
             Get the accelerometer and gyroscope values in mg and mdps in the form of a 2D array.
             The first row is the acceleration values, the second row is the gyro values.
             The order of the values is x, y, z.
         """
-        self.get_acc()
-        self.get_gyro()
+        self._get_acc_rates()
+        self._get_gyro_rates()
         return self.irq_v
+    
+    """
+        Public facing API Methods
+    """
+    
+    def get_pitch(self):
+        """
+        Get the heading of the IMU in degrees. Unbounded in range
+        """
+        return self.running_pitch
+    
+    def get_yaw(self):
+        """
+        Get the heading of the IMU in degrees. Unbounded in range
+        """
+        return self.running_yaw
+    
+    def get_roll(self):
+        """
+        Get the heading of the IMU in degrees. Unbounded in range
+        """
+        return self.running_roll
+    
+    def reset_pitch(self):
+        """
+        Reset the pitch to 0
+        """
+        self.running_pitch = 0
+
+    def reset_yaw(self):
+        """
+        Reset the yaw to 0
+        """
+        self.running_yaw = 0
+    
+    def reset_roll(self):
+        """
+        Reset the roll to 0
+        """
+        self.running_roll = 0
+
+    def set_pitch(self, pitch):
+        """
+        Set the pitch to a specific angle in degrees
+        """
+        self.running_pitch = pitch
+
+    def set_yaw(self, yaw):
+        """
+        Set the yaw to a specific angle in degrees
+        """
+        self.running_yaw = yaw
+
+    def set_roll(self, roll):
+        """
+        Set the roll to a specific angle in degrees
+        """
+        self.running_roll = roll
 
     def temperature(self):
         """
@@ -262,7 +318,7 @@ class IMU():
         avg_vals = [[0,0,0],[0,0,0]]
         num_vals = 0
         while time.time() < start_time + calibration_time:
-            cur_vals = self.get()
+            cur_vals = self._get_acc_gyro_rates()
             # Accelerometer averages
             avg_vals[0][0] = (avg_vals[0][0]*num_vals+cur_vals[0][0])/(num_vals+1)
             avg_vals[0][1] = (avg_vals[0][1]*num_vals+cur_vals[0][1])/(num_vals+1)
@@ -277,21 +333,30 @@ class IMU():
 
         self.acc_offsets = avg_vals[0]
         self.gyro_offsets = avg_vals[1]
-        self.update_timer.init(period=update_time, callback=lambda t:self.adjust_pitch_for_bias())
+        self.update_timer.init(period=update_time, callback=lambda t:self.update_imu_readings())
         self.update_time = update_time/1000
 
-    def adjust_pitch_for_bias(self):
+
+    def update_imu_readings(self):
+        # Called every tick through a callback timer
         # We have two ways of obtaining the pitch of the robot:
         #   - A noisy but accurate reading from the gyroscope
         #   - A more consistent reading from the accelerometer that is affected by linear acceleration
         # We use a complementary filter to combine these two readings into a steady accurate signal.
 
-        self.running_heading += self.gyro_z()*self.update_time / 1000
+        delta_pitch = self._get_gyro_x_rate()*self.update_time / 1000
+        delta_roll = self._get_gyro_y_rate()*self.update_time / 1000
+        delta_yaw = self._get_gyro_z_rate()*self.update_time / 1000
 
+        self.running_pitch += delta_pitch
+        self.running_roll += delta_roll
+        self.running_yaw += delta_yaw
+
+        """
         scale = self.update_time
-        measured_angle = math.atan2(self.acc_y(), self.acc_z()) *180/math.pi * 1000
+        measured_angle = math.atan2(self._get_acc_y_rate(), self._get_acc_z_rate()) *180/math.pi * 1000
 
-        self.gyro_pitch_running_total += (self.gyro_x()-self.gyro_pitch_bias) * scale
+        self.gyro_pitch_running_total += (self._get_gyro_x_rate()-self.gyro_pitch_bias) * scale
 
         if self.gyro_pitch_running_total > math.pi:
             self.gyro_pitch_running_total -= 2*math.pi
@@ -308,4 +373,4 @@ class IMU():
         # Bias growth factor
         epsilon = 0.015
         self.gyro_pitch_bias -= epsilon / scale * possible_error
-
+        """

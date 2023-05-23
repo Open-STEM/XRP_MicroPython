@@ -46,12 +46,12 @@ class RollingAverage:
 # print out x, y, z, accelerometer readings
 def log_accelerometer():
     while True:
-        accReadings = xrp.imu.get_acc()
-        print(f"{accReadings[2]:.2f}, {xrp.imu.gyro_z():.2f}")
+        accReadings = xrp.imu._get_acc_rates()
+        print(f"{accReadings[2]:.2f}, {xrp.imu._get_gyro_z_rate():.2f}")
         time.sleep(0.1)
 
 def pitch():
-    accReadings = xrp.imu.get_acc()
+    accReadings = xrp.imu._get_acc_rates()
     return math.atan2(accReadings[1],accReadings[2])*180/math.pi
 
 def log_imu():
@@ -66,7 +66,7 @@ def log_imu():
 
         i = (i + 1) % 10
         if i == 0:
-            print(f"{r.average():.2f} {xrp.imu.running_heading:.2f}")
+            print(f"{r.average():.2f} {xrp.imu.running_yaw:.2f}")
 
         time.sleep(0.01)
 
@@ -106,7 +106,7 @@ def straight_until_pitch(effort, targetHeading, comparator, threshold):
         if compare(pitch, threshold, comparator):
             break
 
-        currentHeading = xrp.imu.running_heading
+        currentHeading = xrp.imu.running_yaw
         error = KP * (targetHeading - currentHeading)
 
         left = clamp(effort - error, -1, 1)
