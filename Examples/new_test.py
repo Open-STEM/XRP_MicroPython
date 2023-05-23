@@ -25,10 +25,9 @@ while False:
     print(imu.get_pitch(), imu.get_yaw(), imu.get_roll())
     time.sleep(0.1)
 
+
 while True:
+    drivetrain.straight(12)
+    time.sleep(1)
     drivetrain.turn(180)
-    time.sleep(1)
-    drivetrain.turn(-90)
-    time.sleep(1)
-    drivetrain.turn(-90)
     time.sleep(1)

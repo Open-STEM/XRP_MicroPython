@@ -4,7 +4,7 @@
 # Author: shaoziyang (shaoziyang@micropython.org.cn)
 # v1.0 2019.7
 
-from machine import I2C,Pin, Timer
+from machine import I2C,Pin, Timer, disable_irq, enable_irq
 import time, math
 
 LSM6DSO_CTRL1_XL = const(0x10)
@@ -348,9 +348,11 @@ class IMU():
         delta_roll = self._get_gyro_y_rate()*self.update_time / 1000
         delta_yaw = self._get_gyro_z_rate()*self.update_time / 1000
 
+        state = disable_irq()
         self.running_pitch += delta_pitch
         self.running_roll += delta_roll
         self.running_yaw += delta_yaw
+        enable_irq(state)
 
         """
         scale = self.update_time
