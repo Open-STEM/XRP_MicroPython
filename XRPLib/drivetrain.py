@@ -127,6 +127,7 @@ class Drivetrain:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
         Speed is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
+        Uses the IMU to determine the heading of the robot and P control for the motor controller.
 
         : param turnDegrees: The number of angle for the robot to turn (In Degrees)
         : type turnDegrees: float
@@ -154,15 +155,12 @@ class Drivetrain:
         MIN_EFFORT_MAGNITUDE = 0.15
         times = 0
 
-        print("start turn")
-
         self.imu.reset_yaw() 
         while True:
 
+            # poll imu heading
             currentHeading = self.imu.get_yaw()
             deltaHeading = turn_degrees - currentHeading
-
-            print(deltaHeading)
 
             # heading must fall within tolerance for NUM_TIMES_IN_TOLERANCE consecutive times to exit
             if abs(deltaHeading) < TOLERANCE_DEGREES:
@@ -170,6 +168,7 @@ class Drivetrain:
             else:
                 times = 0
             
+            # exit if timeout or tolerance reached
             if _isTimeout(startTime, timeout) or times >= NUM_TIMES_IN_TOLERANCE:
                 break
 

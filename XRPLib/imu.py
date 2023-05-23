@@ -189,19 +189,19 @@ class IMU():
     
     def get_pitch(self):
         """
-        Get the heading of the IMU in degrees. Unbounded in range
+        Get the pitch of the IMU in degrees. Unbounded in range
         """
         return self.running_pitch
     
     def get_yaw(self):
         """
-        Get the heading of the IMU in degrees. Unbounded in range
+        Get the yaw (heading) of the IMU in degrees. Unbounded in range
         """
         return self.running_yaw
     
     def get_roll(self):
         """
-        Get the heading of the IMU in degrees. Unbounded in range
+        Get the roll of the IMU in degrees. Unbounded in range
         """
         return self.running_roll
     
@@ -213,7 +213,7 @@ class IMU():
 
     def reset_yaw(self):
         """
-        Reset the yaw to 0
+        Reset the yaw (heading) to 0
         """
         self.running_yaw = 0
     
@@ -231,7 +231,7 @@ class IMU():
 
     def set_yaw(self, yaw):
         """
-        Set the yaw to a specific angle in degrees
+        Set the yaw (heading) to a specific angle in degrees
         """
         self.running_yaw = yaw
 

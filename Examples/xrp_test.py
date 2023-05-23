@@ -21,11 +21,13 @@ imu.reset_pitch()
 imu.reset_yaw()
 imu.reset_roll()
 
+# Set to true to log the IMU heading forever
 while False:
     print(imu.get_yaw())
     time.sleep(0.1)
 
-
+# Turns 360 slow and fast, then turns 180 slow and fast
+# IMU has accuracy issues at fast speeds.
 drivetrain.turn(360, 0.3)
 time.sleep(1)
 drivetrain.turn(360, 0.5)
