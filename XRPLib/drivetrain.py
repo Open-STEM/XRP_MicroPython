@@ -152,7 +152,7 @@ class Drivetrain:
         KP = 0.02
         TOLERANCE_DEGREES = 0.5
         NUM_TIMES_IN_TOLERANCE = 3
-        MIN_EFFORT_MAGNITUDE = 0.15
+        MIN_EFFORT_MAGNITUDE = 0.2
         times = 0
 
         self.imu.reset_yaw() 
