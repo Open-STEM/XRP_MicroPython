@@ -149,6 +149,11 @@ class Drivetrain:
         #startingRight = self.get_right_encoder_position()
 
         KP = 0.02
+        TOLERANCE_DEGREES = 0.5
+        NUM_TIMES_IN_TOLERANCE = 3
+        MIN_EFFORT_MAGNITUDE = 0.15
+        times = 0
+
         print("start turn")
 
         self.imu.reset_yaw() 
@@ -159,15 +164,26 @@ class Drivetrain:
 
             print(deltaHeading)
 
-            if _isTimeout(startTime, timeout) or abs(deltaHeading) < 0.5:
+            # heading must fall within tolerance for NUM_TIMES_IN_TOLERANCE consecutive times to exit
+            if abs(deltaHeading) < TOLERANCE_DEGREES:
+                times += 1
+            else:
+                times = 0
+            
+            if _isTimeout(startTime, timeout) or times >= NUM_TIMES_IN_TOLERANCE:
                 break
 
             error = KP * deltaHeading
 
+            # clamp error by (-speed, speed)
             if error > speed:
                 error = speed
             elif error < -speed:
                 error = -speed
+
+            # if error is too small, set effort to minimum
+            if abs(error) < MIN_EFFORT_MAGNITUDE:
+                error = MIN_EFFORT_MAGNITUDE * (1 if error > 0 else -1)
 
             self.set_effort(-error, error)
 

@@ -22,12 +22,15 @@ imu.reset_yaw()
 imu.reset_roll()
 
 while False:
-    print(imu.get_pitch(), imu.get_yaw(), imu.get_roll())
+    print(imu.get_yaw())
     time.sleep(0.1)
 
 
-while True:
-    drivetrain.straight(12)
-    time.sleep(1)
-    drivetrain.turn(180)
-    time.sleep(1)
+drivetrain.turn(360, 0.3)
+time.sleep(1)
+drivetrain.turn(360, 0.5)
+time.sleep(1)
+drivetrain.turn(180, 0.3)
+time.sleep(1)
+drivetrain.turn(180, 0.5)
+time.sleep(1)
