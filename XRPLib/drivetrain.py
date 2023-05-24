@@ -107,21 +107,26 @@ class Drivetrain:
 
         rotationsToDo = distance  / (self.wheel_diam * math.pi)
 
+        # record current heading to maintain it
+        heading = self.imu.get_yaw()
+
         while True:
 
-            leftPosition = self.get_left_encoder_position()
-            rightPosition = self.get_right_encoder_position()
-            leftDelta = leftPosition - startingLeft
-            rightDelta = rightPosition - startingRight
+            # calculate the distance traveled
+            leftDelta = self.get_left_encoder_position() - startingLeft
+            rightDelta = self.get_right_encoder_position() - startingRight
+            rotationsDelta = (leftDelta + rightDelta) / 2
 
-            distanceDelta 
+            # PID for distance
+            effort = distancePID.tick(rotationsToDo - rotationsDelta)
 
-            if abs(leftDelta + rightDelta)/2 >= rotationsToDo:
+            if distancePID.is_done():
                 break
 
-            error = KP * (leftDelta - rightDelta) # positive if bearing right
+            # calculate heading correction
+            headingCorrection = thetaPID.tick(self.imu.get_yaw() - heading)
 
-            self.set_effort(speed - error, speed + error)
+            self.set_effort(speed + headingCorrection, speed - headingCorrection)
 
             time.sleep(0.01)
 
@@ -165,8 +170,13 @@ class Drivetrain:
             toleranceCount = 3,
             timeout = timeout
         )
+        # pid to keep encoder values in sync
+        encoderPID = PID(
+            kp = 0.0001,
+        )
  
-        self.imu.reset_yaw()
+        turn_degrees += self.imu.get_yaw()
+
         while True:
 
             # calculate turn speed from PID with delta heading
@@ -176,7 +186,10 @@ class Drivetrain:
             if turnPID.is_done():
                 break
 
-            self.set_effort(-turnSpeed, turnSpeed)
+            # calculate encoder correction to minimize drift
+            encoderCorrection = encoderPID.tick(self.get_left_encoder_position() + self.get_right_encoder_position())
+
+            self.set_effort(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
 
             time.sleep(0.01)
 

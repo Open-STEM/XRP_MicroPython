@@ -199,6 +199,12 @@ class IMU():
         """
         return self.running_yaw
     
+    def get_heading(self):
+        """
+        Get's the heading of the IMU, but bounds between [0, 360)
+        """
+        return self.running_yaw % 360
+    
     def get_roll(self):
         """
         Get the roll of the IMU in degrees. Unbounded in range
