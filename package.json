@@ -1,17 +1,17 @@
 {
     "urls": [
-      ["XRPLib/__init__.py", "github:OpenSTEM/XRP_Micropython/XRPLib/__init__.py"],
-      ["XRPLib/drivetrain.py", "github:OpenSTEM/XRP_Micropython/XRPLib/drivetrain.py"],
-      ["XRPLib/encoded_motor.py", "github:OpenSTEM/XRP_Micropython/XRPLib/encoded_motor.py"],
-      ["XRPLib/encoder.py", "github:OpenSTEM/XRP_Micropython/XRPLib/encoder.py"],
-      ["XRPLib/hcsr04.py", "github:OpenSTEM/XRP_Micropython/XRPLib/hcsr04.py"],
-      ["XRPLib/imu.py", "github:OpenSTEM/XRP_Micropython/XRPLib/imu.py"],
-      ["XRPLib/led.py", "github:OpenSTEM/XRP_Micropython/XRPLib/led.py"],
-      ["XRPLib/reflectance.py", "github:OpenSTEM/XRP_Micropython/XRPLib/reflectance.py"],
-      ["XRPLib/servo.py", "github:OpenSTEM/XRP_Micropython/XRPLib/servo.py"],
-      ["Examples/__init__.py", "github:OpenSTEM/XRP_Micropython/Examples/servo.py"],
-      ["Examples/webserver_test.py", "github:OpenSTEM/XRP_Micropython/Examples/webserver_test.py"],
-      ["Examples/xrp_test.py", "github:OpenSTEM/XRP_Micropython/Examples/xrp_test.py"]
+      ["XRPLib/__init__.py", "github:Open-STEM/XRP_Micropython/XRPLib/__init__.py"],
+      ["XRPLib/drivetrain.py", "github:Open-STEM/XRP_Micropython/XRPLib/drivetrain.py"],
+      ["XRPLib/encoded_motor.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoded_motor.py"],
+      ["XRPLib/encoder.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoder.py"],
+      ["XRPLib/hcsr04.py", "github:Open-STEM/XRP_Micropython/XRPLib/hcsr04.py"],
+      ["XRPLib/imu.py", "github:Open-STEM/XRP_Micropython/XRPLib/imu.py"],
+      ["XRPLib/led.py", "github:Open-STEM/XRP_Micropython/XRPLib/led.py"],
+      ["XRPLib/reflectance.py", "github:Open-STEM/XRP_Micropython/XRPLib/reflectance.py"],
+      ["XRPLib/servo.py", "github:Open-STEM/XRP_Micropython/XRPLib/servo.py"],
+      ["Examples/__init__.py", "github:Open-STEM/XRP_Micropython/Examples/servo.py"],
+      ["Examples/webserver_test.py", "github:Open-STEM/XRP_Micropython/Examples/webserver_test.py"],
+      ["Examples/xrp_test.py", "github:Open-STEM/XRP_Micropython/Examples/xrp_test.py"]
     ],
     "deps": [
       ["collections-defaultdict", "latest"],
