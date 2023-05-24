@@ -28,11 +28,8 @@ while False:
 
 # Turns 360 slow and fast, then turns 180 slow and fast
 # IMU has accuracy issues at fast speeds.
-drivetrain.turn(360, 0.3)
-time.sleep(1)
 drivetrain.turn(360, 0.5)
 time.sleep(1)
-drivetrain.turn(180, 0.3)
+drivetrain.turn(360, 0.75)
 time.sleep(1)
-drivetrain.turn(180, 0.5)
-time.sleep(1)
+drivetrain.turn(360, 1)
