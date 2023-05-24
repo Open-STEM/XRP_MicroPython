@@ -33,18 +33,41 @@ Open Mu, and select the RP2040 Option (Or whichever option represents using Micr
 
 ![](https://codewith.mu/img/en/tutorials/mode_selector1-1.png)
 
-## Step 3: Installing the library
+## Step 3: Installing the library using mip
 
-Right now installing the library is a little informal. Clone or download the library files through github.
+Open up a new file in mu.
 
-Then, in mu, press load, and navigate to the \_\_init\_\_.py file (or any other in that directory)
+Copy the following code into that file:
 
-Press the "Files" button, and drag the files from your computer into the board's memory.
+```python
+import network
+import mip
+import time
 
-Use them with ```from [File] import [ClassName]```.
+def install_update_library(wifi_ssid, wifi_password, timeout = 5):
+    
+    wlan = network.WLAN(network.STA_IF)
+    # Configure board to connect to wifi
+    wlan.active(True)
+    wlan.connect(wifi_ssid,wifi_password)
+    start_time = time.time()
+    # Wait until connection is confirmed before attempting install
+    while not wlan.isconnected():
+            print("Connecting to network, may take a second")
+            if time.time() > start_time+timeout:
+                print("Failed to connect to network, please try again")
+                wlan.disconnect()
+                return
+            time.sleep(0.25)
+    # Install up-to-date library files and dependencies
+    mip.install("github:Open-STEM/XRP_MicroPython")
+    # Disconnect and disable wifi, since it is no longer needed
+    wlan.disconnect()
+    wlan.active(False)
+    
+install_update_library("your-ssid","your-password")
+```
 
-ex. ```from hcsr04 import HCSR04```
+Edit the method call at the bottom to include your wifi's details, then hit run.
 
-____
-
-In the future, installing the library will be a lot easier, using mip (Micropython's package installer). I haven't tested this method yet and so do not have explicit instructions of how to do it.
+Check the Serial Monitor to confirm that the libraries were properly installed.
