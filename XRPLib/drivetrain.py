@@ -1,3 +1,4 @@
+from XRPLib.pid import PID
 from .encoded_motor import EncodedMotor
 from .imu import IMU
 import time
@@ -95,7 +96,14 @@ class Drivetrain:
         startingLeft = self.get_left_encoder_position()
         startingRight = self.get_right_encoder_position()
 
-        KP = 5
+        thetaPID = PID(kp = 0.05)
+        distancePID = PID(
+            kp = 1,
+            minOutput = 0.1,
+            maxOutput = speed,
+            tolerance = 0.1,
+            toleranceCount = 3,
+        )
 
         rotationsToDo = distance  / (self.wheel_diam * math.pi)
 
@@ -106,7 +114,9 @@ class Drivetrain:
             leftDelta = leftPosition - startingLeft
             rightDelta = rightPosition - startingRight
 
-            if _isTimeout(startTime, timeout) or abs(leftDelta + rightDelta)/2 >= rotationsToDo:
+            distanceDelta 
+
+            if abs(leftDelta + rightDelta)/2 >= rotationsToDo:
                 break
 
             error = KP * (leftDelta - rightDelta) # positive if bearing right
@@ -143,48 +153,30 @@ class Drivetrain:
             speed *= -1
             turn_degrees *= -1
 
-        #rotationsToDo = (turn_degrees/360) * self.track_width / self.wheel_diam
-
         startTime = time.time()
-        #startingLeft = self.get_left_encoder_position()
-        #startingRight = self.get_right_encoder_position()
+        startingLeft = self.get_left_encoder_position()
+        startingRight = self.get_right_encoder_position()
 
-        KP = 0.02
-        TOLERANCE_DEGREES = 0.5
-        NUM_TIMES_IN_TOLERANCE = 3
-        MIN_EFFORT_MAGNITUDE = 0.2
-        times = 0
-
-        self.imu.reset_yaw() 
+        turnPID = PID(
+            kp = .00016,
+            minOutput = 0.2,
+            maxOutput = speed,
+            tolerance = 0.5,
+            toleranceCount = 3,
+            timeout = timeout
+        )
+ 
+        self.imu.reset_yaw()
         while True:
 
-            # poll imu heading
-            currentHeading = self.imu.get_yaw()
-            deltaHeading = turn_degrees - currentHeading
-
-            # heading must fall within tolerance for NUM_TIMES_IN_TOLERANCE consecutive times to exit
-            if abs(deltaHeading) < TOLERANCE_DEGREES:
-                times += 1
-            else:
-                times = 0
+            # calculate turn speed from PID with delta heading
+            turnSpeed = turnPID.tick(turn_degrees - self.imu.get_yaw())
             
             # exit if timeout or tolerance reached
-            if _isTimeout(startTime, timeout) or times >= NUM_TIMES_IN_TOLERANCE:
+            if turnPID.is_done():
                 break
 
-            error = KP * deltaHeading
-
-            # clamp error by (-speed, speed)
-            if error > speed:
-                error = speed
-            elif error < -speed:
-                error = -speed
-
-            # if error is too small, set effort to minimum
-            if abs(error) < MIN_EFFORT_MAGNITUDE:
-                error = MIN_EFFORT_MAGNITUDE * (1 if error > 0 else -1)
-
-            self.set_effort(-error, error)
+            self.set_effort(-turnSpeed, turnSpeed)
 
             time.sleep(0.01)
 
@@ -194,11 +186,3 @@ class Drivetrain:
             return True
         else:
             return time.time() < startTime+timeout
-
-# A helper function for our straight and turn functions
-# Returns true if the timeout has been reached
-def _isTimeout(startTime, timeout):
-
-    if timeout is None:
-        return False
-    return time.time() >= startTime+timeout
