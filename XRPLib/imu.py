@@ -69,7 +69,7 @@ class IMU():
         self._scale_a_c = 1
         self._scale_g_c = 1
         self.acc_scale('2g')
-        self.gyro_scale('250')
+        self.gyro_scale('500')
 
         self.gyro_offsets = [0,0,0]
         self.acc_offsets = [0,0,0]

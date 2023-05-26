@@ -17,7 +17,7 @@ class EncodedMotor:
         if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
             cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
                 Motor(6, 7, flip_dir=True),
-                Encoder(4, 5, 544)
+                Encoder(4, 5)
             )
 
         return cls._DEFAULT_LEFT_MOTOR_INSTANCE
@@ -32,7 +32,7 @@ class EncodedMotor:
         if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
             cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
                 Motor(14, 15),
-                Encoder(12, 13, 544)
+                Encoder(12, 13)
             )
 
         return cls._DEFAULT_RIGHT_MOTOR_INSTANCE
@@ -62,6 +62,13 @@ class EncodedMotor:
         else:
             invert = 1
         return self._encoder.get_position()*invert
+    
+    def get_position_ticks(self):
+        if self._motor.flip_dir:
+            invert = -1
+        else:
+            invert = 1
+        return self._encoder.get_position_ticks()*invert
 
     def reset_encoder_position(self):
         self._encoder.reset_encoder_position()

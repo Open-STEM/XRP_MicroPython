@@ -24,7 +24,7 @@ class Drivetrain:
             
         return cls._DEFAULT_DRIVETRAIN_INSTANCE
 
-    def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, imu: IMU | None = None, wheel_diam:float = 6.5, wheel_track:float = 13.5):
+    def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, imu: IMU | None = None, wheel_diam:float = 6.0, wheel_track:float = 13.5):
         self.left_motor = left_motor
         self.right_motor = right_motor
         self.imu = imu
@@ -96,16 +96,17 @@ class Drivetrain:
         startingLeft = self.get_left_encoder_position()
         startingRight = self.get_right_encoder_position()
 
-        thetaPID = PID(kp = 0.05)
+        thetaPID = PID(kp = 0.01, ki = 0.02)
         distancePID = PID(
-            kp = 1,
-            minOutput = 0.1,
+            kp = 2,
+            minOutput = 0.12,
             maxOutput = speed,
             tolerance = 0.1,
             toleranceCount = 3,
         )
 
         rotationsToDo = distance  / (self.wheel_diam * math.pi)
+        print("rot:", rotationsToDo)
 
         # record current heading to maintain it
         heading = self.imu.get_yaw()
@@ -118,7 +119,8 @@ class Drivetrain:
             rotationsDelta = (leftDelta + rightDelta) / 2
 
             # PID for distance
-            effort = distancePID.tick(rotationsToDo - rotationsDelta)
+            distanceError = rotationsToDo - rotationsDelta
+            effort = distancePID.tick(distanceError)
 
             if distancePID.is_done():
                 break
@@ -126,7 +128,9 @@ class Drivetrain:
             # calculate heading correction
             headingCorrection = thetaPID.tick(self.imu.get_yaw() - heading)
 
-            self.set_effort(speed + headingCorrection, speed - headingCorrection)
+            self.set_effort(effort + headingCorrection, effort - headingCorrection)
+
+            print(self.imu.get_yaw() - heading, effort + headingCorrection, effort - headingCorrection, headingCorrection)
 
             time.sleep(0.01)
 
@@ -163,8 +167,9 @@ class Drivetrain:
         startingRight = self.get_right_encoder_position()
 
         turnPID = PID(
-            kp = .00016,
-            minOutput = 0.2,
+            kp = .011,
+            kd = 0.0012,
+            minOutput = 0.20,
             maxOutput = speed,
             tolerance = 0.5,
             toleranceCount = 3,
@@ -172,7 +177,7 @@ class Drivetrain:
         )
         # pid to keep encoder values in sync
         encoderPID = PID(
-            kp = 0.0001,
+            kp = 0.002,
         )
  
         turn_degrees += self.imu.get_yaw()
@@ -180,16 +185,21 @@ class Drivetrain:
         while True:
 
             # calculate turn speed from PID with delta heading
-            turnSpeed = turnPID.tick(turn_degrees - self.imu.get_yaw())
+            turnError = turn_degrees - self.imu.get_yaw()
+            turnSpeed = turnPID.tick(turnError)
             
             # exit if timeout or tolerance reached
             if turnPID.is_done():
                 break
 
             # calculate encoder correction to minimize drift
-            encoderCorrection = encoderPID.tick(self.get_left_encoder_position() + self.get_right_encoder_position())
+            left = self.get_left_encoder_position() - startingLeft
+            right = self.get_right_encoder_position() - startingRight
+            encoderCorrection = encoderPID.tick(left + right)
 
             self.set_effort(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
+
+            print(turnError, turnSpeed)
 
             time.sleep(0.01)
 

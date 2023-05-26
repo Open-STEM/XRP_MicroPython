@@ -83,7 +83,7 @@ class PID:
         if output > 0:
             output = max(self.minOutput, output)
         else:
-            output = max(-self.minOutput, output)
+            output = min(-self.minOutput, output)
         
         # Bound output by maximum
         output = max(-self.maxOutput, min(self.maxOutput, output))
