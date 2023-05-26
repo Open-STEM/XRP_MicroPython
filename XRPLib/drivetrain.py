@@ -106,7 +106,7 @@ class Drivetrain:
         )
 
         rotationsToDo = distance  / (self.wheel_diam * math.pi)
-        print("rot:", rotationsToDo)
+        #print("rot:", rotationsToDo)
 
         # record current heading to maintain it
         heading = self.imu.get_yaw()
@@ -130,7 +130,7 @@ class Drivetrain:
 
             self.set_effort(effort + headingCorrection, effort - headingCorrection)
 
-            print(self.imu.get_yaw() - heading, effort + headingCorrection, effort - headingCorrection, headingCorrection)
+            #print(self.imu.get_yaw() - heading, effort + headingCorrection, effort - headingCorrection, headingCorrection)
 
             time.sleep(0.01)
 
@@ -199,7 +199,7 @@ class Drivetrain:
 
             self.set_effort(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
 
-            print(turnError, turnSpeed)
+            #print(turnError, turnSpeed)
 
             time.sleep(0.01)
 

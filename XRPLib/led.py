@@ -8,6 +8,17 @@ class LED:
     Default pin on the XRP Controller is Pin 25
     """
 
+    _DEFAULT_LED_INSTANCE = None
+
+    @classmethod
+    def get_default_led(cls):
+        """
+        Get the default XRP v2 LED instance. This is a singleton, so only one instance of the LED will ever exist.
+        """
+        if cls._DEFAULT_LED_INSTANCE is None:
+            cls._DEFAULT_LED_INSTANCE = cls()
+        return cls._DEFAULT_LED_INSTANCE
+
     def __init__(self, ledPin="LED"):
         self._led = Pin(ledPin, Pin.OUT)
         # A timer ID of -1 is a virtual timer.

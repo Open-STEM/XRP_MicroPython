@@ -12,10 +12,11 @@ drivetrain = Drivetrain.get_default_drivetrain()
 left_motor = EncodedMotor.get_default_left_motor()
 right_motor = EncodedMotor.get_default_right_motor()
 imu = IMU.get_default_imu()
+led = LED.get_default_led()
 
 imu.calibrate(5)
 
-print("start")
+# print("start")
 
 imu.reset_pitch()
 imu.reset_yaw()
@@ -45,12 +46,22 @@ def benchmark_encoder_isr():
     print("Time per call: {}s".format((b-a)/N)) # ~0.06 ms per call
 
 def test_turns():
+    drivetrain.turn(45, 0.5)
+    time.sleep(1)
+    drivetrain.turn(-45, 0.75)
+    time.sleep(1)
+
+    drivetrain.turn(90, 0.5)
+    time.sleep(1)
+    drivetrain.turn(-90, 0.75)
+    time.sleep(1)
+
+
     # Turns 360 slow and fast, then turns 180 slow and fast
     drivetrain.turn(360, 0.5)
     time.sleep(1)
     drivetrain.turn(-360, 0.75)
     time.sleep(1)
-
 
 def test_straight():
     drivetrain.straight(30, 0.2)
@@ -60,4 +71,11 @@ def test_set_effort():
     time.sleep(2)
     drivetrain.stop()
 
-test_turns()
+def test_led():
+    while True:
+        time.sleep(1)
+        led.on()
+        time.sleep(1)
+        led.off()
+
+test_led()
