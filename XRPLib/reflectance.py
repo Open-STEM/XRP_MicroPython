@@ -7,6 +7,17 @@ class Reflectance:
     Reads from analog in and converts to a float from 0 (white) to 1 (black)
     """
 
+    _DEFAULT_REFLECTANCE_INSTANCE = None
+
+    @classmethod
+    def get_default_reflectance(cls):
+        """
+        Get the default XRP v2 reflectance sensor instance. This is a singleton, so only one instance of the reflectance sensor will ever exist.
+        """
+        if cls._DEFAULT_REFLECTANCE_INSTANCE is None:
+            cls._DEFAULT_REFLECTANCE_INSTANCE = cls(26, 27)
+        return cls._DEFAULT_REFLECTANCE_INSTANCE
+
     def __init__(self, leftPin:int, rightPin:int):
         self._leftReflectance = ADC(Pin(leftPin))
         self._rightReflectance = ADC(Pin(rightPin))

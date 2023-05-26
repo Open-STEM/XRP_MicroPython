@@ -1,13 +1,24 @@
 import machine, time
 from machine import Pin
 
-class HCSR04:
+class Rangefinder:
 
     """
     A basic class for using the HC-SR04 Ultrasonic Rangefinder.
     The sensor range is between 2cm and 4m.
     Timeouts will return a MAX_VALUE (65535) instead of raising an exception.
     """
+
+    _DEFAULT_RANGEFINDER_INSTANCE = None
+
+    @classmethod
+    def get_default_rangefinder(cls):
+        """
+        Get the default XRP v2 rangefinder instance. This is a singleton, so only one instance of the rangefinder will ever exist.
+        """
+        if cls._DEFAULT_RANGEFINDER_INSTANCE is None:
+            cls._DEFAULT_RANGEFINDER_INSTANCE = cls(22, 28)
+        return cls._DEFAULT_RANGEFINDER_INSTANCE
 
     def __init__(self, trigger_pin:int, echo_pin:int, timeout_us:int=500*2*30):
         """

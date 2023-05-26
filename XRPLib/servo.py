@@ -6,6 +6,17 @@ class Servo:
     A simple class for interacting with a servo through PWM
     """
 
+    _DEFAULT_SERVO_INSTANCE = None
+
+    @classmethod
+    def get_default_servo(cls):
+        """
+        Get the default XRP v2 servo instance. This is a singleton, so only one instance of the servo will ever exist.
+        """
+        if cls._DEFAULT_SERVO_INSTANCE is None:
+            cls._DEFAULT_SERVO_INSTANCE = cls(16)
+        return cls._DEFAULT_SERVO_INSTANCE
+
     def __init__(self, signal_pin:int):
         self._servo = PWM(Pin(signal_pin, Pin.OUT))
         # Initialize base frequency for the PWM
