@@ -4,7 +4,7 @@
       ["XRPLib/drivetrain.py", "github:Open-STEM/XRP_Micropython/XRPLib/drivetrain.py"],
       ["XRPLib/encoded_motor.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoded_motor.py"],
       ["XRPLib/encoder.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoder.py"],
-      ["XRPLib/rangefinder.py", "github:Open-STEM/XRP_Micropython/XRPLib/hcsr04.py"],
+      ["XRPLib/rangefinder.py", "github:Open-STEM/XRP_Micropython/XRPLib/rangefinder.py"],
       ["XRPLib/imu.py", "github:Open-STEM/XRP_Micropython/XRPLib/imu.py"],
       ["XRPLib/led.py", "github:Open-STEM/XRP_Micropython/XRPLib/led.py"],
       ["XRPLib/reflectance.py", "github:Open-STEM/XRP_Micropython/XRPLib/reflectance.py"],
