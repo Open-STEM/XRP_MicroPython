@@ -90,6 +90,9 @@ class EncodedMotor:
         self.target_speed = target_speed_rpm/(60*50)
 
     def set_PI_constants(self, new_kp:float, new_ki:float):
+        """
+        Sets the Proportional and Integration constants for speed control
+        """
         self.kp = new_kp
         self.ki = new_ki
         self.errorSum = 0

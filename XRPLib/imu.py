@@ -201,7 +201,7 @@ class IMU():
     
     def get_heading(self):
         """
-        Get's the heading of the IMU, but bounds between [0, 360)
+        Get's the heading of the IMU, but bounded between [0, 360)
         """
         return self.running_yaw % 360
     
