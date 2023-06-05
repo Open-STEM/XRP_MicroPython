@@ -13,7 +13,7 @@ class Wifi:
         self.timeout = network_timeout
         pass
 
-    def connect_to_network(self, ssid:str, password:st=None):
+    def connect_to_network(self, ssid:str, password:str=None):
         self.wlan = network.WLAN(network.STA_IF)
         self.wlan.active(True)
         self.wlan.connect(ssid, password)

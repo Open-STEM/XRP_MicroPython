@@ -321,6 +321,8 @@ class IMU():
         """
         self.update_timer.deinit()
         start_time = time.time()
+        self.acc_offsets = [0,0,0]
+        self.gyro_offsets = [0,0,0]
         avg_vals = [[0,0,0],[0,0,0]]
         num_vals = 0
         while time.time() < start_time + calibration_time:
