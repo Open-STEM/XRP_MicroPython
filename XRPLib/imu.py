@@ -42,8 +42,8 @@ class IMU():
                 scl_pin=19,
                 sda_pin=18,
                 addr=0x6B
-            )
-
+            )  
+            cls._DEFAULT_IMU_INSTANCE.calibrate()
         return cls._DEFAULT_IMU_INSTANCE
 
     def __init__(self, scl_pin: int, sda_pin: int, addr):
@@ -313,7 +313,7 @@ class IMU():
                 self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
 
-    def calibrate(self, calibration_time=7, vertical_axis = 2, update_time=4):
+    def calibrate(self, calibration_time=3, vertical_axis = 2, update_time=4):
         """
             Collect readings for 3 seconds and calibrate the IMU based on those readings
             Do not move the robot during this time

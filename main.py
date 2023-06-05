@@ -26,6 +26,8 @@ def print_imu(calibration_time, print_time):
     imu.reset_pitch()
     imu.reset_roll()
     imu.reset_yaw()
+    imu.acc_offsets = [0,0,0]
+    imu.gyro_offsets = [0,0,0]
     imu.calibrate(calibration_time)
     start_time = time.time()
     while time.time() < start_time + print_time:
