@@ -19,7 +19,8 @@
     ],
     "deps": [
       ["collections-defaultdict", "latest"],
-      ["os-path", "latest"]
+      ["os-path", "latest"],
+      ["github:pimoroni/phew"]
     ],
     "version": "0.1.0"
   }
