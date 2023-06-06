@@ -12,8 +12,11 @@ class Wifi:
         self.DOMAIN = "remote.xrp"
         self.timeout = network_timeout
         self.logged_data = {}
-        self.buttons = {}
-        pass
+        self.buttons = {"forwardButton":    lambda: print("Button not initialized"),
+                        "backwardButton":   lambda: print("Button not initialized"),
+                        "leftButton":       lambda: print("Button not initialized"),
+                        "rightButton":      lambda: print("Button not initialized"),
+                        "stopButton":       lambda: print("Button not initialized")}
 
     def connect_to_network(self, ssid:str, password:str=None):
         self.wlan = network.WLAN(network.STA_IF)
@@ -26,12 +29,12 @@ class Wifi:
                 print("Failed to connect to network, please try again")
                 self.wlan.disconnect()
                 return
-            sleep(0.25)
+            time.sleep(0.25)
         print("Successfully connected to network")
 
     def start_server(self, robot_number:int):
         self.access_point = access_point(f"XRP_{robot_number}")
-        self.ip = network.WLAN(network.STA_IF).ifconfig()[0]
+        self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
         server.run()
