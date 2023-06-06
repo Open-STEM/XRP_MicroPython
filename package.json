@@ -18,7 +18,7 @@
       ["XRPExamples/xrp_test.py", "github:Open-STEM/XRP_Micropython/Examples/xrp_test.py"]
     ],
     "deps": [
-      ["github:pimoroni/phew"],
+      ["github:pimoroni/phew", "latest"],
       ["collections-defaultdict", "latest"],
       ["os-path", "latest"]
     ],
