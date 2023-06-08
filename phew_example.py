@@ -17,6 +17,8 @@ class Wifi:
                         "leftButton":       lambda: print("Button not initialized"),
                         "rightButton":      lambda: print("Button not initialized"),
                         "stopButton":       lambda: print("Button not initialized")}
+        self.FUNCTION_PREFIX = "startfunction"
+        self.FUNCTION_SUFFIX = "endfunction"
 
     def connect_to_network(self, ssid:str, password:str=None):
         self.wlan = network.WLAN(network.STA_IF)
@@ -84,9 +86,9 @@ class Wifi:
 
         string += f'<h3>Custom Function Bindings:</h3><p>'
         # add each button's href to html
-        for button in self.buttons:
-            buttonID = self.FUNCTION_PREFIX + button.name + self.FUNCTION_SUFFIX
-            string += f'<p><a href=\"{buttonID}"> <span><font size="30px">{button.name}</font></span></a></p>'
+        for button in self.buttons.keys():
+            buttonID = self.FUNCTION_PREFIX + button + self.FUNCTION_SUFFIX
+            string += f'<p><a href=\"{buttonID}"> <span><font size="30px">{button}</font></span></a></p>'
             string += "\n"
         string += '<\p>'
 
