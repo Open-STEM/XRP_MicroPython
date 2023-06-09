@@ -120,7 +120,7 @@ class Wifi:
             if(["forwardButton","backwardButton","leftButton","rightButton","stopButton"].count(button) > 0):
                 # Slightly cursed solution to not display the arrow buttons as text buttons
                 continue
-            string += f'<p><a href=\"{button}"> <span><font size="30px">{button}</font></span></a></p>'
+            string += f'<p><form action="{button}" method="post"><input type="submit" name={button} value="{button}" /></form></p>'
             string += "\n"
 
         string += f'<h3>Logged Data:</h3>'
@@ -177,15 +177,15 @@ _HTML1 = """
 """
 
 _HTML_ARROWS = """
-        <form action="forwardButton" method="post"><input type="submit" name="forwardButton"><span><font size="30px">&#8593;</font></span></input></form>
+        <form action="forwardButton" method="post"><input type="submit" name="forwardButton" value="forward"><input.value><font size="30px">&#8593;</font></input.value></input></form>
         <p></p>
-        <button type=submit formmethod=POST formurl=\"/" name=\"leftButton"><span><font size="30px">&#8592;</font></span></button>
+        <form action="leftButton" method="post"><input type="submit" name="leftButton" value="left\"><input.value><font size="30px">&#8592;</font></input.value></input></form>
         &nbsp;&nbsp;
-        <button type=submit formmethod=POST formurl=\"/" name=\"stopButton"><span><font size="30px">&#9744;</font></span></button>
+        <form action="stopButton" method="post"><input type="submit" name="stopButton" value="stop"><input.value><font size="30px">&#9744;</font></input.value></input></form>
         &nbsp;&nbsp;
-        <button type=submit formmethod=POST formurl=\"/" name=\"rightButton"><span><font size="30px">&#8594;</font></span></button>
+        <form action="rightButton" method="post"><input type="submit" name="rightButton" value="right"><input.value><font size="30px">&#8594;</font></input.value></input></form>
         <p></p>
-        <button type=submit formmethod=POST formurl=\"/" name=\"backButton"><span><font size="30px">&#8595;</font></span></button>
+        <form action="backButton" method="post"><input type="submit" name="backButton" value="back"><input.value><font size="30px">&#8595;</font></input.value></input></form>
 """
 
 _HTML2 = """
