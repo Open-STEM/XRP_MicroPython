@@ -251,7 +251,11 @@ _HTML1 = """
 
             </style>
         </head>
-
+        <style>
+        .arrow-button {
+            font-size: 20px;
+        }
+        </style>
         <body>
             <h2>XRP control page</h2>
 
@@ -261,11 +265,13 @@ _HTML1 = """
 _HTML_ARROWS = """
         <a href=\"forwardbutton"> <span><font size="30px">&#8593;</font></span></a>
         <p></p>
+        <div style="display: flex;">
         <a href=\"leftbutton"> <span><font size="30px">&#8592;</font></span></a>
         &nbsp;&nbsp;
         <a href=\"stopbutton"> <span><font size="30px">&#9744;</font></span></a>
         &nbsp;&nbsp;
         <a href=\"rightbutton"> <span><font size="30px">&#8594;</font></span></a>
+        </div>
         <p></p>
         <a href=\"backbutton"> <span><font size="30px">&#8595;</font></span></a>
 """

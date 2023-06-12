@@ -167,7 +167,11 @@ _HTML1 = """
                     text-align: center;
                 }
 
+                .arrow-button {
+                    font-size: 30px;
+                }
             </style>
+            
         </head>
 
         <body>
@@ -177,15 +181,15 @@ _HTML1 = """
 """
 
 _HTML_ARROWS = """
-        <form action="forwardButton" method="post"><input type="submit" name="forwardButton" value="forward"><input.value><font size="30px">&#8593;</font></input.value></input></form>
-        <p></p>
-        <form action="leftButton" method="post"><input type="submit" name="leftButton" value="left\"><input.value><font size="30px">&#8592;</font></input.value></input></form>
+        <form action="forwardButton" method="post"><input type="submit" class="arrow-button" name="forwardButton" value=&#8593; /></form>
+        <div style="display: flex; justify-content: center;">
+        <form action="leftButton" method="post"><input type="submit" class="arrow-button" name="leftButton" value=&#8592; /></form>
         &nbsp;&nbsp;
-        <form action="stopButton" method="post"><input type="submit" name="stopButton" value="stop"><input.value><font size="30px">&#9744;</font></input.value></input></form>
+        <form action="stopButton" method="post"><input type="submit" class="arrow-button" name="stopButton" value=&#9744; /></form>
         &nbsp;&nbsp;
-        <form action="rightButton" method="post"><input type="submit" name="rightButton" value="right"><input.value><font size="30px">&#8594;</font></input.value></input></form>
-        <p></p>
-        <form action="backButton" method="post"><input type="submit" name="backButton" value="back"><input.value><font size="30px">&#8595;</font></input.value></input></form>
+        <form action="rightButton" method="post"><input type="submit" class="arrow-button" name="rightButton" value=&#8594; /></form>
+        </div>
+        <form action="backButton" method="post"><input type="submit" class="arrow-button" name="backButton" value=&#8595; /></form>
 """
 
 _HTML2 = """
@@ -196,9 +200,8 @@ _HTML2 = """
         </html>
 """
 
-from XRPLib.led import *
+from XRPLib.defaults import *
 
-led = LED()
 wifi.registerForwardButton(lambda: led.blink(2))
 wifi.registerBackwardButton(lambda: led.blink(4))
 wifi.registerLeftButton(lambda: led.on())
