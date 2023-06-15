@@ -31,15 +31,15 @@ class Reflectance:
     def get_left(self) -> float:
         """
         Gets the the reflectance of the left reflectance sensor
-        :return: The reflectance ranging from 0 (white) to 1 (black)
-        :rtype: float
+        : return: The reflectance ranging from 0 (white) to 1 (black)
+        : rtype: float
         """
         return self._get_value(self._leftReflectance)
 
     def get_right(self) -> float:
         """
         Gets the the reflectance of the right reflectance sensor
-        :return: The reflectance ranging from 0 (white) to 1 (black)
-        :rtype: float
+        : return: The reflectance ranging from 0 (white) to 1 (black)
+        : rtype: float
         """
         return self._get_value(self._rightReflectance)

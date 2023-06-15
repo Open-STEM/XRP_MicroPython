@@ -200,20 +200,3 @@ _HTML2 = """
         </html>
 """
 
-from XRPLib.defaults import *
-
-wifi.registerForwardButton(lambda: led.blink(2))
-wifi.registerLeftButton(lambda: led.on())
-wifi.registerRightButton(lambda: led.off())
-wifi.registerStopButton(lambda: led.change_state())
-wifi.add_button("test", lambda: logging.debug("test"))
-wifi.add_button("stopLED", lambda: led.off())
-wifi.log_data("test", "test")
-wifi.log_data("Int", 123)
-wifi.log_data("Float", 123.456)
-wifi.log_data("Bool", True)
-wifi.log_data("None", None)
-wifi.log_data("List", [1,2,3])
-wifi.log_data("Dict", {"a":1,"b":2,"c":3})
-wifi.log_data("Tuple", (1,2,3))
-wifi.start_server(1)

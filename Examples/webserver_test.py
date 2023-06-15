@@ -1,25 +1,14 @@
-import machine
 from XRPLib import webserver
 import time
-
-selection = 0
-
-def blink():
-    for i in range(4):
-        print("LED ON")
-        time.sleep(0.5)
-        print("LED OFF")
-        time.sleep(0.5)
-
+from XRPLib.defaults import *
 def square():
-    # simulating a square through printing and waiting
     # use a loop
     print("Making a square")
     for i in range(4):
         print("forward")
-        time.sleep(1)
-        print("right")
-        time.sleep(1)
+        drivetrain.straight(30, 0.5)
+        print("turn right")
+        drivetrain.turn(90, 0.5)
 
 def keepaway():
     print("Keep away")
@@ -35,12 +24,19 @@ def forward():
 
 print("start")
 server = webserver.WebServer()
-server.addButton(blink)
-server.addButton(square)
-server.addButton(keepaway)
-server.addButton(imufun)
+server.add_button(square)
+server.add_button(keepaway)
+server.add_button(imufun)
 server.registerForwardButton(forward)
-
-while True:
-    server.run()
-
+server.registerLeftButton(lambda: led.on())
+server.registerRightButton(lambda: led.off())
+server.registerStopButton(lambda: led.blink(2))
+server.log_data("test", "test")
+server.log_data("Int", 123)
+server.log_data("Float", 123.456)
+server.log_data("Bool", True)
+server.log_data("None", None)
+server.log_data("List", [1,2,3])
+server.log_data("Dict", {"a":1,"b":2,"c":3})
+server.log_data("Tuple", (1,2,3))
+server.start_server(1)

@@ -22,15 +22,15 @@ class Rangefinder:
 
     def __init__(self, trigger_pin:int, echo_pin:int, timeout_us:int=500*2*30):
         """
-        :param trigger_pin: The number of the pin on the microcontroller that's connected
+        : param trigger_pin: The number of the pin on the microcontroller that's connected
             to the ``Trig`` pin on the HC-SR04.
-        :type trig_pin: int
-        :param echo_pin: The number of the pin on the microcontroller that's connected
+        : type trig_pin: int
+        : param echo_pin: The number of the pin on the microcontroller that's connected
             to the ``Echo`` pin on the HC-SR04.
-        :type echo_pin: int
-        :param timeout_us: Max microseconds seconds to wait for a response from the
+        : type echo_pin: int
+        : param timeout_us: Max microseconds seconds to wait for a response from the
             sensor before assuming it isn't going to answer. By default set to 30,000 us (0.03 s)
-        :type timeout_us: int
+        : type timeout_us: int
         """
         self.timeout_us = timeout_us
         # Init trigger pin (out)

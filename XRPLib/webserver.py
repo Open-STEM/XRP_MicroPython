@@ -7,10 +7,9 @@ import time
 
 class Webserver:
 
-    def __init__(self, network_timeout:int=10):
+    def __init__(self):
         gc.threshold(50000) # garbage collection
         self.DOMAIN = "remote.xrp"
-        self.timeout = network_timeout
         self.logged_data = {}
         self.buttons = {"forwardButton":    lambda: logging.debug("Button not initialized"),
                         "backButton":   lambda: logging.debug("Button not initialized"),
@@ -22,6 +21,11 @@ class Webserver:
         self.display_arrows = False
 
     def start_server(self, robot_number:int):
+        """
+        Start the webserver
+        : param robot_number: The number of the robot, used to generate the access point name
+        : type robot_number: int
+        """
         self.access_point = access_point(f"XRP_{robot_number}")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
         logging.info(f"Starting DNS Server at {self.ip}")
@@ -58,25 +62,57 @@ class Webserver:
         self.logged_data[label] = data
 
     def add_button(self, button_name:str, function):
+        """
+        Register a custom button to be displayed on the webserver
+        : param button_name: The label for the button as it will be displayed, must be unique
+        : type button_name: str
+        : param function: The function to be called when the button is pressed
+        : type function: function
+        """
         self.buttons[button_name] = function
 
     def registerForwardButton(self, function):
+        """
+        Assign a function to the forward button
+        : param function: The function to be called when the button is pressed
+        : type function: function
+        """
         self.display_arrows = True
         self.buttons["forwardButton"] = function
 
     def registerBackwardButton(self, function):
+        """
+        Assign a function to the backward button
+        : param function: The function to be called when the button is pressed
+        : type function: function
+        """
         self.display_arrows = True
         self.buttons["backwardButton"] = function
     
     def registerLeftButton(self, function):
+        """
+        Assign a function to the left button
+        : param function: The function to be called when the button is pressed
+        : type function: function
+        """
         self.display_arrows = True
         self.buttons["leftButton"] = function
 
     def registerRightButton(self, function):
+        """
+        Assign a function to the right button
+        : param function: The function to be called when the button is pressed
+        : type function: function
+        """
         self.display_arrows = True
         self.buttons["rightButton"] = function
     
     def registerStopButton(self, function):
+        """
+        Assign a function to the stop button
+        : param function: The function to be called when the button is pressed
+        : type function: function
+        """
         self.display_arrows = True
         self.buttons["stopButton"] = function
 
@@ -106,7 +142,7 @@ class Webserver:
             if(["forwardButton","backwardButton","leftButton","rightButton","stopButton"].count(button) > 0):
                 # Slightly cursed solution to not display the arrow buttons as text buttons
                 continue
-            string += f'<p><form action="{button}" method="post"><input type="submit" name={button} value="{button}" /></form></p>'
+            string += f'<p><form action="{button}" method="post"><input type="submit" class="user-button" name={button} value="{button}" /></form></p>'
             string += "\n"
 
         string += f'<h3>Logged Data:</h3>'
@@ -155,6 +191,10 @@ _HTML1 = """
 
                 .arrow-button {
                     font-size: 30px;
+                }
+
+                .user-button {
+                    font-size: 20px;
                 }
             </style>
             

@@ -1,24 +1,7 @@
-from XRPLib.drivetrain import Drivetrain
-from XRPLib.encoded_motor import EncodedMotor
-from XRPLib.rangefinder import Rangefinder
-from XRPLib.imu import IMU
-from XRPLib.led import LED
-from XRPLib.reflectance import Reflectance
-from XRPLib.servo import Servo
+from XRPLib.defaults import *
 import time
 
-drivetrain = Drivetrain.get_default_drivetrain()
-left_motor = EncodedMotor.get_default_left_motor()
-right_motor = EncodedMotor.get_default_right_motor()
-imu = IMU.get_default_imu()
-led = LED.get_default_led()
-rangefinder = Rangefinder.get_default_rangefinder()
-reflectance = Reflectance.get_default_reflectance()
-servo = Servo.get_default_servo()
-
-imu.calibrate(5)
-
-# print("start")
+print("start")
 
 imu.reset_pitch()
 imu.reset_yaw()
@@ -44,8 +27,8 @@ def benchmark_encoder_isr():
     b = time.time()
     
     # Print benchmark
-    print("Time for {} calls: {}s".format(N, b-a))
-    print("Time per call: {}s".format((b-a)/N)) # ~0.06 ms per call
+    print(f"Time for {N} calls: {b-a}s")
+    print(f"Time per call: {(b-a)/N}s") # ~0.06 ms per call
 
 def test_turns():
     drivetrain.turn(45, 0.5)
