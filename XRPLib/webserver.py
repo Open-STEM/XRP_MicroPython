@@ -1,238 +1,142 @@
-import machine
-import utime
+from phew import server, template, logging, access_point, dns
+from phew.template import render_template
+from phew.server import redirect
+import gc
 import network
-import socket
-import _thread
 import time
 
-SSID = "XRPbot1"
-PASSWORD = '12345678'
+class Webserver:
 
-class Button:
-    def __init__(self, function):
-        self.callback = function
-        self.name = function.__name__
-
-class WebServer:
-
-    def __init__(self):
-
-        self.buttons = []
-
-        # prefix for each button's href
+    def __init__(self, network_timeout:int=10):
+        gc.threshold(50000) # garbage collection
+        self.DOMAIN = "remote.xrp"
+        self.timeout = network_timeout
+        self.logged_data = {}
+        self.buttons = {"forwardButton":    lambda: logging.debug("Button not initialized"),
+                        "backButton":   lambda: logging.debug("Button not initialized"),
+                        "leftButton":       lambda: logging.debug("Button not initialized"),
+                        "rightButton":      lambda: logging.debug("Button not initialized"),
+                        "stopButton":       lambda: logging.debug("Button not initialized")}
         self.FUNCTION_PREFIX = "startfunction"
         self.FUNCTION_SUFFIX = "endfunction"
+        self.display_arrows = False
 
-        self.forwardCallback = lambda: print("no forward function registered")
-        self.leftCallback = lambda: print("no left function registered")
-        self.rightCallback = lambda: print("no right function registered")
-        self.backCallback = lambda: print("no back function registered")
-        self.stopCallback = lambda: print("no stop function registered")
+    def start_server(self, robot_number:int):
+        self.access_point = access_point(f"XRP_{robot_number}")
+        self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
+        logging.info(f"Starting DNS Server at {self.ip}")
+        dns.run_catchall(self.ip)
+        server.run()
+        logging.info("Webserver Started")
 
-        # function to run when a button is pressed
-        self.functionToRun = None
-        self.lock = _thread.allocate_lock()
+    def index_page(self, request):
+        """ Render index page and respond to form requests """
+        if request.method == 'GET':
+            return self._generateHTML()
+        if request.method == 'POST':
+            text = list(request.form.keys())[0]
+            self._handleUserFunctionRequest(text)
+            return self._generateHTML()
 
-        # we want to ignore the first request (when page is loaded, it sends a request automatically)
-        self.isFirstRequest = True
+    def wrong_host_redirect(self, request):
+        # Captive portal redirects any other host request to self.DOMAIN
+        body = "<!DOCTYPE html><head><meta http-equiv=\"refresh\" content=\"0;URL='http://"+self.DOMAIN+"'/ /></head>"
+        logging.info("Redirecting to https://"+self.DOMAIN+"/")
+        return body
 
-    def addButton(self, function):
-        self.buttons.append(Button(function))
+    def hotspot(self, request):
+        """ Redirect to Index Page """
+        return self._generateHTML()
+
+    def catch_all(self, request):
+        """ Catch all requests and redirect if necessary """
+        if request.headers.get("host") != self.DOMAIN:
+            return redirect("http://"+self.DOMAIN+"/wrong-host-redirect")
+        return self.index_page(request=request)
+        
+    def log_data(self, label:str, data:str):
+        self.logged_data[label] = data
+
+    def add_button(self, button_name:str, function):
+        self.buttons[button_name] = function
 
     def registerForwardButton(self, function):
-        self.forwardCallback = function
+        self.display_arrows = True
+        self.buttons["forwardButton"] = function
 
+    def registerBackwardButton(self, function):
+        self.display_arrows = True
+        self.buttons["backwardButton"] = function
+    
     def registerLeftButton(self, function):
-        self.leftCallback = function
+        self.display_arrows = True
+        self.buttons["leftButton"] = function
 
     def registerRightButton(self, function):
-        self.rightCallback = function
-
-    def registerBackButton(self, function):
-        self.backCallback = function
-
+        self.display_arrows = True
+        self.buttons["rightButton"] = function
+    
     def registerStopButton(self, function):
-        self.stopCallback = function
+        self.display_arrows = True
+        self.buttons["stopButton"] = function
 
-    def run(self):
-
-        # start a new thread for the IO
-        #_thread.start_new_thread(self._runUserThread, ())
-        self._runIOThread()
-
-    
-
-
-    # run on a separate thread to handle IO
-    def _runIOThread(self):
-
-        print("run IO thread")
-
-        self.wlan, self.socket = self._initServer()
-
-        # Listen for connections
-        while True:
-            try:
-                cl, addr = self.socket.accept()
-                print('client connected from', addr)
-                request = cl.recv(1024)
-
-                result = self._handleRequest(str(request))
-
-                if not result:
-                    print("no function found")
-                print("before function to run")
-                    
-                if self.functionToRun is not None:
-                    self.functionToRun()
-                    self.functionToRun = None
-                print("after functio nto run")
-
-                cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
-                cl.send(self._generateHTML())
-                cl.close()
-                print("succesfully sent html")
-            
-            except OSError as e:
-                print('connection closed')
-                cl.close()
-            
-
-       # self.wlan.active(False)
-
-    # called on the webserver thread.
-    def _setFunctionToRun(self, function):
-        self.functionToRun = function
-
-    # returns wlan, socket
-    def _initServer(self):
-
-        wlan = network.WLAN(network.AP_IF)
-        wlan.active(False)
-        wlan.config(essid=SSID, password=PASSWORD)
-        wlan.active(True)
-
-        max_wait = 10
-        while max_wait > 0:
-            if wlan.status() < 0 or wlan.status() >= 3:
-                break
-            max_wait -= 1
-            print('waiting for connection...')
-            utime.sleep(1)
-
-        if wlan.status() != 3:
-            print (wlan.status())
-            raise RuntimeError('network connection failed')
-        else:
-            print('connected')
-            status = wlan.ifconfig()
-            print( 'ip = ' + status[0] )
-
-        addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
-
-        s = socket.socket()
-        s.bind(addr)
-        s.listen(1)
-
-        print('listening on', addr)
-
-        return wlan, s
-
-    # returns the string after the substring, or None if not found
-    def _getStringAfter(self, fullString, substring):
-        index = fullString.find(substring)
-        if index == -1:
-            return None
-        else:
-            rest_of_string = fullString[index + len(substring):]
-            return rest_of_string
-
-    def _getStringBefore(self, fullString, substring):
-        index = fullString.find(substring)
-        if index == -1:
-            return None
-        else:
-            string_before_substring = fullString[:index]
-            return string_before_substring
-
-    def _getCallbackByFunctionName(self, functionName):
-        for button in self.buttons:
-            if button.name == functionName:
-                return button.callback
-        return None
-    
-
-    def _indexOfSubstring(self, list, substring):
-        for i in range(len(list)):
-            if substring in list[i]:
-                return i
-        return -1
-    
-    def _handleUserFunctionRequest(self, request):
-        stringWithSuffix = self._getStringAfter(request, self.FUNCTION_PREFIX)
-
-        if stringWithSuffix is None:
-            return False
-
-        functionName = self._getStringBefore(stringWithSuffix, self.FUNCTION_SUFFIX)
-
-        if functionName is None:
-            return False
-
-        functionCallback = self._getCallbackByFunctionName(functionName)
-
-        if functionCallback is None:
-            return False
-        
-        # matching function callback. Call it and successful return
-        self._setFunctionToRun(functionCallback)
-        return True
-
-    def _handleRequest(self, fullRequest):
-
-        request = fullRequest.split(" ")
-        print(request)
-        index = self._indexOfSubstring(request[:-1], "GET")
-        if index == -1:
-            return False
-        request = request[index + 1]
-        print("Filtered request:", request)
-
-        userFunctionRequestSuccess = self._handleUserFunctionRequest(fullRequest)
-
-        # if userFunctionRequestSuccess, then we don't need to check for arrow buttons
-        if userFunctionRequestSuccess:
+    def _handleUserFunctionRequest(self, text) -> bool:
+        print(f"Running {text}")
+        try:
+            user_function = self.buttons[text]
+            if user_function is None:
+                print("User function "+text+" not found")
+                return False
+            user_function()
             return True
-
-        if "forwardbutton" in fullRequest:
-            self._setFunctionToRun(self.forwardCallback)
-        elif "leftbutton" in fullRequest:
-            self._setFunctionToRun(self.leftCallback)
-        elif "rightbutton" in fullRequest:
-            self._setFunctionToRun(self.rightCallback)
-        elif "backbutton" in fullRequest:
-            self._setFunctionToRun(self.backCallback)
-        elif "stopbutton" in fullRequest:
-            self._setFunctionToRun(self.stopCallback)
-        else:
-            print("no function found")
+        except:
+            print("User function "+text+" caused an exception")
             return False
-
-        return True
 
     def _generateHTML(self):
 
-        string = _HTML1 + _HTML_ARROWS
+        string = _HTML1
+        
+        if self.display_arrows:
+            string += _HTML_ARROWS
 
+        string += f'<h3>Custom Function Bindings:</h3>'
         # add each button's href to html
-        for button in self.buttons:
-            buttonID = self.FUNCTION_PREFIX + button.name + self.FUNCTION_SUFFIX
-            string += f'<p><a href=\"{buttonID}"> <span><font size="30px">{button.name}</font></span></a></p>'
+        for button in self.buttons.keys():
+            if(["forwardButton","backwardButton","leftButton","rightButton","stopButton"].count(button) > 0):
+                # Slightly cursed solution to not display the arrow buttons as text buttons
+                continue
+            string += f'<p><form action="{button}" method="post"><input type="submit" name={button} value="{button}" /></form></p>'
+            string += "\n"
+
+        string += f'<h3>Logged Data:</h3>'
+        # add logged data to the html
+        for data_label in self.logged_data.keys():
+            string += f'<p>{data_label}: {str(self.logged_data[data_label])}</p>'
             string += "\n"
 
         string += _HTML2
 
         return string
+
+""" Use decorators to bind the wifi methods to the requests """
+webserver = Webserver()
+
+@server.route("/", methods=['GET','POST'])
+def index(request):
+    return webserver.index_page(request)
+
+@server.route("/wrong-host-redirect", methods=['GET'])
+def wrong_host_redirect(request):
+    return webserver.wrong_host_redirect(request)
+
+@server.route("/hotspot-detect.html", methods=["GET"])
+def hotspot(request):
+    return webserver.hotspot(request)
+
+@server.catchall()
+def catch_all(request):
+    return webserver.catch_all(request)
 
 _HTML1 = """
         <html>
@@ -249,13 +153,13 @@ _HTML1 = """
                     text-align: center;
                 }
 
+                .arrow-button {
+                    font-size: 30px;
+                }
             </style>
+            
         </head>
-        <style>
-        .arrow-button {
-            font-size: 20px;
-        }
-        </style>
+
         <body>
             <h2>XRP control page</h2>
 
@@ -263,17 +167,15 @@ _HTML1 = """
 """
 
 _HTML_ARROWS = """
-        <a href=\"forwardbutton"> <span><font size="30px">&#8593;</font></span></a>
-        <p></p>
-        <div style="display: flex;">
-        <a href=\"leftbutton"> <span><font size="30px">&#8592;</font></span></a>
+        <form action="forwardButton" method="post"><input type="submit" class="arrow-button" name="forwardButton" value=&#8593; /></form>
+        <div style="display: flex; justify-content: center;">
+        <form action="leftButton" method="post"><input type="submit" class="arrow-button" name="leftButton" value=&#8592; /></form>
         &nbsp;&nbsp;
-        <a href=\"stopbutton"> <span><font size="30px">&#9744;</font></span></a>
+        <form action="stopButton" method="post"><input type="submit" class="arrow-button" name="stopButton" value=&#9744; /></form>
         &nbsp;&nbsp;
-        <a href=\"rightbutton"> <span><font size="30px">&#8594;</font></span></a>
+        <form action="rightButton" method="post"><input type="submit" class="arrow-button" name="rightButton" value=&#8594; /></form>
         </div>
-        <p></p>
-        <a href=\"backbutton"> <span><font size="30px">&#8595;</font></span></a>
+        <form action="backButton" method="post"><input type="submit" class="arrow-button" name="backButton" value=&#8595; /></form>
 """
 
 _HTML2 = """
@@ -283,4 +185,3 @@ _HTML2 = """
 
         </html>
 """
-

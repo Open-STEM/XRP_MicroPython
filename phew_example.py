@@ -13,7 +13,7 @@ class Wifi:
         self.timeout = network_timeout
         self.logged_data = {}
         self.buttons = {"forwardButton":    lambda: logging.debug("Button not initialized"),
-                        "backwardButton":   lambda: logging.debug("Button not initialized"),
+                        "backButton":   lambda: logging.debug("Button not initialized"),
                         "leftButton":       lambda: logging.debug("Button not initialized"),
                         "rightButton":      lambda: logging.debug("Button not initialized"),
                         "stopButton":       lambda: logging.debug("Button not initialized")}
@@ -203,7 +203,6 @@ _HTML2 = """
 from XRPLib.defaults import *
 
 wifi.registerForwardButton(lambda: led.blink(2))
-wifi.registerBackwardButton(lambda: led.blink(4))
 wifi.registerLeftButton(lambda: led.on())
 wifi.registerRightButton(lambda: led.off())
 wifi.registerStopButton(lambda: led.change_state())
