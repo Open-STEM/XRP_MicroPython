@@ -1,4 +1,5 @@
 from XRPLib.defaults import *
+from machine import Pin
 import time
 
 print("start")
@@ -57,10 +58,11 @@ def test_set_effort():
     drivetrain.stop()
 
 def test_led():
-    while True:
-        time.sleep(1)
-        led.on()
-        time.sleep(1)
-        led.off()
+    led.blink(5)
+    time.sleep(3)
+    led.off()
 
-test_led()
+def test_button():
+    button.set_callback(trigger=Pin.IRQ_RISING, callback=lambda p: led.change_state())
+
+test_button()

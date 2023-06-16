@@ -2,6 +2,8 @@ from machine import Pin
 
 class Button:
 
+    _DEFAULT_BUTTON_INSTANCE = None
+
     @classmethod
     def get_default_button(cls):
         """
@@ -13,7 +15,7 @@ class Button:
 
     def __init__(self, pin:int):
         self.callback = None
-        self.button = Pin(self._pin, Pin.IN, Pin.PULL_UP)
+        self.button = Pin(pin, Pin.IN, Pin.PULL_UP)
 
     def set_callback(self, trigger, callback):
         """
