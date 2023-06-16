@@ -12,17 +12,24 @@ class Motor:
         self._MAX_PWM = 65534 # Motor holds when actually at full power
 
     def set_effort(self, effort: float):
+        """
+        Sets the effort value of the motor (corresponds to power)
+
+        : param effort: The effort to set the motor to, between -1 and 1
+        : type effort: float
+        """
+
         if effort < 0:
             # Change direction if negative power
             effort *= -1
-            self.set_direction(1)
+            self._set_direction(1)
         else:
-            self.set_direction(0)
+            self._set_direction(0)
         # Cap power to [0,1]
         effort = max(0,min(effort,1))
         self._speedPin.duty_u16(int(effort*self._MAX_PWM))
 
-    def set_direction(self, direction: int):
+    def _set_direction(self, direction: int):
         if self.flip_dir:
             self._dirPin.value(not direction)
         else:

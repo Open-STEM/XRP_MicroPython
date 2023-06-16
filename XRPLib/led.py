@@ -27,6 +27,12 @@ class LED:
         self.is_blinking = False
 
     def blink(self, frequency: int):
+        """
+        Blinks the LED at a given frequency
+
+        : param frequency: The frequency to blink the LED at (in Hz)
+        : type frequency: int
+        """
         if self.is_blinking:
             # disable the old timer so we can reinitialize it
             self._virt_timer.deinit()
@@ -37,14 +43,25 @@ class LED:
         self.is_blinking = True
 
     def change_state(self):
+        """
+        Changes the state of the LED
+        """
         self._led.toggle()
 
     def off(self):
+        """
+        Turns the LED off
+        Stops the blinking timer if it is running
+        """
         self.is_blinking = False
         self._led.off()
         self._virt_timer.deinit()
 
     def on(self):
+        """
+        Turns the LED on
+        Stops the blinking timer if it is running
+        """
         self.is_blinking = False
         self._led.on()
         self._virt_timer.deinit()

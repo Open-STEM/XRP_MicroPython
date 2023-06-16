@@ -1,6 +1,7 @@
 from .motor import Motor
 from .encoder import Encoder
 from machine import Timer
+from .pid import PID
 
 class EncodedMotor:
 
@@ -47,9 +48,13 @@ class EncodedMotor:
         self.ki = 0.25
 
         self.target_speed = None
-        self.speed = 0
+        self.speedPID = PID(
+            self.kp,
+            self.ki,
+            0,
+        )
         self.prev_position = 0
-        self.errorSum = 0
+        self.speed = 0
         # Use a virtual timer so we can leave the hardware timers up for the user
         self.updateTimer = Timer(-1)
 
@@ -93,20 +98,19 @@ class EncodedMotor:
         """
         Sets the Proportional and Integration constants for speed control
         """
-        self.kp = new_kp
-        self.ki = new_ki
-        self.errorSum = 0
+        self.speedPID = PID(new_kp, new_ki, 0)
 
     def update(self):
+
+        # TODO: Move over to using encoder ticks instead of position to avoid doing math with floats
 
         current_position = self.get_position()
         self.speed = current_position - self.prev_position
         if self.target_speed is not None:
             error = self.target_speed - self.speed
-            self.errorSum += error
-            self._motor.set_effort(self.kp * error + self.ki * self.errorSum)
+            effort = self.speedPID.tick(error)
+            self._motor.set_effort(effort)
         else:
-            self.errorSum = 0
             self.updateTimer.deinit()
 
         self.prev_position = current_position

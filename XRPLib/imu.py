@@ -190,24 +190,36 @@ class IMU():
     def get_pitch(self):
         """
         Get the pitch of the IMU in degrees. Unbounded in range
+
+        : return: The pitch of the IMU in degrees
+        : rtype: float
         """
         return self.running_pitch
     
     def get_yaw(self):
         """
         Get the yaw (heading) of the IMU in degrees. Unbounded in range
+
+        : return: The yaw (heading) of the IMU in degrees
+        : rtype: float
         """
         return self.running_yaw
     
     def get_heading(self):
         """
         Get's the heading of the IMU, but bounded between [0, 360)
+
+        : return: The heading of the IMU in degrees, bound between [0, 360)
+        : rtype: float
         """
         return self.running_yaw % 360
     
     def get_roll(self):
         """
         Get the roll of the IMU in degrees. Unbounded in range
+
+        : return: The roll of the IMU in degrees
+        : rtype: float
         """
         return self.running_roll
     
@@ -232,24 +244,36 @@ class IMU():
     def set_pitch(self, pitch):
         """
         Set the pitch to a specific angle in degrees
+
+        : param pitch: The pitch to set the IMU to
+        : type pitch: float
         """
         self.running_pitch = pitch
 
     def set_yaw(self, yaw):
         """
         Set the yaw (heading) to a specific angle in degrees
+
+        : param yaw: The yaw (heading) to set the IMU to
+        : type yaw: float
         """
         self.running_yaw = yaw
 
     def set_roll(self, roll):
         """
         Set the roll to a specific angle in degrees
+
+        : param roll: The roll to set the IMU to
+        : type roll: float
         """
         self.running_roll = roll
 
     def temperature(self):
         """
             Read the temperature of the LSM6DSO in degrees Celsius
+
+            : return: The temperature of the LSM6DSO in degrees Celsius
+            : rtype: float
         """
         # The LSM6DSO's temperature can be read from the OUT_TEMP_L register
         # We use OUT_TEMP_L+1 if OUT_TEMP_L cannot be read
@@ -299,6 +323,9 @@ class IMU():
         """
             Turn the LSM6DSO on or off.
             Pass in no parameters to retrieve the current value
+
+            : param on: Whether to turn the LSM6DSO on or off, or None
+            : type on: bool (or None)
         """
         if on is None:
             return self._power
@@ -313,11 +340,18 @@ class IMU():
                 self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
 
-    def calibrate(self, calibration_time=3, vertical_axis = 2, update_time=4):
+    def calibrate(self, calibration_time:float=3, vertical_axis:int= 2, update_time:int=4):
         """
             Collect readings for 3 seconds and calibrate the IMU based on those readings
             Do not move the robot during this time
             Assumes the board to be parallel to the ground. Please use the vertical_axis parameter if that is not correct
+
+            : param calibration_time: The time in seconds to collect readings for
+            : type calibration_time: float
+            : param vertical_axis: The axis that is vertical. 0 for X, 1 for Y, 2 for Z
+            : type vertical_axis: int
+            : param update_time: The time in milliseconds between each update of the IMU
+            : type update_time: int
         """
         self.update_timer.deinit()
         start_time = time.time()
@@ -347,10 +381,6 @@ class IMU():
 
     def update_imu_readings(self):
         # Called every tick through a callback timer
-        # We have two ways of obtaining the pitch of the robot:
-        #   - A noisy but accurate reading from the gyroscope
-        #   - A more consistent reading from the accelerometer that is affected by linear acceleration
-        # We use a complementary filter to combine these two readings into a steady accurate signal.
 
         delta_pitch = self._get_gyro_x_rate()*self.update_time / 1000
         delta_roll = self._get_gyro_y_rate()*self.update_time / 1000
@@ -361,6 +391,14 @@ class IMU():
         self.running_roll += delta_roll
         self.running_yaw += delta_yaw
         enable_irq(state)
+
+        
+        ## REMOVE BELOW BEFORE OFFICIAL RELEASE
+
+        # We have two ways of obtaining the pitch of the robot:
+        #   - A noisy but accurate reading from the gyroscope
+        #   - A more consistent reading from the accelerometer that is affected by linear acceleration
+        # We use a complementary filter to combine these two readings into a steady accurate signal.
 
         """
         scale = self.update_time
