@@ -7,6 +7,8 @@ from .imu import IMU
 from .led import LED
 from .reflectance import Reflectance
 from .servo import Servo
+from .button import Button
+from .webserver import Webserver
 
 left_motor = EncodedMotor.get_default_left_motor()
 right_motor = EncodedMotor.get_default_right_motor()
@@ -16,3 +18,5 @@ rangefinder = Rangefinder.get_default_rangefinder()
 reflectance = Reflectance.get_default_reflectance()
 led = LED.get_default_led()
 servo_one = Servo.get_default_servo()
+button = Button.get_default_button()
+webserver = Webserver.get_default_webserver()
