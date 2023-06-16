@@ -7,6 +7,13 @@ import time
 
 class Webserver:
 
+    @classmethod
+    def get_default_webserver(cls):
+        """
+        Get the default webserver instance. This is a singleton, so only one instance of the webserver will ever exist.
+        """
+        return webserver
+
     def __init__(self):
         gc.threshold(50000) # garbage collection
         self.DOMAIN = "remote.xrp"
@@ -87,7 +94,7 @@ class Webserver:
         : type function: function
         """
         self.display_arrows = True
-        self.buttons["backwardButton"] = function
+        self.buttons["backButton"] = function
     
     def registerLeftButton(self, function):
         """
@@ -139,7 +146,7 @@ class Webserver:
         string += f'<h3>Custom Function Bindings:</h3>'
         # add each button's href to html
         for button in self.buttons.keys():
-            if(["forwardButton","backwardButton","leftButton","rightButton","stopButton"].count(button) > 0):
+            if(["forwardButton","backButton","leftButton","rightButton","stopButton"].count(button) > 0):
                 # Slightly cursed solution to not display the arrow buttons as text buttons
                 continue
             string += f'<p><form action="{button}" method="post"><input type="submit" class="user-button" name={button} value="{button}" /></form></p>'
