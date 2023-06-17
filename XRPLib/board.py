@@ -17,7 +17,7 @@ class Board:
         self.on_switch = ADC(Pin(vin_pin))
 
 
-    def is_motors_powered(self):
+    def are_motors_powered(self):
         """
         Returns true if the batteries are connected and powering the motors, false otherwise
         """
