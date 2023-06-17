@@ -1,6 +1,7 @@
 {
     "urls": [
       ["XRPLib/__init__.py", "github:Open-STEM/XRP_Micropython/XRPLib/__init__.py"],
+      ["XRPLib/board.py", "github:Open-STEM/XRP_Micropython/XRPLib/board.py"],
       ["XRPLib/button.py", "github:Open-STEM/XRP_Micropython/XRPLib/button.py"],
       ["XRPLib/defaults.py", "github:Open-STEM/XRP_Micropython/XRPLib/defaults.py"],
       ["XRPLib/drivetrain.py", "github:Open-STEM/XRP_Micropython/XRPLib/drivetrain.py"],

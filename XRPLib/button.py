@@ -39,4 +39,3 @@ class Button:
         : rtype: bool
         """
         return not self.button.value()
-
