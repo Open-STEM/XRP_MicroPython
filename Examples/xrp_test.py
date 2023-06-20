@@ -2,8 +2,6 @@ from XRPLib.defaults import *
 from machine import Pin
 import time
 
-print("start")
-
 imu.reset_pitch()
 imu.reset_yaw()
 imu.reset_roll()
@@ -66,7 +64,6 @@ def test_button():
     button.set_callback(trigger=Pin.IRQ_RISING, callback=lambda p: led.change_state())
 
 def test_rangefinder():
-    rangefinder = Rangefinder.get_default_rangefinder()
     while True:
         print(f"{rangefinder.distance()}")
         time.sleep(0.25)
