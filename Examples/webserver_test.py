@@ -15,10 +15,10 @@ webserver.add_button("blink", lambda: print(led.blink(2)))
 webserver.add_button("LED_Off", lambda: led.off())
 
 # Logging static data to the webserver
-webserver.log_data("test", "test")
-webserver.log_data("List", [1,2,3])
-webserver.log_data("Dict", {"a":1,"b":2,"c":3})
-webserver.log_data("Tuple", (1,2,3))
+# webserver.log_data("test", "test")
+# webserver.log_data("List", [1,2,3])
+# webserver.log_data("Dict", {"a":1,"b":2,"c":3})
+# webserver.log_data("Tuple", (1,2,3))
 
 def log_time_and_range():
     # This function is called every second to update the data on the webserver

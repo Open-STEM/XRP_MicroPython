@@ -1,12 +1,12 @@
-import machine, time
-from machine import Pin
+import time
+from machine import Pin, Timer
 
 class Rangefinder:
 
     """
-    A basic class for using the HC-SR04 Ultrasonic Rangefinder.
+    A class for using the HC-SR04 Ultrasonic Rangefinder that uses timers and interrupts to measure distance in a non-blocking way.
     The sensor range is between 2cm and 4m.
-    Timeouts will return a MAX_VALUE (65535) instead of raising an exception.
+    Timeouts will return the previous legal value instead of raising an exception.
     """
 
     _DEFAULT_RANGEFINDER_INSTANCE = None
@@ -38,42 +38,53 @@ class Rangefinder:
         self._trigger.value(0)
         self.MAX_VALUE = 65535
 
-        # Init echo pin (in)
-        self.echo = Pin(echo_pin, mode=Pin.IN, pull=None)
+        self.trigger_timer = Timer(-1)
+        # Set a new timer to send a pulse every 5ms
+        self.trigger_timer.init(period=100, mode=Timer.PERIODIC, callback=lambda t:self._send_pulse())
 
-    def _send_pulse_and_wait(self):
+        # Init pulse tracking
+        self._last_pulse_time = 0
+        self.last_pulse_len = 0
+        # Init echo pin (in)
+        self._echo = Pin(echo_pin, mode=Pin.IN)
+        self._echo.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=lambda pin:self._pulse_heard())
+
+
+    def _send_pulse(self):
         """
         Send the pulse to trigger and listen on echo pin.
-        We use the method `machine.time_pulse_us()` to get the microseconds until the echo is received.
+        When called on its own, blocks for 15us.
         """
         self._trigger.value(0) # Stabilize the sensor
         time.sleep_us(5)
-        self._trigger.value(1)
-        # Send a 10us pulse.
-        time.sleep_us(10)
+        self._trigger.value(1) # Send the pulse
+        
+        time.sleep_us(10) # 10us wide pulse
         self._trigger.value(0)
-        try:
-            pulse_time = machine.time_pulse_us(self.echo, 1, self.timeout_us)
-            return pulse_time
-        except OSError as exception:
-            raise exception
+
+    def _pulse_heard(self):
+        """
+        Interrupt handler that records the time of the echo pulse and computes the length of the pulse
+        """
+        pulse_time = time.ticks_us()
+        if self._echo.value():
+            # Rising edge of the pulse
+            self._last_pulse_time = time.ticks_us()
+        else:
+            # Falling edge of the pulse
+            pulse_len = time.ticks_diff(pulse_time, self._last_pulse_time)
+            if pulse_len < self.timeout_us:
+                self.last_pulse_len = pulse_len
+            
 
     def distance(self) -> float:
         """
         Get the distance in centimeters by measuring the echo pulse time
         """
-        try:
-            pulse_time = self._send_pulse_and_wait()
-        except OSError as exception:
-            # We don't want programs to crash if the HC-SR04 doesn't see anything in range
-            # So we catch those errors and return 65535 instead
-            if exception.args[0] == 110: # 110 = ETIMEDOUT
-                return self.MAX_VALUE
-            raise exception
 
         # To calculate the distance we get the pulse_time and divide it by 2
         # (the pulse walk the distance twice) and by 29.1 becasue
         # the sound speed on air (343.2 m/s), that It's equivalent to
         # 0.034320 cm/us that is 1cm each 29.1us
-        cms = (pulse_time / 2) / 29.1
+        cms = (self.last_pulse_len / 2) / 29.1
         return cms

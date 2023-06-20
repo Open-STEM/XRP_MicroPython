@@ -65,4 +65,10 @@ def test_led():
 def test_button():
     button.set_callback(trigger=Pin.IRQ_RISING, callback=lambda p: led.change_state())
 
-test_button()
+def test_rangefinder():
+    rangefinder = Rangefinder.get_default_rangefinder()
+    while True:
+        print(f"{rangefinder.distance()}")
+        time.sleep(0.25)
+
+test_rangefinder()
