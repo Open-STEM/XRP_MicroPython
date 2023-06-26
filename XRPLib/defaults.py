@@ -11,6 +11,11 @@ from .reflectance import Reflectance
 from .servo import Servo
 from .webserver import Webserver
 
+"""
+A simple file that constructs all of the default objects for the XRP robot
+Run "from XRPLib.defaults import *" to use
+"""
+
 left_motor = EncodedMotor.get_default_left_motor()
 right_motor = EncodedMotor.get_default_right_motor()
 imu = IMU.get_default_imu()

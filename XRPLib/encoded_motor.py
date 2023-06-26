@@ -59,16 +59,28 @@ class EncodedMotor:
         self.updateTimer = Timer(-1)
 
     def set_effort(self, effort: float):
+        """
+        : param effort: The effort to set this motor to, from -1 to 1
+        : type effort: float
+        """
         self._motor.set_effort(effort)
 
-    def get_position(self):
+    def get_position(self) -> float:
+        """
+        : return: The position of the encoded motor, in revolutions, relative to the last time reset was called.
+        : rtype: float
+        """
         if self._motor.flip_dir:
             invert = -1
         else:
             invert = 1
         return self._encoder.get_position()*invert
     
-    def get_position_ticks(self):
+    def get_position_ticks(self) -> int:
+        """
+        : return: The position of the encoded motor, in encoder ticks, relative to the last time reset was called.
+        : rtype: int
+        """
         if self._motor.flip_dir:
             invert = -1
         else:
@@ -76,35 +88,54 @@ class EncodedMotor:
         return self._encoder.get_position_ticks()*invert
 
     def reset_encoder_position(self):
+        """
+        Resets the encoder position back to zero.
+        """
         self._encoder.reset_encoder_position()
 
-    def get_speed(self):
-        return self.speed*3000
+    def get_speed(self) -> float:
+        """
+        Gets the speed of the motor, in rpm
 
-    def set_target_speed(self, target_speed_rpm:float = None):
+        : return: The speed of the motor, in rpm
+        : rtype: float
+        """
+        # Convert from ticks per 20ms to rpm (60 sec/min, 50 Hz)
+        return self.speed*(60*50)/self._encoder.ticks_per_rev
+
+    def set_target_speed(self, target_speed_rpm: float | None = None):
         """
         Sets target speed (in rpm) to be maintained passively using PI Control
+        Call with no parameters to turn off speed control
+
+        : param target_speed_rpm: The target speed for the motor in rpm, or None
+        : type target_speed_rpm: float, or None
         """
         if target_speed_rpm is None:
             self.target_speed = None
             self.set_effort(0)
             return
-        # If the update timer is not running, start it at 100 Hz (20ms updates)
-        self.updateTimer.init(period=20, callback=lambda t:self.update())
-        # Convert from rev per min to rev per 10ms
-        self.target_speed = target_speed_rpm/(60*50)
+        # If the update timer is not running, start it at 50 Hz (20ms updates)
+        self.updateTimer.init(period=20, callback=lambda t:self._update())
+        # Convert from rev per min to ticks per 20ms (60 sec/min, 50 Hz)
+        self.target_speed = target_speed_rpm*self._encoder.ticks_per_rev/(60*50)
 
     def set_PI_constants(self, new_kp:float, new_ki:float):
         """
         Sets the Proportional and Integration constants for speed control
+
+        : param new_kp: The new Proportional Constant for Speed Control
+        : type new_kp: float
+        : param new_ki: The new Integration Constant for Speed Control
+        : type new_ki: float
         """
         self.speedPID = PID(new_kp, new_ki, 0)
 
-    def update(self):
-
-        # TODO: Move over to using encoder ticks instead of position to avoid doing math with floats
-
-        current_position = self.get_position()
+    def _update(self):
+        """
+        Non-api method; used for updating motor efforts for speed control
+        """
+        current_position = self.get_position_ticks()
         self.speed = current_position - self.prev_position
         if self.target_speed is not None:
             error = self.target_speed - self.speed
