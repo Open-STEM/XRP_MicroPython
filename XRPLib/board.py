@@ -17,8 +17,9 @@ class Board:
         self.on_switch = ADC(Pin(vin_pin))
 
 
-    def are_motors_powered(self):
+    def are_motors_powered(self) -> bool:
         """
-        Returns true if the batteries are connected and powering the motors, false otherwise
+        : return: Returns true if the batteries are connected and powering the motors, false otherwise
+        : rytpe: bool
         """
         return self.on_switch.read_u16() > 20000
