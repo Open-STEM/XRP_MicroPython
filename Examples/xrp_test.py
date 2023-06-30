@@ -14,7 +14,7 @@ def log_imu_heading():
 
 def log_encoder_position():
     while True:
-        print(drivetrain.left_motor.get_position(), drivetrain.right_motor.get_position())
+        print(left_motor.get_position(), right_motor.get_position())
         time.sleep(0.1)
 
 def benchmark_encoder_isr():

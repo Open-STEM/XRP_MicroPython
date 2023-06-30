@@ -31,7 +31,7 @@ class Button:
         self.callback = callback
         self.button.irq(trigger=trigger, handler=self.callback)
 
-    def is_pressed(self):
+    def is_pressed(self) -> bool:
         """
         Returns the state of the button
 
