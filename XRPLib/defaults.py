@@ -1,6 +1,6 @@
 from .board import Board
 from .button import Button
-from .drivetrain import Drivetrain
+from .differential_drive import DifferentialDrive
 from .motor import Motor
 from .encoder import Encoder
 from .encoded_motor import EncodedMotor
@@ -19,7 +19,7 @@ Run "from XRPLib.defaults import *" to use
 left_motor = EncodedMotor.get_default_left_motor()
 right_motor = EncodedMotor.get_default_right_motor()
 imu = IMU.get_default_imu()
-drivetrain = Drivetrain.get_default_drivetrain()
+drivetrain = DifferentialDrive.get_default_differential_drive()
 rangefinder = Rangefinder.get_default_rangefinder()
 reflectance = Reflectance.get_default_reflectance()
 led = LED.get_default_led()
