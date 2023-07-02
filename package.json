@@ -15,6 +15,7 @@
       ["XRPLib/servo.py", "github:Open-STEM/XRP_Micropython/XRPLib/servo.py"],
       ["XRPLib/webserver.py", "github:Open-STEM/XRP_Micropython/XRPLib/webserver.py"],
       ["XRPLib/resetbot.py", "github:Open-STEM/XRP_Micropython/XRPLib/resetbot.py"],
+      ["XRPLib/version.py", "github:Open-STEM/XRP_Micropython/XRPLib/version.py"],
       ["XRPLib/pid.py", "github:Open-STEM/XRP_Micropython/XRPLib/pid.py"],
       ["XRPExamples/__init__.py", "github:Open-STEM/XRP_Micropython/Examples/__init__.py"],
       ["XRPExamples/webserver_test.py", "github:Open-STEM/XRP_Micropython/Examples/webserver_test.py"],
