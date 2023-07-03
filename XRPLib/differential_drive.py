@@ -1,6 +1,7 @@
-from XRPLib.pid import PID
 from .encoded_motor import EncodedMotor
 from .imu import IMU
+from .controller import Controller
+from .pid import PID
 import time
 import math
 
@@ -73,7 +74,7 @@ class DifferentialDrive:
         return self.right_motor.get_position()
 
 
-    def straight(self, distance: float, speed: float = 0.5, timeout: float = None) -> bool:
+    def straight(self, distance: float, speed: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:
         """
         Go forward the specified distance in centimeters, and exit function when distance has been reached.
         Speed is bounded from -1 (reverse at full speed) to 1 (forward at full speed)
@@ -84,6 +85,10 @@ class DifferentialDrive:
         : type speed: float
         : param timeout: The amount of time before the robot stops trying to move forward and continues to the next step (In Seconds)
         : type timeout: float
+        : param main_controller: The main controller, for handling the distance driven forwards
+        : type main_controller: Controller
+        : param secondary_controller: The secondary controller, for correcting heading error that may result during the drive.
+        : type secondary_controller: Controller
         : return: if the distance was reached before the timeout
         : rtype: bool
         """
@@ -96,14 +101,22 @@ class DifferentialDrive:
         startingLeft = self.get_left_encoder_position()
         startingRight = self.get_right_encoder_position()
 
-        thetaPID = PID(kp = 0.01, ki = 0.02)
-        distancePID = PID(
-            kp = 2,
-            minOutput = 0.12,
-            maxOutput = speed,
-            tolerance = 0.1,
-            toleranceCount = 3,
-        )
+
+        if main_controller is None:
+            main_controller = PID(
+                kp = 2,
+                minOutput = 0.12,
+                maxOutput = speed,
+                tolerance = 0.1,
+                toleranceCount = 3,
+            )
+
+        # Secondary controller to keep encoder values in sync
+        if secondary_controller is None:
+            secondary_controller = PID(
+                kp = 0.01, 
+                ki = 0.02
+            )
 
         rotationsToDo = distance  / (self.wheel_diam * math.pi)
         #print("rot:", rotationsToDo)
@@ -120,13 +133,13 @@ class DifferentialDrive:
 
             # PID for distance
             distanceError = rotationsToDo - rotationsDelta
-            effort = distancePID.tick(distanceError)
+            effort = main_controller.tick(distanceError)
             
-            if distancePID.is_done():
+            if main_controller.is_done():
                 break
 
             # calculate heading correction
-            headingCorrection = thetaPID.tick(self.imu.get_yaw() - heading)
+            headingCorrection = secondary_controller.tick(self.imu.get_yaw() - heading)
 
             self.set_effort(effort + headingCorrection, effort - headingCorrection)
 
@@ -142,7 +155,7 @@ class DifferentialDrive:
             return time.time() < startTime+timeout
 
 
-    def turn(self, turn_degrees: float, speed: float = 0.5, timeout: float = None) -> bool:
+    def turn(self, turn_degrees: float, speed: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
         Speed is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
@@ -154,6 +167,10 @@ class DifferentialDrive:
         : type speed: float
         : param timeout: The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)
         : type timeout: float
+        : param main_controller: The main controller, for handling the angle turned
+        : type main_controller: Controller
+        : param secondary_controller: The secondary controller, for maintaining position during the turn by controlling the encoder count difference
+        : type secondary_controller: Controller
         : return: if the distance was reached before the timeout
         : rtype: bool
         """
@@ -166,19 +183,22 @@ class DifferentialDrive:
         startingLeft = self.get_left_encoder_position()
         startingRight = self.get_right_encoder_position()
 
-        turnPID = PID(
-            kp = .011,
-            kd = 0.0012,
-            minOutput = 0.20,
-            maxOutput = speed,
-            tolerance = 0.5,
-            toleranceCount = 3,
-            timeout = timeout
-        )
-        # pid to keep encoder values in sync
-        encoderPID = PID(
-            kp = 0.002,
-        )
+        if main_controller is None:
+            main_controller = PID(
+                kp = .011,
+                kd = 0.0012,
+                minOutput = 0.20,
+                maxOutput = speed,
+                tolerance = 0.5,
+                toleranceCount = 3,
+                timeout = timeout
+            )
+
+        # Secondary controller to keep encoder values in sync
+        if secondary_controller is None:
+            secondary_controller = PID(
+                kp = 0.002,
+            )
  
         turn_degrees += self.imu.get_yaw()
 
@@ -186,16 +206,16 @@ class DifferentialDrive:
 
             # calculate turn speed from PID with delta heading
             turnError = turn_degrees - self.imu.get_yaw()
-            turnSpeed = turnPID.tick(turnError)
+            turnSpeed = main_controller.tick(turnError)
             
             # exit if timeout or tolerance reached
-            if turnPID.is_done():
+            if main_controller.is_done():
                 break
 
             # calculate encoder correction to minimize drift
             left = self.get_left_encoder_position() - startingLeft
             right = self.get_right_encoder_position() - startingRight
-            encoderCorrection = encoderPID.tick(left + right)
+            encoderCorrection = secondary_controller.tick(left + right)
 
             self.set_effort(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
 

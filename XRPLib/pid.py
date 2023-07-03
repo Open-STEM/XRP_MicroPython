@@ -1,10 +1,11 @@
 import time
+from .controller import Controller
 
 """
 PID controller with exit condition
 """
 
-class PID:
+class PID(Controller):
 
     def __init__(self,
                  kp = 1.0,
@@ -48,7 +49,7 @@ class PID:
         # number of actual times in tolerance
         self.times = 0
 
-    def _handle_exit_condition(self, error):
+    def _handle_exit_condition(self, error: float):
 
         if abs(error) < self.tolerance:
             # if error is within tolerance, increment times in tolerance
@@ -57,8 +58,16 @@ class PID:
             # otherwise, reset times in tolerance, because we need to be in tolerance for numTimesInTolerance consecutive times
             self.times = 0
 
-    def tick(self, error) -> float:
+    def tick(self, error: float) -> float:
+        """
+        Handle a new tick of this PID loop given an error.
 
+        :param error: The error of the system being controlled by this PID controller
+        :type error: float
+
+        :return: The system output from the controller, to be used as an effort value or for any other purpose
+        :rtype: float
+        """
         currentTime = time.ticks_ms()
         if self.prevTime is None:
             # First tick after instantiation
@@ -102,6 +111,7 @@ class PID:
     def is_done(self) -> bool:
         """
         :return: if error is within tolerance for numTimesInTolerance consecutive times, or timed out
+        :rtype: bool
         """
         if self.timeout is not None:
             if time.ticks_diff(time.ticks_ms(), self.startTime) / 1000 > self.timeout:
