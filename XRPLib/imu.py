@@ -117,24 +117,6 @@ class IMU():
     def _mdps(self, reg):
         return round(self._int16(self._get2reg(reg)) * 4.375 * self._scale_g_c)
 
-    def _get_acc_x_rate(self):
-        """
-            Individual axis read for the Accelerometer's X-axis, in mg
-        """
-        return self._mg(LSM6DSO_OUTX_L_A) - self.acc_offsets[0]
-
-    def _get_acc_y_rate(self):
-        """
-            Individual axis read for the Accelerometer's Y-axis, in mg
-        """
-        return self._mg(LSM6DSO_OUTY_L_A) - self.acc_offsets[1]
-
-    def _get_acc_z_rate(self):
-        """
-            Individual axis read for the Accelerometer's Z-axis, in mg
-        """
-        return self._mg(LSM6DSO_OUTZ_L_A) - self.acc_offsets[2]
-
     def _get_gyro_x_rate(self):
         """
             Individual axis read for the Gyroscope's X-axis, in mg
@@ -153,16 +135,6 @@ class IMU():
         """
         return self._mdps(LSM6DSO_OUTZ_L_G) - self.gyro_offsets[2]
 
-    def _get_acc_rates(self):
-        """
-            Retrieves the array of readings from the Accelerometer, in mg
-            The order of the values is x, y, z.
-        """
-        self.irq_v[0][0] = self._get_acc_x_rate()
-        self.irq_v[0][1] = self._get_acc_y_rate()
-        self.irq_v[0][2] = self._get_acc_z_rate()
-        return self.irq_v[0]
-
     def _get_gyro_rates(self):
         """
             Retrieves the array of readings from the Gyroscope, in mdps
@@ -179,13 +151,41 @@ class IMU():
             The first row is the acceleration values, the second row is the gyro values.
             The order of the values is x, y, z.
         """
-        self._get_acc_rates()
+        self.get_acc_rates()
         self._get_gyro_rates()
         return self.irq_v
     
     """
         Public facing API Methods
     """
+
+    def get_acc_x(self):
+        """
+            Individual axis read for the Accelerometer's X-axis, in mg
+        """
+        return self._mg(LSM6DSO_OUTX_L_A) - self.acc_offsets[0]
+
+    def get_acc_y(self):
+        """
+            Individual axis read for the Accelerometer's Y-axis, in mg
+        """
+        return self._mg(LSM6DSO_OUTY_L_A) - self.acc_offsets[1]
+
+    def get_acc_z(self):
+        """
+            Individual axis read for the Accelerometer's Z-axis, in mg
+        """
+        return self._mg(LSM6DSO_OUTZ_L_A) - self.acc_offsets[2]
+    
+    def get_acc_rates(self):
+        """
+            Retrieves the array of readings from the Accelerometer, in mg
+            The order of the values is x, y, z.
+        """
+        self.irq_v[0][0] = self.get_acc_x()
+        self.irq_v[0][1] = self.get_acc_y()
+        self.irq_v[0][2] = self.get_acc_z()
+        return self.irq_v[0]
     
     def get_pitch(self):
         """
