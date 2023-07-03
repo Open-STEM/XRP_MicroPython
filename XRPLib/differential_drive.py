@@ -121,8 +121,11 @@ class DifferentialDrive:
         rotationsToDo = distance  / (self.wheel_diam * math.pi)
         #print("rot:", rotationsToDo)
 
-        # record current heading to maintain it
-        heading = self.imu.get_yaw()
+        if self.imu is not None:
+            # record current heading to maintain it
+            initial_heading = self.imu.get_yaw()
+        else:
+            initial_heading = 0
 
         while True:
 
@@ -139,7 +142,13 @@ class DifferentialDrive:
                 break
 
             # calculate heading correction
-            headingCorrection = secondary_controller.tick(self.imu.get_yaw() - heading)
+            if self.imu is not None:
+                # record current heading to maintain it
+                current_heading = self.imu.get_yaw()
+            else:
+                current_heading = ((leftDelta-rightDelta)/2)*360*self.wheel_diam/self.track_width
+
+            headingCorrection = secondary_controller.tick(current_heading - initial_heading)
 
             self.set_effort(effort + headingCorrection, effort - headingCorrection)
 
@@ -155,7 +164,7 @@ class DifferentialDrive:
             return time.time() < startTime+timeout
 
 
-    def turn(self, turn_degrees: float, speed: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:
+    def turn(self, turn_degrees: float, speed: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
         Speed is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
@@ -171,6 +180,7 @@ class DifferentialDrive:
         : type main_controller: Controller
         : param secondary_controller: The secondary controller, for maintaining position during the turn by controlling the encoder count difference
         : type secondary_controller: Controller
+        : param use_imu: A boolean flag that changes if the main controller bases it's movement off of 
         : return: if the distance was reached before the timeout
         : rtype: bool
         """
@@ -185,9 +195,9 @@ class DifferentialDrive:
 
         if main_controller is None:
             main_controller = PID(
-                kp = .011,
+                kp = .015,
                 kd = 0.0012,
-                minOutput = 0.20,
+                minOutput = 0.25,
                 maxOutput = speed,
                 tolerance = 0.5,
                 toleranceCount = 3,
@@ -200,22 +210,30 @@ class DifferentialDrive:
                 kp = 0.002,
             )
  
-        turn_degrees += self.imu.get_yaw()
+        if use_imu and (self.imu is not None):
+            turn_degrees += self.imu.get_yaw()
 
         while True:
+            
+            # calculate encoder correction to minimize drift
+            leftDelta = self.get_left_encoder_position() - startingLeft
+            rightDelta = self.get_right_encoder_position() - startingRight
+            encoderCorrection = secondary_controller.tick(leftDelta + rightDelta)
 
-            # calculate turn speed from PID with delta heading
-            turnError = turn_degrees - self.imu.get_yaw()
+            if use_imu and (self.imu is not None):
+                # calculate turn error (in degrees) from the imu
+                turnError = turn_degrees - self.imu.get_yaw()
+            else:
+                # calculate turn error (in degrees) from the encoder counts
+                turnError = turn_degrees - ((rightDelta-leftDelta)/2)*360*self.wheel_diam/self.track_width
+
+            # Pass the turn error to the main controller to get a turn speed
             turnSpeed = main_controller.tick(turnError)
             
             # exit if timeout or tolerance reached
             if main_controller.is_done():
                 break
 
-            # calculate encoder correction to minimize drift
-            left = self.get_left_encoder_position() - startingLeft
-            right = self.get_right_encoder_position() - startingRight
-            encoderCorrection = secondary_controller.tick(left + right)
 
             self.set_effort(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
 
