@@ -11,8 +11,8 @@ webserver.registerStopButton(lambda: drivetrain.set_effort(0, 0))
 
 # Binding functions to custom buttons
 webserver.add_button("test", lambda: print("test"))
-webserver.add_button("blink", lambda: print(led.blink(2)))
-webserver.add_button("LED_Off", lambda: led.off())
+webserver.add_button("blink", lambda: board.led_blink(2))
+webserver.add_button("LED_Off", lambda: board.led_off())
 webserver.add_button("Servo_Up", lambda: servo_one.set_angle(0))
 webserver.add_button("Servo_Down", lambda: servo_one.set_angle(135))
 
@@ -28,7 +28,7 @@ def log_time_and_range():
     webserver.log_data("Range", rangefinder.distance())
     webserver.log_data("Left Motor", left_motor.get_position())
     webserver.log_data("Right Motor", right_motor.get_position())
-    webserver.log_data("Button State", button.is_pressed())
+    webserver.log_data("Button State", board.is_button_pressed())
 
 timer = Timer(-1)
 timer.init(freq=1, mode=Timer.PERIODIC, callback=lambda t: log_time_and_range())

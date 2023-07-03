@@ -56,12 +56,12 @@ def test_set_effort():
     drivetrain.stop()
 
 def test_led():
-    led.blink(5)
+    board.led_blink(5)
     time.sleep(3)
-    led.off()
+    board.led_off()
 
 def test_button():
-    button.set_callback(trigger=Pin.IRQ_RISING, callback=lambda p: led.change_state())
+    board.set_button_callback(trigger=Pin.IRQ_RISING, callback=lambda p: board.led.toggle())
 
 def test_rangefinder():
     while True:
