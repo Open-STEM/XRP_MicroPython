@@ -1,8 +1,5 @@
 from machine import Pin, ADC
 
-# Last updated 29-June-2023
-__version__ = '0.8'
-
 class Board:
 
     _DEFAULT_BOARD_INSTANCE = None
