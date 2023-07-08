@@ -47,10 +47,25 @@ class DifferentialDrive:
         self.left_motor.set_effort(left_effort)
         self.right_motor.set_effort(right_effort)
 
+    def set_speed(self, left_speed: float, right_speed: float) -> None:
+        """
+        Set the speed of both motors individually
+
+        : param leftSpeed: The speed (In Centimeters per Second) to set the left motor to.
+        : type leftSpeed: float
+        : param rightSpeed: The speed (In Centimeters per Second) to set the right motor to.
+        : type rightSpeed: float
+        """
+
+        self.left_motor.set_speed(left_speed)
+        self.right_motor.set_speed(right_speed)
+
     def stop(self) -> None:
         """
         Stops both drivetrain motors
         """
+        self.left_motor.set_speed()
+        self.right_motor.set_speed()
         self.set_effort(0,0)
 
     def reset_encoder_position(self) -> None:
