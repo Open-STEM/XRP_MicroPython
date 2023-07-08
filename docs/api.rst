@@ -4,75 +4,77 @@
 .. If your library file(s) are nested in a directory (e.g. /adafruit_foo/foo.py)
 .. use this format as the module name: "adafruit_foo.foo"
 
+API Reference
+=============
+
 Hardware
--------
-
-.. autoclass:: XRPLib.motor
+--------
+.. autoclass:: motor.Motor
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.encoded_motor
+.. autoclass:: encoded_motor.EncodedMotor
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.motor_group
+.. autoclass:: motor_group.MotorGroup
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.differential_drive
+.. autoclass:: differential_drive.DifferentialDrive
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.servo
+.. autoclass:: servo.Servo
     :members:
     :undoc-members:
 
 Sensors
 -------
 
-.. autoclass:: XRPLib.encoder
+.. autoclass:: encoder.Encoder
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.imu
+.. autoclass:: imu.IMU
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.rangefinder
+.. autoclass:: rangefinder.Rangefinder
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.reflectance
+.. autoclass:: reflectance.Reflectance
     :members:
     :undoc-members:
 
 Miscellaneous
--------
+-------------
 
-.. autoclass:: XRPLib.board
+.. autoclass:: board.Board
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.controller
+.. autoclass:: controller.Controller
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.defaults
+.. automodule:: defaults
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.pid
+.. autoclass:: pid.PID
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.resetbot
+.. automodule:: resetbot
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.version
+.. automodule:: version
     :members:
     :undoc-members:
 
-.. autoclass:: XRPLib.webserver
+.. autoclass:: webserver.Webserver
     :members:
     :undoc-members:
