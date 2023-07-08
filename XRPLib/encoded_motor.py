@@ -12,18 +12,18 @@ class EncodedMotor:
     _DEFAULT_MOTOR_FOUR_INSTANCE = None
 
     @classmethod
-    def get_default_encoded_motor(cls, index:int):
+    def get_default_encoded_motor(cls, index:int = 0):
         """
         Get one of the default XRP v2 motor instances. These are singletons, so only one instance of each of these will ever exist.
+        Motor indexes:
+            0 - Left Motor
+            1 - Right Motor
+            2 - Motor 3
+            3 - Motor 4
+        Left Motor is the default, so if no index is specified, the left motor will be returned.
         """
-        if index == 0: # Left Motor
-            if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
-                cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
-                    Motor(6, 7, flip_dir=True),
-                    Encoder(0, 4, 5)
-                )
-            motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
-        elif index == 1:
+        
+        if index == 1:
             if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
                     Motor(14, 15),
@@ -44,8 +44,16 @@ class EncodedMotor:
                     Encoder(3, 8, 9)
                 )
             motor = cls._DEFAULT_MOTOR_FOUR_INSTANCE
+        else:
+            # Left Motor
+            if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
+                cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
+                    Motor(6, 7, flip_dir=True),
+                    Encoder(0, 4, 5)
+                )
+            motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
         return motor
-    
+
     @classmethod
     def get_default_encoded_motor(cls):
         """
