@@ -1,66 +1,91 @@
-from machine import Pin
-from micropython import const
+# Modified from https://forum.micropython.org/viewtopic.php?t=12277&p=66659
+
+import machine
+import rp2
+import time
 
 class Encoder:
-    def __init__(self, aPin:int, bPin:int, ticks_per_revolution:int = 146.25):
-        # TODO: Look into PIO implementation as to not take CPU time
-        self.currentPosition = 0
-        self.ticks_per_rev = ticks_per_revolution
-        # Set pins as inputs
-        self._aPin = Pin(aPin, Pin.IN)
-        self._bPin = Pin(bPin, Pin.IN)
-        # Set up both pins with an interrupt to update the encoder count on any change
-        self._aPin.irq(trigger=Pin.IRQ_RISING, handler=lambda pin:self._isr())
-        #self._bPin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=lambda pin:self.isr("b"))
-
-        #self.prevAState = 0
-        #self.prevBState = 0
-        # Use a lookup table based on the pin transitions to figure out if we are running forwards or backwards
-        #self._ENCODER_LOOKUP_TABLE = [ 0, 1, -1, 0,  -1, 0, 0, 1,  1, 0, 0, -1,  0, -1, 1, 0 ]
-
-
-    def get_position(self):
-        """
-        : return: The position of the encoded motor, in revolutions, relative to the last time reset was called.
-        : rtype: float
-        """
-        return self.currentPosition/self.ticks_per_rev
+    gearRatio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
+    ticksPerMotorRotation = 12
+    ticksPerShaftRotation = ticksPerMotorRotation * gearRatio # 585
     
-    # return position in ticks
-    def get_position_ticks(self):
-        """
-        : return: The position of the encoder, in ticks, relative to the last time reset was called.
-        : rtype: int
-        """
-        return self.currentPosition
-
+    def __init__(self, index, encAPin, encBPin):
+        if(abs(encAPin - encBPin) != 1):
+            raise Exception("Encoder pins must be successive!")
+        basePin = machine.Pin(min(encAPin, encBPin))
+        self.sm = rp2.StateMachine(index, self._encoder, in_base=basePin)
+        self.reset_encoder_position()
+        self.sm.active(1)
+    
     def reset_encoder_position(self):
-        """
-        Resets the encoder position back to zero.
-        """
-        self.currentPosition = 0
+        # It's possible for this to cause issues if in the middle of inrementing
+        # or decrementing, but the result should only be off by 1. If that's a
+        # problem, an alternative solution is to stop the state machine, then
+        # reset both x and the program counter. But that's excessive.
+        self.sm.exec("set(x, 0)")
+    
+    def get_position_ticks(self):
+        ticks = self.sm.get()
+        if(ticks > 2**31):
+            ticks -= 2**32
+        return ticks
+    
+    def get_position(self):
+        return self.getTicks() / self.ticksPerShaftRotation
 
-    def _isr(self):
-        # aState = self._aPin.value()
-        bState = self._bPin.value()
-
-        # At rising edge of A. If B is low, we are going forwards, if B is high, we are going backwards
-        if bState == 0:
-            self.currentPosition -= 1
-        else:
-            self.currentPosition += 1
-
-        #print(self.currentPosition)
-
+    @rp2.asm_pio(in_shiftdir=rp2.PIO.SHIFT_LEFT, out_shiftdir=rp2.PIO.SHIFT_RIGHT)
+    def _encoder():
+        # Register descriptions:
+        # X - Encoder count, as a 32-bit number
+        # OSR - Previous pin values, only last 2 bits are used
+        # ISR - Push encoder count, and combine pin states together
         
-        # index = self.prevAState*8 + self.prevBState*4 + aState*2 + bState
-
-        # print(text, aState, bState, index)
-
-        # self.currentPosition += self._ENCODER_LOOKUP_TABLE[index]
-
-        # # DEBUG ONLY
-        # #print(f"{index}, {self._ENCODER_LOOKUP_TABLE[index]}")
-
-        # self.prevAState = aState
-        # self.prevBState = bState
+        # Jump table
+        # The program counter is moved to memory address 0000 - 1111, based
+        # on the previous (left 2 bits) and current (right  bits) pin states
+        jmp("read") # 00 -> 00 No change, continue
+        jmp("decr") # 00 -> 01 Reverse, decrement count
+        jmp("incr") # 00 -> 10 Forward, increment count
+        jmp("read") # 00 -> 11 Impossible, continue
+        
+        jmp("incr") # 01 -> 00 Forward, increment count
+        jmp("read") # 01 -> 01 No change, continue
+        jmp("read") # 01 -> 10 Impossible, continue
+        jmp("decr") # 01 -> 11 Reverse, decrement count
+        
+        jmp("decr") # 10 -> 00 Reverse, decrement count
+        jmp("read") # 10 -> 01 Impossible, continue
+        jmp("read") # 10 -> 10 No change, continue
+        jmp("incr") # 10 -> 11 Forward, increment count
+        
+        jmp("read") # 11 -> 00 Impossible, continue
+        jmp("incr") # 11 -> 01 Forward, increment count
+        jmp("decr") # 11 -> 10 Reverse, decrement count
+        jmp("read") # 11 -> 11 No change, continue
+        
+        label("read")
+        mov(osr, isr)   # Store previous pin states in OSR
+        mov(isr, x)     # Copy encoder count to ISR
+        push(noblock)   # Push count to RX buffer, and reset ISR to 0
+        out(isr, 2)     # Shift previous pin states into ISR
+        in_(pins, 2)    # Shift current pin states into ISR
+        mov(pc, isr)    # Move PC to jump table to determine what to do next
+        
+        label("decr")           # There is no explicite increment intruction, but X can be
+        jmp(x_dec, "decr_nop")  # decremented in the jump instruction. So we use that and jump
+        label("decr_nop")       # to the next instruction, which is equivalent to just decrementing
+        jmp("read")
+        
+        label("incr")           # There is no explicite increment intruction, but X can be
+        mov(x, invert(x))       # decremented in the jump instruction. So we invert X, decrement, 
+        jmp(x_dec, "incr_nop")  # then invert again - this is equivalent to incrementing.
+        label("incr_nop")
+        mov(x, invert(x))
+        jmp("read")
+        
+        # Fill remaining instruction memory with jumps to ensure nothing bad happens
+        # For some reason, weird behavior happens if the instruction memory isn't full
+        jmp("read")
+        jmp("read")
+        jmp("read")
+        jmp("read")

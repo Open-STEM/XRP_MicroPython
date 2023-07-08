@@ -114,8 +114,7 @@ class DifferentialDrive:
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.01, 
-                ki = 0.02
+                kp = 0.02, 
             )
 
         rotationsToDo = distance  / (self.wheel_diam * math.pi)
@@ -150,9 +149,7 @@ class DifferentialDrive:
 
             headingCorrection = secondary_controller.tick(current_heading - initial_heading)
 
-            self.set_effort(effort + headingCorrection, effort - headingCorrection)
-
-            #print(self.imu.get_yaw() - heading, effort + headingCorrection, effort - headingCorrection, headingCorrection)
+            self.set_effort(effort - headingCorrection, effort + headingCorrection)
 
             time.sleep(0.01)
 
