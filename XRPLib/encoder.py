@@ -31,7 +31,7 @@ class Encoder:
         return ticks
     
     def get_position(self):
-        return self.getTicks() / self.ticksPerShaftRotation
+        return self.get_position_ticks() / self.ticksPerShaftRotation
 
     @rp2.asm_pio(in_shiftdir=rp2.PIO.SHIFT_LEFT, out_shiftdir=rp2.PIO.SHIFT_RIGHT)
     def _encoder():

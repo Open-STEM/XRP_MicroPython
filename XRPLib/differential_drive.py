@@ -19,8 +19,8 @@ class DifferentialDrive:
 
         if cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE is None:
             cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE = cls(
-            EncodedMotor.get_default_left_motor(),
-            EncodedMotor.get_default_right_motor(),
+            EncodedMotor.get_default_encoded_motor(0),
+            EncodedMotor.get_default_encoded_motor(1),
             IMU.get_default_imu()
         )
             
@@ -105,7 +105,7 @@ class DifferentialDrive:
 
         if main_controller is None:
             main_controller = PID(
-                kp = 2,
+                kp = 0.5,
                 minOutput = 0.12,
                 maxOutput = speed,
                 tolerance = 0.1,
@@ -115,7 +115,7 @@ class DifferentialDrive:
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.02, 
+                kp = 0.0175, kd=0.005, 
             )
 
         rotationsToDo = distance  / (self.wheel_diam * math.pi)
@@ -228,10 +228,7 @@ class DifferentialDrive:
             if main_controller.is_done() or time_out.is_done():
                 break
 
-
             self.set_effort(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
-
-            #print(turnError, turnSpeed)
 
             time.sleep(0.01)
 

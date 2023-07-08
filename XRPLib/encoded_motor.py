@@ -53,17 +53,6 @@ class EncodedMotor:
                 )
             motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
         return motor
-
-    @classmethod
-    def get_default_encoded_motor(cls):
-        """
-        Get the default XRP v2 right motor instance. This is a singleton, so only one instance of the drivetrain will ever exist.
-        Motor pins set to 14 and 15 and the encoder pins set to 12 and 13
-        """
-
-        
-
-        return cls._DEFAULT_RIGHT_MOTOR_INSTANCE
     
     def __init__(self, motor: Motor, encoder: Encoder):
         
