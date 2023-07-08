@@ -15,8 +15,7 @@ class PID(Controller):
                  maxOutput = 1.0,
                  maxDerivative = None,
                  tolerance = 0.1,
-                 toleranceCount = 1,
-                 timeout = None
+                 toleranceCount = 1
                  ):
         """
         :param kp: proportional gain
@@ -40,8 +39,6 @@ class PID(Controller):
         self.prevError = 0
         self.prevIntegral = 0
         self.prevOutput = 0
-
-        self.timeout = timeout
 
         self.startTime = None
         self.prevTime = None
@@ -113,8 +110,5 @@ class PID(Controller):
         :return: if error is within tolerance for numTimesInTolerance consecutive times, or timed out
         :rtype: bool
         """
-        if self.timeout is not None:
-            if time.ticks_diff(time.ticks_ms(), self.startTime) / 1000 > self.timeout:
-                return True
 
         return self.times >= self.toleranceCount

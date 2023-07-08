@@ -2,6 +2,7 @@ from .encoded_motor import EncodedMotor
 from .imu import IMU
 from .controller import Controller
 from .pid import PID
+from .timeout import Timeout
 import time
 import math
 
@@ -97,7 +98,7 @@ class DifferentialDrive:
             speed *= -1
             distance *= -1
 
-        startTime = time.time()
+        time_out = Timeout(timeout)
         startingLeft = self.get_left_encoder_position()
         startingRight = self.get_right_encoder_position()
 
@@ -137,7 +138,7 @@ class DifferentialDrive:
             distanceError = rotationsToDo - rotationsDelta
             effort = main_controller.tick(distanceError)
             
-            if main_controller.is_done():
+            if main_controller.is_done() or time_out.is_done():
                 break
 
             # calculate heading correction
@@ -155,10 +156,7 @@ class DifferentialDrive:
 
         self.stop()
 
-        if timeout is None:
-            return True
-        else:
-            return time.time() < startTime+timeout
+        return not time_out.is_done()
 
 
     def turn(self, turn_degrees: float, speed: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
@@ -186,7 +184,7 @@ class DifferentialDrive:
             speed *= -1
             turn_degrees *= -1
 
-        startTime = time.time()
+        time_out = Timeout(timeout)
         startingLeft = self.get_left_encoder_position()
         startingRight = self.get_right_encoder_position()
 
@@ -197,8 +195,7 @@ class DifferentialDrive:
                 minOutput = 0.25,
                 maxOutput = speed,
                 tolerance = 0.5,
-                toleranceCount = 3,
-                timeout = timeout
+                toleranceCount = 3
             )
 
         # Secondary controller to keep encoder values in sync
@@ -228,7 +225,7 @@ class DifferentialDrive:
             turnSpeed = main_controller.tick(turnError)
             
             # exit if timeout or tolerance reached
-            if main_controller.is_done():
+            if main_controller.is_done() or time_out.is_done():
                 break
 
 
@@ -240,7 +237,4 @@ class DifferentialDrive:
 
         self.stop()
 
-        if timeout is None:
-            return True
-        else:
-            return time.time() < startTime+timeout
+        return not time_out.is_done()
