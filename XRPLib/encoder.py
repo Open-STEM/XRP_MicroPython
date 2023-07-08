@@ -5,9 +5,9 @@ import rp2
 import time
 
 class Encoder:
-    gearRatio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
-    ticksPerMotorRotation = 12
-    ticksPerShaftRotation = ticksPerMotorRotation * gearRatio # 585
+    gear_ratio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
+    ticks_per_motor_shaft_revolution = 12
+    ticks_per_rev = ticks_per_motor_shaft_revolution * gear_ratio # 585
     
     def __init__(self, index, encAPin, encBPin):
         if(abs(encAPin - encBPin) != 1):
@@ -31,7 +31,7 @@ class Encoder:
         return ticks
     
     def get_position(self):
-        return self.get_position_ticks() / self.ticksPerShaftRotation
+        return self.get_position_ticks() / self.ticks_per_rev
 
     @rp2.asm_pio(in_shiftdir=rp2.PIO.SHIFT_LEFT, out_shiftdir=rp2.PIO.SHIFT_RIGHT)
     def _encoder():

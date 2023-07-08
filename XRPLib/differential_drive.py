@@ -75,7 +75,7 @@ class DifferentialDrive:
         return self.right_motor.get_position()
 
 
-    def straight(self, distance: float, speed: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:
+    def straight(self, distance: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:
         """
         Go forward the specified distance in centimeters, and exit function when distance has been reached.
         Speed is bounded from -1 (reverse at full speed) to 1 (forward at full speed)
@@ -95,7 +95,7 @@ class DifferentialDrive:
         """
         # ensure distance is always positive while speed could be either positive or negative
         if distance < 0:
-            speed *= -1
+            max_effort *= -1
             distance *= -1
 
         time_out = Timeout(timeout)
@@ -107,7 +107,7 @@ class DifferentialDrive:
             main_controller = PID(
                 kp = 0.5,
                 minOutput = 0.12,
-                maxOutput = speed,
+                maxOutput = max_effort,
                 tolerance = 0.1,
                 toleranceCount = 3,
             )
@@ -159,7 +159,7 @@ class DifferentialDrive:
         return not time_out.is_done()
 
 
-    def turn(self, turn_degrees: float, speed: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
+    def turn(self, turn_degrees: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
         Speed is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
@@ -180,8 +180,8 @@ class DifferentialDrive:
         : rtype: bool
         """
 
-        if speed < 0:
-            speed *= -1
+        if max_effort < 0:
+            max_effort *= -1
             turn_degrees *= -1
 
         time_out = Timeout(timeout)
@@ -193,7 +193,7 @@ class DifferentialDrive:
                 kp = .015,
                 kd = 0.0012,
                 minOutput = 0.25,
-                maxOutput = speed,
+                maxOutput = max_effort,
                 tolerance = 0.5,
                 toleranceCount = 3
             )

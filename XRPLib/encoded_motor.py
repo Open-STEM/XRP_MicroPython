@@ -116,7 +116,7 @@ class EncodedMotor:
         # Convert from ticks per 20ms to rpm (60 sec/min, 50 Hz)
         return self.speed*(60*50)/self._encoder.ticks_per_rev
 
-    def set_target_speed(self, target_speed_rpm: float | None = None):
+    def set_speed(self, speed_rpm: float | None = None):
         """
         Sets target speed (in rpm) to be maintained passively
         Call with no parameters to turn off speed control
@@ -124,14 +124,14 @@ class EncodedMotor:
         : param target_speed_rpm: The target speed for the motor in rpm, or None
         : type target_speed_rpm: float, or None
         """
-        if target_speed_rpm is None:
+        if speed_rpm is None:
             self.target_speed = None
             self.set_effort(0)
             return
         # If the update timer is not running, start it at 50 Hz (20ms updates)
         self.updateTimer.init(period=20, callback=lambda t:self._update())
         # Convert from rev per min to ticks per 20ms (60 sec/min, 50 Hz)
-        self.target_speed = target_speed_rpm*self._encoder.ticks_per_rev/(60*50)
+        self.target_speed = speed_rpm*self._encoder.ticks_per_rev/(60*50)
 
     def set_speed_controller(self, new_controller):
         """
