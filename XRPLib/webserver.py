@@ -15,6 +15,10 @@ class Webserver:
         return webserver
 
     def __init__(self):
+        """
+        Host a webserver for the XRP v2 Robot; Register your own callbacks and log your own data to the webserver using the methods below.
+        """
+
         gc.threshold(50000) # garbage collection
         self.DOMAIN = "remote.xrp"
         self.logged_data = {}
@@ -30,6 +34,7 @@ class Webserver:
     def start_server(self, robot_number:int):
         """
         Start the webserver
+
         :param robot_number: The number of the robot, used to generate the access point name
         :type robot_number: int
         """
@@ -68,6 +73,7 @@ class Webserver:
     def log_data(self, label:str, data):
         """
         Register a custom label to be displayed on the webserver
+
         :param label: The label as it will be displayed, must be unique
         :type label: str
         :param data: The data to be displayed
@@ -78,6 +84,7 @@ class Webserver:
     def add_button(self, button_name:str, function):
         """
         Register a custom button to be displayed on the webserver
+
         :param button_name: The label for the button as it will be displayed, must be unique
         :type button_name: str
         :param function: The function to be called when the button is pressed
@@ -88,6 +95,7 @@ class Webserver:
     def registerForwardButton(self, function):
         """
         Assign a function to the forward button
+
         :param function: The function to be called when the button is pressed
         :type function: function
         """
@@ -97,6 +105,7 @@ class Webserver:
     def registerBackwardButton(self, function):
         """
         Assign a function to the backward button
+
         :param function: The function to be called when the button is pressed
         :type function: function
         """
@@ -106,6 +115,7 @@ class Webserver:
     def registerLeftButton(self, function):
         """
         Assign a function to the left button
+
         :param function: The function to be called when the button is pressed
         :type function: function
         """
@@ -115,6 +125,7 @@ class Webserver:
     def registerRightButton(self, function):
         """
         Assign a function to the right button
+
         :param function: The function to be called when the button is pressed
         :type function: function
         """
@@ -123,7 +134,8 @@ class Webserver:
     
     def registerStopButton(self, function):
         """
-        Assign a function to the stop button
+        Assign a function to the stop 
+        
         :param function: The function to be called when the button is pressed
         :type function: function
         """

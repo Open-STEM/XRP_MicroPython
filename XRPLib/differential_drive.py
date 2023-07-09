@@ -86,8 +86,7 @@ class DifferentialDrive:
 
     def reset_encoder_position(self) -> None:
         """
-        Set the position of the motors' encoders in degrees. Note that this does not actually move the motor but just recalibrates the stored encoder value.
-        If only one encoder position is specified, the encoders for each motor will be set to that position.
+        Resets the position of both motors' encoders to 0
         """
 
         self.left_motor.reset_encoder_position()
@@ -208,7 +207,8 @@ class DifferentialDrive:
         :type main_controller: Controller
         :param secondary_controller: The secondary controller, for maintaining position during the turn by controlling the encoder count difference
         :type secondary_controller: Controller
-        :param use_imu: A boolean flag that changes if the main controller bases it's movement off of 
+        :param use_imu: A boolean flag that changes if the main controller bases its movement off of the imu (True) or the encoders (False)
+        :type use_imu: bool
         :return: if the distance was reached before the timeout
         :rtype: bool
         """

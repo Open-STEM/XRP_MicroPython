@@ -59,9 +59,9 @@ class EncodedMotor:
 
         self.target_speed = None
         self.DEFAULT_SPEED_CONTROLLER = PID(
-            5,
-            0.25,
-            0,
+            kp=5,
+            ki=0.25,
+            kd=0,
         )
         self.speedController = self.DEFAULT_SPEED_CONTROLLER
         self.prev_position = 0

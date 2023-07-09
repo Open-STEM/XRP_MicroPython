@@ -7,19 +7,19 @@
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
 
-LSM6DSO_CTRL1_XL = const(0x10)
-LSM6DSO_CTRL2_G = const(0x11)
-LSM6DSO_CTRL3_C = const(0x12)
-LSM6DSO_CTRL6_C = const(0x15)
-LSM6DSO_CTRL8_XL = const(0x17)
-LSM6DSO_STATUS = const(0x1E)
-LSM6DSO_OUT_TEMP_L = const(0x20)
-LSM6DSO_OUTX_L_G = const(0x22)
-LSM6DSO_OUTY_L_G = const(0x24)
-LSM6DSO_OUTZ_L_G = const(0x26)
-LSM6DSO_OUTX_L_A = const(0x28)
-LSM6DSO_OUTY_L_A = const(0x2A)
-LSM6DSO_OUTZ_L_A = const(0x2C)
+LSM6DSO_CTRL1_XL = 0x10
+LSM6DSO_CTRL2_G = 0x11
+LSM6DSO_CTRL3_C = 0x12
+LSM6DSO_CTRL6_C = 0x15
+LSM6DSO_CTRL8_XL = 0x17
+LSM6DSO_STATUS = 0x1E
+LSM6DSO_OUT_TEMP_L = 0x20
+LSM6DSO_OUTX_L_G = 0x22
+LSM6DSO_OUTY_L_G = 0x24
+LSM6DSO_OUTZ_L_G = 0x26
+LSM6DSO_OUTX_L_A = 0x28
+LSM6DSO_OUTY_L_A = 0x2A
+LSM6DSO_OUTZ_L_A = 0x2C
 
 """
     Options for accelerometer and gyroscope scale factors
@@ -378,11 +378,11 @@ class IMU():
 
         self.acc_offsets = avg_vals[0]
         self.gyro_offsets = avg_vals[1]
-        self.update_timer.init(period=update_time, callback=lambda t:self.update_imu_readings())
+        self.update_timer.init(period=update_time, callback=lambda t:self._update_imu_readings())
         self.update_time = update_time/1000
 
 
-    def update_imu_readings(self):
+    def _update_imu_readings(self):
         # Called every tick through a callback timer
 
         delta_pitch = self._get_gyro_x_rate()*self.update_time / 1000

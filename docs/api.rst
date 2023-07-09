@@ -6,6 +6,7 @@
 
 API Reference
 =============
+
 .. automodule:: XRPLib
     :members:
     :undoc-members:
@@ -62,25 +63,13 @@ Miscellaneous
     :members:
     :undoc-members:
 
-.. automodule:: XRPLib.defaults
-    :members:
-    :undoc-members:
-
 .. autoclass:: XRPLib.pid.PID
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: XRPLib.resetbot
-    :members:
-    :undoc-members:
-
 .. autoclass:: XRPLib.timeout.Timeout
     :members:
-    :undoc-members:
-
-.. automodule:: XRPLib.version
-    :members: __version__
     :undoc-members:
 
 .. autoclass:: XRPLib.webserver.Webserver

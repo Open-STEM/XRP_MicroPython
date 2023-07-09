@@ -39,7 +39,7 @@ autodoc_mock_imports = [
     'btree',
     'rp2',
     'phew',
-]
+    'gc']
 
 autodoc_preserve_defaults = True
 
