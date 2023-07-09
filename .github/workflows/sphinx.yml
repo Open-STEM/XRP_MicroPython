@@ -1,5 +1,5 @@
 name: Sphinx-Docs
-on: [push, pull_request, workflow_dispatch]
+on: [release, workflow_dispatch]
 permissions:
     contents: write
 jobs:
