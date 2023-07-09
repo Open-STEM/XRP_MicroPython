@@ -1,7 +1,7 @@
-Simple test
+Example Code
 ------------
 
-Ensure your device works with this simple test.
+Feel free to read through, import, and use any of the below sample code:
 
 .. literalinclude:: ../Examples/drive_examples.py
     :caption: Examples/drive_examples.py
@@ -11,10 +11,10 @@ Ensure your device works with this simple test.
     :caption: Examples/sensor_examples.py
     :linenos:
 
-.. literalinclude:: ../Examples/webserver_example.py
-    :caption: Examples/sensor_examples.py
+.. literalinclude:: ../Examples/misc_examples.py
+    :caption: Examples/misc_examples.py
     :linenos:
 
-.. literalinclude:: ../Examples/misc_examples.py
-    :caption: Examples/sensor_examples.py
+.. literalinclude:: ../Examples/webserver_example.py
+    :caption: Examples/webserver_example.py
     :linenos:

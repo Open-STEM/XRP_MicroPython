@@ -19,6 +19,7 @@ Table of Contents
 .. toctree::
     :caption: Examples
 
+    installation_check
     examples
 
 .. toctree::
