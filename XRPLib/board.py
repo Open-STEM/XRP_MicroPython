@@ -1,4 +1,5 @@
 from machine import Pin, ADC, Timer
+import time
 
 class Board:
 
@@ -64,6 +65,20 @@ class Board:
         :rtype: bool
         """
         return not self.button.value()
+    
+    def wait_for_button(self):
+        """
+        Halts the program until the button is pressed
+        """
+
+        # Wait until user command before running
+        while not self.is_button_pressed():
+            time.sleep(.01)
+
+        # Wait until user to release button before running
+        while self.is_button_pressed():
+            time.sleep(.01)
+
     
     def led_on(self):
         """

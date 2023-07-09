@@ -94,17 +94,17 @@ class DifferentialDrive:
 
     def get_left_encoder_position(self) -> float:
         """
-        :return: the current position of the left motor's encoder in revolutions.
+        :return: the current position of the left motor's encoder in cm.
         :rtype: float
         """
-        return self.left_motor.get_position()
+        return self.left_motor.get_position()*math.pi*self.wheel_diam
 
     def get_right_encoder_position(self) -> float:
         """
-        :return: the current position of the right motor's encoder in revolutions.
+        :return: the current position of the right motor's encoder in cm.
         :rtype: float
         """
-        return self.right_motor.get_position()
+        return self.right_motor.get_position()*math.pi*self.wheel_diam
 
 
     def straight(self, distance: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:

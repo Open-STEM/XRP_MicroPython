@@ -7,20 +7,6 @@ import time
     as well as control a servo that may be connected.
 """
 
-# Does nothing until any button input is found
-def wait_for_button():
-    print("Waiting for button signal from either button")
-
-    # Wait until user command before running
-    while not board.is_button_pressed():
-        time.sleep(.01)
-
-    # Wait until user to release button before running
-    while board.is_button_pressed():
-        time.sleep(.01)
-
-    print("Button input found; Program starting")
-
 def test_leds():
     board.led_blink(3)
     time.sleep(1)
@@ -50,8 +36,8 @@ def ivp():
     print("Testing Servo")
     test_servo()
     print("Testing LEDs")
-    wait_for_button()
+    board.wait_for_button()
     test_leds()
     print("Testing Drivetrain:")
-    wait_for_button()
+    board.wait_for_button()
     test_drive()
