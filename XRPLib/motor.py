@@ -15,8 +15,8 @@ class Motor:
         """
         Sets the effort value of the motor (corresponds to power)
 
-        : param effort: The effort to set the motor to, between -1 and 1
-        : type effort: float
+        :param effort: The effort to set the motor to, between -1 and 1
+        :type effort: float
         """
 
         if effort < 0:

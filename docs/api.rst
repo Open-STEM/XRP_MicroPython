@@ -6,75 +6,83 @@
 
 API Reference
 =============
+.. automodule:: XRPLib
+    :members:
+    :undoc-members:
 
 Hardware
 --------
-.. autoclass:: motor.Motor
+.. autoclass:: XRPLib.motor.Motor
     :members:
     :undoc-members:
 
-.. autoclass:: encoded_motor.EncodedMotor
+.. autoclass:: XRPLib.encoded_motor.EncodedMotor
     :members:
     :undoc-members:
 
-.. autoclass:: motor_group.MotorGroup
+.. autoclass:: XRPLib.motor_group.MotorGroup
     :members:
     :undoc-members:
 
-.. autoclass:: differential_drive.DifferentialDrive
+.. autoclass:: XRPLib.differential_drive.DifferentialDrive
     :members:
     :undoc-members:
 
-.. autoclass:: servo.Servo
+.. autoclass:: XRPLib.servo.Servo
     :members:
     :undoc-members:
 
 Sensors
 -------
 
-.. autoclass:: encoder.Encoder
+.. autoclass:: XRPLib.encoder.Encoder
     :members:
     :undoc-members:
 
-.. autoclass:: imu.IMU
+.. autoclass:: XRPLib.imu.IMU
     :members:
     :undoc-members:
 
-.. autoclass:: rangefinder.Rangefinder
+.. autoclass:: XRPLib.rangefinder.Rangefinder
     :members:
     :undoc-members:
 
-.. autoclass:: reflectance.Reflectance
+.. autoclass:: XRPLib.reflectance.Reflectance
     :members:
     :undoc-members:
 
 Miscellaneous
 -------------
 
-.. autoclass:: board.Board
+.. autoclass:: XRPLib.board.Board
     :members:
     :undoc-members:
 
-.. autoclass:: controller.Controller
+.. autoclass:: XRPLib.controller.Controller
     :members:
     :undoc-members:
 
-.. automodule:: defaults
+.. automodule:: XRPLib.defaults
     :members:
     :undoc-members:
 
-.. autoclass:: pid.PID
+.. autoclass:: XRPLib.pid.PID
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: XRPLib.resetbot
     :members:
     :undoc-members:
 
-.. automodule:: resetbot
+.. autoclass:: XRPLib.timeout.Timeout
     :members:
     :undoc-members:
 
-.. automodule:: version
-    :members:
+.. automodule:: XRPLib.version
+    :members: __version__
     :undoc-members:
 
-.. autoclass:: webserver.Webserver
+.. autoclass:: XRPLib.webserver.Webserver
     :members:
     :undoc-members:

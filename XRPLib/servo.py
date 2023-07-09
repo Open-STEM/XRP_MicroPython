@@ -2,10 +2,6 @@ from machine import Pin, PWM
 
 class Servo:
 
-    """
-    A simple class for interacting with a servo through PWM
-    """
-
     _DEFAULT_SERVO_INSTANCE = None
 
     @classmethod
@@ -18,6 +14,13 @@ class Servo:
         return cls._DEFAULT_SERVO_INSTANCE
 
     def __init__(self, signal_pin:int):
+        """
+        A simple class for interacting with a servo through PWM
+        
+        :param signal_pin: The pin the servo is connected to
+        :type signal_pin: int
+        """
+
         self._servo = PWM(Pin(signal_pin, Pin.OUT))
         # Initialize base frequency for the PWM
         self._servo.freq(50)
@@ -33,4 +36,7 @@ class Servo:
         self._servo.duty_ns(int(degrees * self.MICROSEC_PER_DEGREE + self.LOW_ANGLE_OFFSET))
 
     def free(self):
+        """
+        Allows the servo to spin freely without holding position
+        """
         self._servo.duty_ns(0)

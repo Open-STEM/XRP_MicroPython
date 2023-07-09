@@ -14,6 +14,15 @@ class Board:
         return cls._DEFAULT_BOARD_INSTANCE
 
     def __init__(self, vin_pin:int, button_pin:int):
+        """
+        Implements for extra features on the XRP v2 board. Handles the on/off switch, button, and LED.
+
+        :param vin_pin: The pin the on/off switch is connected to
+        :type vin_pin: int
+        :param button_pin: The pin the button is connected to
+        :type button_pin: int
+        """
+
         self.on_switch = ADC(Pin(vin_pin))
         
         self.button = Pin(button_pin, Pin.IN, Pin.PULL_UP)
@@ -28,8 +37,8 @@ class Board:
 
     def are_motors_powered(self) -> bool:
         """
-        : return: Returns true if the batteries are connected and powering the motors, false otherwise
-        : rytpe: bool
+        :return: Returns true if the batteries are connected and powering the motors, false otherwise
+        :rytpe: bool
         """
         return self.on_switch.read_u16() > 20000
 
@@ -39,10 +48,10 @@ class Board:
         Follow the link for more information on how to write an Interrupt Service Routine (ISR). 
         https://docs.micropython.org/en/latest/reference/isr_rules.html
 
-        : param trigger: The type of trigger to be used for the interrupt
-        : type trigger: Pin.IRQ_RISING | Pin.IRQ_FALLING
-        : param callback: The function to be called when the interrupt is triggered
-        : type callback: function | None
+        :param trigger: The type of trigger to be used for the interrupt
+        :type trigger: Pin.IRQ_RISING | Pin.IRQ_FALLING
+        :param callback: The function to be called when the interrupt is triggered
+        :type callback: function | None
         """
         self.button_callback = callback
         self.button.irq(trigger=trigger, handler=self.button_callback)
@@ -51,8 +60,8 @@ class Board:
         """
         Returns the state of the button
 
-        : return: True if the button is pressed, False otherwise
-        : rtype: bool
+        :return: True if the button is pressed, False otherwise
+        :rtype: bool
         """
         return not self.button.value()
     
@@ -78,8 +87,8 @@ class Board:
         """
         Blinks the LED at a given frequency
 
-        : param frequency: The frequency to blink the LED at (in Hz)
-        : type frequency: int
+        :param frequency: The frequency to blink the LED at (in Hz)
+        :type frequency: int
         """
         if self.is_led_blinking:
             # disable the old timer so we can reinitialize it

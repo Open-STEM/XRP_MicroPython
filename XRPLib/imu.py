@@ -161,26 +161,29 @@ class IMU():
 
     def get_acc_x(self):
         """
-            Individual axis read for the Accelerometer's X-axis, in mg
+        :return: The current reading for the accelerometer's X-axis, in mg
+        :rtype: int
         """
         return self._mg(LSM6DSO_OUTX_L_A) - self.acc_offsets[0]
 
     def get_acc_y(self):
         """
-            Individual axis read for the Accelerometer's Y-axis, in mg
+        :return: The current reading for the accelerometer's Y-axis, in mg
+        :rtype: int
         """
         return self._mg(LSM6DSO_OUTY_L_A) - self.acc_offsets[1]
 
     def get_acc_z(self):
         """
-            Individual axis read for the Accelerometer's Z-axis, in mg
+        :return: The current reading for the accelerometer's Z-axis, in mg
+        :rtype: int
         """
         return self._mg(LSM6DSO_OUTZ_L_A) - self.acc_offsets[2]
     
     def get_acc_rates(self):
         """
-            Retrieves the array of readings from the Accelerometer, in mg
-            The order of the values is x, y, z.
+        :return: the list of readings from the Accelerometer, in mg. The order of the values is x, y, z.
+        :rtype: list<int>
         """
         self.irq_v[0][0] = self.get_acc_x()
         self.irq_v[0][1] = self.get_acc_y()
@@ -191,8 +194,8 @@ class IMU():
         """
         Get the pitch of the IMU in degrees. Unbounded in range
 
-        : return: The pitch of the IMU in degrees
-        : rtype: float
+        :return: The pitch of the IMU in degrees
+        :rtype: float
         """
         return self.running_pitch
     
@@ -200,8 +203,8 @@ class IMU():
         """
         Get the yaw (heading) of the IMU in degrees. Unbounded in range
 
-        : return: The yaw (heading) of the IMU in degrees
-        : rtype: float
+        :return: The yaw (heading) of the IMU in degrees
+        :rtype: float
         """
         return self.running_yaw
     
@@ -209,8 +212,8 @@ class IMU():
         """
         Get's the heading of the IMU, but bounded between [0, 360)
 
-        : return: The heading of the IMU in degrees, bound between [0, 360)
-        : rtype: float
+        :return: The heading of the IMU in degrees, bound between [0, 360)
+        :rtype: float
         """
         return self.running_yaw % 360
     
@@ -218,8 +221,8 @@ class IMU():
         """
         Get the roll of the IMU in degrees. Unbounded in range
 
-        : return: The roll of the IMU in degrees
-        : rtype: float
+        :return: The roll of the IMU in degrees
+        :rtype: float
         """
         return self.running_roll
     
@@ -245,8 +248,8 @@ class IMU():
         """
         Set the pitch to a specific angle in degrees
 
-        : param pitch: The pitch to set the IMU to
-        : type pitch: float
+        :param pitch: The pitch to set the IMU to
+        :type pitch: float
         """
         self.running_pitch = pitch
 
@@ -254,8 +257,8 @@ class IMU():
         """
         Set the yaw (heading) to a specific angle in degrees
 
-        : param yaw: The yaw (heading) to set the IMU to
-        : type yaw: float
+        :param yaw: The yaw (heading) to set the IMU to
+        :type yaw: float
         """
         self.running_yaw = yaw
 
@@ -263,17 +266,17 @@ class IMU():
         """
         Set the roll to a specific angle in degrees
 
-        : param roll: The roll to set the IMU to
-        : type roll: float
+        :param roll: The roll to set the IMU to
+        :type roll: float
         """
         self.running_roll = roll
 
     def temperature(self):
         """
-            Read the temperature of the LSM6DSO in degrees Celsius
+        Read the temperature of the LSM6DSO in degrees Celsius
 
-            : return: The temperature of the LSM6DSO in degrees Celsius
-            : rtype: float
+        :return: The temperature of the LSM6DSO in degrees Celsius
+        :rtype: float
         """
         # The LSM6DSO's temperature can be read from the OUT_TEMP_L register
         # We use OUT_TEMP_L+1 if OUT_TEMP_L cannot be read
@@ -291,8 +294,8 @@ class IMU():
 
     def acc_scale(self, dat=None):
         """
-            Set the accelerometer scale. The scale can be 2, 4, 8, 16.
-            Pass in no parameters to retrieve the current value
+        Set the accelerometer scale. The scale can be 2, 4, 8, 16.
+        Pass in no parameters to retrieve the current value
         """
         if dat is None:
             return LSM6DSO_SCALEA[self._scale_a]
@@ -306,8 +309,8 @@ class IMU():
 
     def gyro_scale(self, dat=None):
         """
-            Set the gyroscope scale. The scale can be 125, 250, 500, 1000, 2000.
-            Pass in no parameters to retrieve the current value
+        Set the gyroscope scale. The scale can be 125, 250, 500, 1000, 2000.
+        Pass in no parameters to retrieve the current value
         """
         if (dat is None) or (dat == ''):
             return LSM6DSO_SCALEG[self._scale_g]
@@ -321,11 +324,11 @@ class IMU():
 
     def power(self, on:bool=None):
         """
-            Turn the LSM6DSO on or off.
-            Pass in no parameters to retrieve the current value
+        Turn the LSM6DSO on or off.
+        Pass in no parameters to retrieve the current value
 
-            : param on: Whether to turn the LSM6DSO on or off, or None
-            : type on: bool (or None)
+        :param on: Whether to turn the LSM6DSO on or off, or None
+        :type on: bool (or None)
         """
         if on is None:
             return self._power
@@ -342,16 +345,16 @@ class IMU():
 
     def calibrate(self, calibration_time:float=3, vertical_axis:int= 2, update_time:int=4):
         """
-            Collect readings for 3 seconds and calibrate the IMU based on those readings
-            Do not move the robot during this time
-            Assumes the board to be parallel to the ground. Please use the vertical_axis parameter if that is not correct
+        Collect readings for 3 seconds and calibrate the IMU based on those readings
+        Do not move the robot during this time
+        Assumes the board to be parallel to the ground. Please use the vertical_axis parameter if that is not correct
 
-            : param calibration_time: The time in seconds to collect readings for
-            : type calibration_time: float
-            : param vertical_axis: The axis that is vertical. 0 for X, 1 for Y, 2 for Z
-            : type vertical_axis: int
-            : param update_time: The time in milliseconds between each update of the IMU
-            : type update_time: int
+        :param calibration_time: The time in seconds to collect readings for
+        :type calibration_time: float
+        :param vertical_axis: The axis that is vertical. 0 for X, 1 for Y, 2 for Z
+        :type vertical_axis: int
+        :param update_time: The time in milliseconds between each update of the IMU
+        :type update_time: int
         """
         self.update_timer.deinit()
         start_time = time.time()

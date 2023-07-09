@@ -5,9 +5,9 @@ import rp2
 import time
 
 class Encoder:
-    gear_ratio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
-    ticks_per_motor_shaft_revolution = 12
-    ticks_per_rev = ticks_per_motor_shaft_revolution * gear_ratio # 585
+    _gear_ratio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
+    _ticks_per_motor_shaft_revolution = 12
+    ticks_per_rev = _ticks_per_motor_shaft_revolution * _gear_ratio # 585
     
     def __init__(self, index, encAPin, encBPin):
         if(abs(encAPin - encBPin) != 1):
@@ -18,6 +18,9 @@ class Encoder:
         self.sm.active(1)
     
     def reset_encoder_position(self):
+        """
+        Resets the encoder position to 0
+        """
         # It's possible for this to cause issues if in the middle of inrementing
         # or decrementing, but the result should only be off by 1. If that's a
         # problem, an alternative solution is to stop the state machine, then
@@ -25,12 +28,20 @@ class Encoder:
         self.sm.exec("set(x, 0)")
     
     def get_position_ticks(self):
+        """
+        :return: The position of the encoded motor, in ticks, relative to the last time reset was called.
+        :rtype: int
+        """
         ticks = self.sm.get()
         if(ticks > 2**31):
             ticks -= 2**32
         return ticks
     
     def get_position(self):
+        """
+        :return: The position of the encoded motor, in revolutions, relative to the last time reset was called.
+        :rtype: float
+        """
         return self.get_position_ticks() / self.ticks_per_rev
 
     @rp2.asm_pio(in_shiftdir=rp2.PIO.SHIFT_LEFT, out_shiftdir=rp2.PIO.SHIFT_RIGHT)

@@ -27,6 +27,21 @@ class DifferentialDrive:
         return cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE
 
     def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, imu: IMU | None = None, wheel_diam:float = 6.0, wheel_track:float = 13.5):
+        """
+        A Differential Drive class designed for the XRP two-wheeled drive robot.
+
+        :param leftMotor: The left motor of the drivetrain
+        :type leftMotor: EncodedMotor
+        :param rightMotor: The right motor of the drivetrain
+        :type rightMotor: EncodedMotor
+        :param imu: The IMU of the robot. If None, the robot will not use the IMU for turning or maintaining heading.
+        :type imu: IMU
+        :param wheelDiam: The diameter of the wheels in inches. Defaults to 6 inches.
+        :type wheelDiam: float
+        :param wheelTrack: The distance between the wheels in inches. Defaults to 13.5 inches.
+        :type wheelTrack: float
+        """
+        
         self.left_motor = left_motor
         self.right_motor = right_motor
         self.imu = imu
@@ -38,10 +53,10 @@ class DifferentialDrive:
         """
         Set the raw effort of both motors individually
 
-        : param leftEffort: The power (Bounded from -1 to 1) to set the left motor to.
-        : type leftEffort: float
-        : param rightEffort: The power (Bounded from -1 to 1) to set the right motor to.
-        : type rightEffort: float
+        :param leftEffort: The power (Bounded from -1 to 1) to set the left motor to.
+        :type leftEffort: float
+        :param rightEffort: The power (Bounded from -1 to 1) to set the right motor to.
+        :type rightEffort: float
         """
 
         self.left_motor.set_effort(left_effort)
@@ -51,10 +66,10 @@ class DifferentialDrive:
         """
         Set the speed of both motors individually
 
-        : param leftSpeed: The speed (In Centimeters per Second) to set the left motor to.
-        : type leftSpeed: float
-        : param rightSpeed: The speed (In Centimeters per Second) to set the right motor to.
-        : type rightSpeed: float
+        :param leftSpeed: The speed (In Centimeters per Second) to set the left motor to.
+        :type leftSpeed: float
+        :param rightSpeed: The speed (In Centimeters per Second) to set the right motor to.
+        :type rightSpeed: float
         """
         # Convert from cm/s to RPM
         cmpsToRPM = 60 / (math.pi * self.wheel_diam)
@@ -80,13 +95,15 @@ class DifferentialDrive:
 
     def get_left_encoder_position(self) -> float:
         """
-        Return the current position of the left motor's encoder in revolutions.
+        :return: the current position of the left motor's encoder in revolutions.
+        :rtype: float
         """
         return self.left_motor.get_position()
 
     def get_right_encoder_position(self) -> float:
         """
-        Return the current position of the right motor's encoder in revolutions.
+        :return: the current position of the right motor's encoder in revolutions.
+        :rtype: float
         """
         return self.right_motor.get_position()
 
@@ -96,18 +113,18 @@ class DifferentialDrive:
         Go forward the specified distance in centimeters, and exit function when distance has been reached.
         Speed is bounded from -1 (reverse at full speed) to 1 (forward at full speed)
 
-        : param distance: The distance for the robot to travel (In Centimeters)
-        : type distance: float
-        : param speed: The speed for which the robot to travel (Bounded from -1 to 1). Default is half speed forward
-        : type speed: float
-        : param timeout: The amount of time before the robot stops trying to move forward and continues to the next step (In Seconds)
-        : type timeout: float
-        : param main_controller: The main controller, for handling the distance driven forwards
-        : type main_controller: Controller
-        : param secondary_controller: The secondary controller, for correcting heading error that may result during the drive.
-        : type secondary_controller: Controller
-        : return: if the distance was reached before the timeout
-        : rtype: bool
+        :param distance: The distance for the robot to travel (In Centimeters)
+        :type distance: float
+        :param speed: The speed for which the robot to travel (Bounded from -1 to 1). Default is half speed forward
+        :type speed: float
+        :param timeout: The amount of time before the robot stops trying to move forward and continues to the next step (In Seconds)
+        :type timeout: float
+        :param main_controller: The main controller, for handling the distance driven forwards
+        :type main_controller: Controller
+        :param secondary_controller: The secondary controller, for correcting heading error that may result during the drive.
+        :type secondary_controller: Controller
+        :return: if the distance was reached before the timeout
+        :rtype: bool
         """
         # ensure distance is always positive while speed could be either positive or negative
         if distance < 0:
@@ -181,19 +198,19 @@ class DifferentialDrive:
         Speed is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
         Uses the IMU to determine the heading of the robot and P control for the motor controller.
 
-        : param turnDegrees: The number of angle for the robot to turn (In Degrees)
-        : type turnDegrees: float
-        : param speed: The speed for which the robot to travel (Bounded from -1 to 1). Default is half speed forward.
-        : type speed: float
-        : param timeout: The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)
-        : type timeout: float
-        : param main_controller: The main controller, for handling the angle turned
-        : type main_controller: Controller
-        : param secondary_controller: The secondary controller, for maintaining position during the turn by controlling the encoder count difference
-        : type secondary_controller: Controller
-        : param use_imu: A boolean flag that changes if the main controller bases it's movement off of 
-        : return: if the distance was reached before the timeout
-        : rtype: bool
+        :param turnDegrees: The number of angle for the robot to turn (In Degrees)
+        :type turnDegrees: float
+        :param speed: The speed for which the robot to travel (Bounded from -1 to 1). Default is half speed forward.
+        :type speed: float
+        :param timeout: The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)
+        :type timeout: float
+        :param main_controller: The main controller, for handling the angle turned
+        :type main_controller: Controller
+        :param secondary_controller: The secondary controller, for maintaining position during the turn by controlling the encoder count difference
+        :type secondary_controller: Controller
+        :param use_imu: A boolean flag that changes if the main controller bases it's movement off of 
+        :return: if the distance was reached before the timeout
+        :rtype: bool
         """
 
         if max_effort < 0:

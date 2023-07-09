@@ -8,9 +8,9 @@ import os
 import sys
 import datetime
 
-sys.path.insert(0, os.path.abspath("../XRPLib"))
+sys.path.insert(0, os.path.abspath(".."))
 
-from version import __version__
+from XRPLib.version import __version__
 
 # -- General configuration ------------------------------------------------
 

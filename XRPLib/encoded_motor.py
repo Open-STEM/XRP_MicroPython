@@ -12,18 +12,16 @@ class EncodedMotor:
     _DEFAULT_MOTOR_FOUR_INSTANCE = None
 
     @classmethod
-    def get_default_encoded_motor(cls, index:int = 0):
+    def get_default_encoded_motor(cls, index:int = 1):
         """
         Get one of the default XRP v2 motor instances. These are singletons, so only one instance of each of these will ever exist.
-        Motor indexes:
-            0 - Left Motor
-            1 - Right Motor
-            2 - Motor 3
-            3 - Motor 4
-        Left Motor is the default, so if no index is specified, the left motor will be returned.
+        Left Motor is the default, so if no index (or an invalid index) is specified, the left motor will be returned.
+
+        :param index: The index of the motor to get; 1 for left, 2 for right, 3 for motor 3, 4 for motor 4
+        :type index: int
         """
         
-        if index == 1:
+        if index == 2:
             if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
                     Motor(14, 15),
@@ -37,7 +35,7 @@ class EncodedMotor:
                     Encoder(2, 0, 1)
                 )
             motor = cls._DEFAULT_MOTOR_THREE_INSTANCE
-        elif index == 3:
+        elif index == 4:
             if cls._DEFAULT_MOTOR_FOUR_INSTANCE is None:
                 cls._DEFAULT_MOTOR_FOUR_INSTANCE = cls(
                     Motor(10, 11, flip_dir=True),
@@ -73,15 +71,15 @@ class EncodedMotor:
 
     def set_effort(self, effort: float):
         """
-        : param effort: The effort to set this motor to, from -1 to 1
-        : type effort: float
+        :param effort: The effort to set this motor to, from -1 to 1
+        :type effort: float
         """
         self._motor.set_effort(effort)
 
     def get_position(self) -> float:
         """
-        : return: The position of the encoded motor, in revolutions, relative to the last time reset was called.
-        : rtype: float
+        :return: The position of the encoded motor, in revolutions, relative to the last time reset was called.
+        :rtype: float
         """
         if self._motor.flip_dir:
             invert = -1
@@ -91,8 +89,8 @@ class EncodedMotor:
     
     def get_position_ticks(self) -> int:
         """
-        : return: The position of the encoded motor, in encoder ticks, relative to the last time reset was called.
-        : rtype: int
+        :return: The position of the encoded motor, in encoder ticks, relative to the last time reset was called.
+        :rtype: int
         """
         if self._motor.flip_dir:
             invert = -1
@@ -108,10 +106,8 @@ class EncodedMotor:
 
     def get_speed(self) -> float:
         """
-        Gets the speed of the motor, in rpm
-
-        : return: The speed of the motor, in rpm
-        : rtype: float
+        :return: The speed of the motor, in rpm
+        :rtype: float
         """
         # Convert from ticks per 20ms to rpm (60 sec/min, 50 Hz)
         return self.speed*(60*50)/self._encoder.ticks_per_rev
@@ -121,8 +117,8 @@ class EncodedMotor:
         Sets target speed (in rpm) to be maintained passively
         Call with no parameters to turn off speed control
 
-        : param target_speed_rpm: The target speed for the motor in rpm, or None
-        : type target_speed_rpm: float, or None
+        :param target_speed_rpm: The target speed for the motor in rpm, or None
+        :type target_speed_rpm: float, or None
         """
         if speed_rpm is None:
             self.target_speed = None
@@ -137,8 +133,8 @@ class EncodedMotor:
         """
         Sets a new controller for speed control
 
-        : param new_controller: The new Controller for speed control
-        : type new_controller: Controller
+        :param new_controller: The new Controller for speed control
+        :type new_controller: Controller
         """
         self.speedController = new_controller
 

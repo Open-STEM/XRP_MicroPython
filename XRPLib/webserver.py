@@ -30,8 +30,8 @@ class Webserver:
     def start_server(self, robot_number:int):
         """
         Start the webserver
-        : param robot_number: The number of the robot, used to generate the access point name
-        : type robot_number: int
+        :param robot_number: The number of the robot, used to generate the access point name
+        :type robot_number: int
         """
         self.access_point = access_point(f"XRP_{robot_number}")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
@@ -40,8 +40,8 @@ class Webserver:
         server.run()
         logging.info("Webserver Started")
 
-    def index_page(self, request):
-        """ Render index page and respond to form requests """
+    def _index_page(self, request):
+        # Render index page and respond to form requests
         if request.method == 'GET':
             return self._generateHTML()
         if request.method == 'POST':
@@ -49,40 +49,47 @@ class Webserver:
             self._handleUserFunctionRequest(text)
             return self._generateHTML()
 
-    def wrong_host_redirect(self, request):
+    def _wrong_host_redirect(self, request):
         # Captive portal redirects any other host request to self.DOMAIN
         body = "<!DOCTYPE html><head><meta http-equiv=\"refresh\" content=\"0;URL='http://"+self.DOMAIN+"'/ /></head>"
         logging.info("Redirecting to https://"+self.DOMAIN+"/")
         return body
 
-    def hotspot(self, request):
-        """ Redirect to Index Page """
+    def _hotspot(self, request):
+        # Redirect to Index Page
         return self._generateHTML()
 
-    def catch_all(self, request):
-        """ Catch all requests and redirect if necessary """
+    def _catch_all(self, request):
+        # Catch all requests and redirect if necessary
         if request.headers.get("host") != self.DOMAIN:
             return redirect("http://"+self.DOMAIN+"/wrong-host-redirect")
-        return self.index_page(request=request)
+        return self._index_page(request=request)
         
-    def log_data(self, label:str, data:str):
+    def log_data(self, label:str, data):
+        """
+        Register a custom label to be displayed on the webserver
+        :param label: The label as it will be displayed, must be unique
+        :type label: str
+        :param data: The data to be displayed
+        :type data: Any (converted to string)
+        """
         self.logged_data[label] = data
 
     def add_button(self, button_name:str, function):
         """
         Register a custom button to be displayed on the webserver
-        : param button_name: The label for the button as it will be displayed, must be unique
-        : type button_name: str
-        : param function: The function to be called when the button is pressed
-        : type function: function
+        :param button_name: The label for the button as it will be displayed, must be unique
+        :type button_name: str
+        :param function: The function to be called when the button is pressed
+        :type function: function
         """
         self.buttons[button_name] = function
 
     def registerForwardButton(self, function):
         """
         Assign a function to the forward button
-        : param function: The function to be called when the button is pressed
-        : type function: function
+        :param function: The function to be called when the button is pressed
+        :type function: function
         """
         self.display_arrows = True
         self.buttons["forwardButton"] = function
@@ -90,8 +97,8 @@ class Webserver:
     def registerBackwardButton(self, function):
         """
         Assign a function to the backward button
-        : param function: The function to be called when the button is pressed
-        : type function: function
+        :param function: The function to be called when the button is pressed
+        :type function: function
         """
         self.display_arrows = True
         self.buttons["backButton"] = function
@@ -99,8 +106,8 @@ class Webserver:
     def registerLeftButton(self, function):
         """
         Assign a function to the left button
-        : param function: The function to be called when the button is pressed
-        : type function: function
+        :param function: The function to be called when the button is pressed
+        :type function: function
         """
         self.display_arrows = True
         self.buttons["leftButton"] = function
@@ -108,8 +115,8 @@ class Webserver:
     def registerRightButton(self, function):
         """
         Assign a function to the right button
-        : param function: The function to be called when the button is pressed
-        : type function: function
+        :param function: The function to be called when the button is pressed
+        :type function: function
         """
         self.display_arrows = True
         self.buttons["rightButton"] = function
@@ -117,8 +124,8 @@ class Webserver:
     def registerStopButton(self, function):
         """
         Assign a function to the stop button
-        : param function: The function to be called when the button is pressed
-        : type function: function
+        :param function: The function to be called when the button is pressed
+        :type function: function
         """
         self.display_arrows = True
         self.buttons["stopButton"] = function
@@ -167,19 +174,19 @@ webserver = Webserver()
 
 @server.route("/", methods=['GET','POST'])
 def index(request):
-    return webserver.index_page(request)
+    return webserver._index_page(request)
 
 @server.route("/wrong-host-redirect", methods=['GET'])
 def wrong_host_redirect(request):
-    return webserver.wrong_host_redirect(request)
+    return webserver._wrong_host_redirect(request)
 
 @server.route("/hotspot-detect.html", methods=["GET"])
 def hotspot(request):
-    return webserver.hotspot(request)
+    return webserver._hotspot(request)
 
 @server.catchall()
 def catch_all(request):
-    return webserver.catch_all(request)
+    return webserver._catch_all(request)
 
 _HTML1 = """
         <html>
