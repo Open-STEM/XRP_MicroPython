@@ -56,9 +56,10 @@ class DifferentialDrive:
         : param rightSpeed: The speed (In Centimeters per Second) to set the right motor to.
         : type rightSpeed: float
         """
-
-        self.left_motor.set_speed(left_speed)
-        self.right_motor.set_speed(right_speed)
+        # Convert from cm/s to RPM
+        cmpsToRPM = 60 / (math.pi * self.wheel_diam)
+        self.left_motor.set_speed(left_speed*cmpsToRPM)
+        self.right_motor.set_speed(right_speed*cmpsToRPM)
 
     def stop(self) -> None:
         """

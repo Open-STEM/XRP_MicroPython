@@ -4,7 +4,7 @@
 # Author: shaoziyang (shaoziyang@micropython.org.cn)
 # v1.0 2019.7
 
-from machine import I2C,Pin, Timer, disable_irq, enable_irq
+from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
 
 LSM6DSO_CTRL1_XL = const(0x10)

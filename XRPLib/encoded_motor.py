@@ -133,7 +133,7 @@ class EncodedMotor:
         # Convert from rev per min to ticks per 20ms (60 sec/min, 50 Hz)
         self.target_speed = speed_rpm*self._encoder.ticks_per_rev/(60*50)
 
-    def set_speed_controller(self, new_controller):
+    def set_speed_controller(self, new_controller: Controller):
         """
         Sets a new controller for speed control
 
