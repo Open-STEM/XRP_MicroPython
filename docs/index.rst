@@ -11,10 +11,11 @@ Table of Contents
     self
 
 .. toctree::
-    :caption: API Reference
+    :caption: Code Documentation
     :maxdepth: 3
 
     api
+    defaults
 
 .. toctree::
     :caption: Examples
