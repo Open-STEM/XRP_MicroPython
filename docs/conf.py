@@ -77,7 +77,7 @@ author = "Open STEM Authors"
 # built documents.
 #
 # The short X.Y version.
-version = __version__
+version = 'v'+__version__
 # The full version, including alpha/beta/rc tags.
 release = __version__
 

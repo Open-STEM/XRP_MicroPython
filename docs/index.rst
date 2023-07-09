@@ -26,15 +26,14 @@ Table of Contents
 .. toctree::
     :caption: Curriculum
 
-?? .. todo:: Add any Learn guide links here. If there are none, then simply delete this todo and leave the toctree above for use later.
+    XRP Curriculum <https://introtoroboticsv2.readthedocs.io>
+    XRP Support Forum <https://xrp.discourse.group>
 
 .. toctree::
     :caption: Other Links
 
-    XRP Curriculum <https://introtoroboticsv2.readthedocs.io>
-    XRP Support Forum <https://xrp.discourse.group>
-    Download from GitHub <https://github.com/Open-STEM/XRP_MicroPython/releases/latest>
-    Download Library Bundle <https://micropython.org/download/>
+    XRP_MicroPython on GitHub <https://github.com/Open-STEM/XRP_MicroPython/releases/latest>
+    Download Micropython <https://micropython.org/download/>
     MicroPython Reference Documentation <https://docs.micropython.org/en/latest/>
     MicroPython Support Forum <https://github.com/orgs/micropython/discussions>
 
