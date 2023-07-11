@@ -9,7 +9,7 @@ class Timeout:
         :type timeout: float
         """
         self.timeout = timeout
-        self.start_time = time.monotonic()
+        self.start_time = time.time()
     
     def is_done(self):
         """
@@ -17,4 +17,4 @@ class Timeout:
         """
         if self.timeout is None:
             return False
-        return time.monotonic() - self.start_time > self.timeout
+        return time.time() - self.start_time > self.timeout

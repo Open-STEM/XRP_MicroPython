@@ -26,7 +26,7 @@ class DifferentialDrive:
             
         return cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE
 
-    def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, imu: IMU | None = None, wheel_diam:float = 6.0, wheel_track:float = 13.5):
+    def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, imu: IMU | None = None, wheel_diam:float = 6.0, wheel_track:float = 15.5):
         """
         A Differential Drive class designed for the XRP two-wheeled drive robot.
 
@@ -36,9 +36,9 @@ class DifferentialDrive:
         :type rightMotor: EncodedMotor
         :param imu: The IMU of the robot. If None, the robot will not use the IMU for turning or maintaining heading.
         :type imu: IMU
-        :param wheelDiam: The diameter of the wheels in inches. Defaults to 6 inches.
+        :param wheelDiam: The diameter of the wheels in inches. Defaults to 6 cm.
         :type wheelDiam: float
-        :param wheelTrack: The distance between the wheels in inches. Defaults to 13.5 inches.
+        :param wheelTrack: The distance between the wheels in inches. Defaults to 15.5 cm.
         :type wheelTrack: float
         """
         
@@ -110,12 +110,12 @@ class DifferentialDrive:
     def straight(self, distance: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:
         """
         Go forward the specified distance in centimeters, and exit function when distance has been reached.
-        Speed is bounded from -1 (reverse at full speed) to 1 (forward at full speed)
+        Max_effort is bounded from -1 (reverse at full speed) to 1 (forward at full speed)
 
         :param distance: The distance for the robot to travel (In Centimeters)
         :type distance: float
-        :param speed: The speed for which the robot to travel (Bounded from -1 to 1). Default is half speed forward
-        :type speed: float
+        :param max_effort: The max effort for which the robot to travel (Bounded from -1 to 1). Default is half effort forward
+        :type max_effort: float
         :param timeout: The amount of time before the robot stops trying to move forward and continues to the next step (In Seconds)
         :type timeout: float
         :param main_controller: The main controller, for handling the distance driven forwards
@@ -125,8 +125,8 @@ class DifferentialDrive:
         :return: if the distance was reached before the timeout
         :rtype: bool
         """
-        # ensure distance is always positive while speed could be either positive or negative
-        if distance < 0:
+        # ensure effort is always positive while distance could be either positive or negative
+        if max_effort < 0:
             max_effort *= -1
             distance *= -1
 
@@ -199,8 +199,8 @@ class DifferentialDrive:
 
         :param turnDegrees: The number of angle for the robot to turn (In Degrees)
         :type turnDegrees: float
-        :param speed: The speed for which the robot to travel (Bounded from -1 to 1). Default is half speed forward.
-        :type speed: float
+        :param max_effort: The max effort for which the robot to travel (Bounded from -1 to 1). Default is half effort forward.
+        :type max_effort: float
         :param timeout: The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)
         :type timeout: float
         :param main_controller: The main controller, for handling the angle turned
