@@ -20,8 +20,14 @@ class EncodedMotor:
         :param index: The index of the motor to get; 1 for left, 2 for right, 3 for motor 3, 4 for motor 4
         :type index: int
         """
-        
-        if index == 2:
+        if index == 1:
+            if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
+                cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
+                    Motor(6, 7, flip_dir=True),
+                    Encoder(0, 4, 5)
+                )
+            motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
+        elif index == 2:
             if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
                     Motor(14, 15),
@@ -43,13 +49,7 @@ class EncodedMotor:
                 )
             motor = cls._DEFAULT_MOTOR_FOUR_INSTANCE
         else:
-            # Left Motor
-            if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
-                cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
-                    Motor(6, 7, flip_dir=True),
-                    Encoder(0, 4, 5)
-                )
-            motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
+            return Exception("Invalid default motor instance")
         return motor
     
     def __init__(self, motor: Motor, encoder: Encoder):
