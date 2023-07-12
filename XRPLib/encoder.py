@@ -10,6 +10,17 @@ class Encoder:
     ticks_per_rev = _ticks_per_motor_shaft_revolution * _gear_ratio # 585
     
     def __init__(self, index, encAPin, encBPin):
+        """
+        Uses the on board PIO State Machine to keep track of encoder positions. 
+        Only 4 encoders can be instantiated this way.
+        
+        :param index: The index of the state machine to be used, indexed 0-3.
+        :type index: int
+        :param encAPin: The pin the left reflectance sensor is connected to
+        :type encAPin: int
+        :param encBPin: The pin the right reflectance sensor is connected to
+        :type encBPin: int
+        """
         if(abs(encAPin - encBPin) != 1):
             raise Exception("Encoder pins must be successive!")
         basePin = machine.Pin(min(encAPin, encBPin))

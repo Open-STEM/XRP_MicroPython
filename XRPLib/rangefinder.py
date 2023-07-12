@@ -21,7 +21,7 @@ class Rangefinder:
         Timeouts will return a MAX_VALUE (65535) instead of raising an exception.
 
         :param trigger_pin: The number of the pin on the microcontroller that's connected to the ``Trig`` pin on the HC-SR04.
-        :type trig_pin: int
+        :type trigger_pin: int
         :param echo_pin: The number of the pin on the microcontroller that's connected to the ``Echo`` pin on the HC-SR04.
         :type echo_pin: int
         :param timeout_us: Max microseconds seconds to wait for a response from the sensor before assuming it isn't going to answer. By default set to 30,000 us (0.03 s)
