@@ -14,8 +14,8 @@ A simple file that constructs all of the default objects for the XRP robot
 Run "from XRPLib.defaults import *" to use
 """
 
-left_motor = EncodedMotor.get_default_encoded_motor(index=0)
-right_motor = EncodedMotor.get_default_encoded_motor(index=1)
+left_motor = EncodedMotor.get_default_encoded_motor(index=1)
+right_motor = EncodedMotor.get_default_encoded_motor(index=2)
 imu = IMU.get_default_imu()
 drivetrain = DifferentialDrive.get_default_differential_drive()
 rangefinder = Rangefinder.get_default_rangefinder()
