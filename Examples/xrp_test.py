@@ -1,7 +1,6 @@
 from XRPLib.defaults import *
 from machine import Pin
 import time
-from XRPLib.dryw_encoder import *
 
 imu.reset_pitch()
 imu.reset_yaw()
@@ -65,24 +64,13 @@ def test_button():
     board.set_button_callback(trigger=Pin.IRQ_RISING, callback=lambda p: board.led.toggle())
 
 def test_rangefinder():
-    while True:
-        print(f"{rangefinder.distance()}")
-        time.sleep(0.25)
+    while not board.is_button_pressed():
+        print(f"{rangefinder.distance()}, {rangefinder.distance()}")
+        time.sleep(0.5)
 
-def encoder_benchmarking():
-    print("start benchmark")
-    N = 100000
-    a = time.time()
-    for i in range(N):
-        drivetrain.left_motor._encoder._isr()
-    b = time.time()
-    for i in range(N):
-        mot1.encInt(4)
-    c = time.time()
-    # Print benchmark
-    print(f"Time for {N} Old Encoder calls: {b-a}s")
-    print(f"Time per Old Encoder call: {(b-a)/N}s") # ~0.06 ms per call
-    print(f"Time for {N} New Encoder calls: {c-b}s")
-    print(f"Time per New Encoder call: {(c-b)/N}s")
+def encoder_test():
+    while not board.is_button_pressed():
+        print(f"Left: {left_motor.get_position()}\tRight:{right_motor.get_position()}")
+        time.sleep(0.1)
 
-encoder_benchmarking()
+test_rangefinder()
