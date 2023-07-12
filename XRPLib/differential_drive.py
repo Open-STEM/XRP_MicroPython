@@ -137,8 +137,9 @@ class DifferentialDrive:
 
         if main_controller is None:
             main_controller = PID(
-                kp = 0.5,
-                minOutput = 0.12,
+                kp = 0.075,
+                kd = 0.005
+                minOutput = 0.25,
                 maxOutput = max_effort,
                 tolerance = 0.1,
                 toleranceCount = 3,
@@ -147,11 +148,8 @@ class DifferentialDrive:
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.0175, kd=0.005, 
+                kp = 0.25, kd=0.0025,
             )
-
-        rotationsToDo = distance  / (self.wheel_diam * math.pi)
-        #print("rot:", rotationsToDo)
 
         if self.imu is not None:
             # record current heading to maintain it
@@ -164,10 +162,10 @@ class DifferentialDrive:
             # calculate the distance traveled
             leftDelta = self.get_left_encoder_position() - startingLeft
             rightDelta = self.get_right_encoder_position() - startingRight
-            rotationsDelta = (leftDelta + rightDelta) / 2
+            distTraveled = (leftDelta + rightDelta) / 2
 
             # PID for distance
-            distanceError = rotationsToDo - rotationsDelta
+            distanceError = distance - distTraveled
             effort = main_controller.tick(distanceError)
             
             if main_controller.is_done() or time_out.is_done():
@@ -178,9 +176,9 @@ class DifferentialDrive:
                 # record current heading to maintain it
                 current_heading = self.imu.get_yaw()
             else:
-                current_heading = ((leftDelta-rightDelta)/2)*360*self.wheel_diam/self.track_width
+                current_heading = ((leftDelta-rightDelta)/2)*360/(self.track_width*math.pi)
 
-            headingCorrection = secondary_controller.tick(current_heading - initial_heading)
+            headingCorrection = secondary_controller.tick(initial_heading - current_heading)
 
             self.set_effort(effort - headingCorrection, effort + headingCorrection)
 
@@ -252,7 +250,7 @@ class DifferentialDrive:
                 turnError = turn_degrees - self.imu.get_yaw()
             else:
                 # calculate turn error (in degrees) from the encoder counts
-                turnError = turn_degrees - ((rightDelta-leftDelta)/2)*360*self.wheel_diam/self.track_width
+                turnError = turn_degrees - ((leftDelta-rightDelta)/2)*360/(self.track_width*math.pi)
 
             # Pass the turn error to the main controller to get a turn speed
             turnSpeed = main_controller.tick(turnError)
