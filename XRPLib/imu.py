@@ -343,9 +343,9 @@ class IMU():
                 self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
 
-    def calibrate(self, calibration_time:float=3, vertical_axis:int= 2, update_time:int=4):
+    def calibrate(self, calibration_time:float=1, vertical_axis:int= 2, update_time:int=4):
         """
-        Collect readings for 3 seconds and calibrate the IMU based on those readings
+        Collect readings for [calibration_time] seconds and calibrate the IMU based on those readings
         Do not move the robot during this time
         Assumes the board to be parallel to the ground. Please use the vertical_axis parameter if that is not correct
 
@@ -357,12 +357,12 @@ class IMU():
         :type update_time: int
         """
         self.update_timer.deinit()
-        start_time = time.time()
+        start_time = time.ticks_ms()
         self.acc_offsets = [0,0,0]
         self.gyro_offsets = [0,0,0]
         avg_vals = [[0,0,0],[0,0,0]]
         num_vals = 0
-        while time.time() < start_time + calibration_time:
+        while time.ticks_ms() < start_time + calibration_time*1000:
             cur_vals = self._get_acc_gyro_rates()
             # Accelerometer averages
             avg_vals[0][0] = (avg_vals[0][0]*num_vals+cur_vals[0][0])/(num_vals+1)
@@ -394,34 +394,3 @@ class IMU():
         self.running_roll += delta_roll
         self.running_yaw += delta_yaw
         enable_irq(state)
-
-        
-        ## REMOVE BELOW BEFORE OFFICIAL RELEASE
-
-        # We have two ways of obtaining the pitch of the robot:
-        #   - A noisy but accurate reading from the gyroscope
-        #   - A more consistent reading from the accelerometer that is affected by linear acceleration
-        # We use a complementary filter to combine these two readings into a steady accurate signal.
-
-        """
-        scale = self.update_time
-        measured_angle = math.atan2(self._get_acc_y_rate(), self._get_acc_z_rate()) *180/math.pi * 1000
-
-        self.gyro_pitch_running_total += (self._get_gyro_x_rate()-self.gyro_pitch_bias) * scale
-
-        if self.gyro_pitch_running_total > math.pi:
-            self.gyro_pitch_running_total -= 2*math.pi
-        elif self.gyro_pitch_running_total < -math.pi:
-            self.gyro_pitch_running_total += 2*math.pi
-
-        possible_error = measured_angle - self.gyro_pitch_running_total
-
-        # The comp factor is the main tuning value of the complementary filter. A value 0 to 1
-        # Skews the adjusted pitch to either the gyro total (closer to 0) or the accelerometer (closer to 1)
-        comp_factor = 0.7
-        self.adjusted_pitch = (self.gyro_pitch_running_total + comp_factor * possible_error) / 1000
-
-        # Bias growth factor
-        epsilon = 0.015
-        self.gyro_pitch_bias -= epsilon / scale * possible_error
-        """
