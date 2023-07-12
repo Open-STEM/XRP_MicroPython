@@ -49,7 +49,7 @@ class EncodedMotor:
                 )
             motor = cls._DEFAULT_MOTOR_FOUR_INSTANCE
         else:
-            return Exception("Invalid default motor instance")
+            return Exception("Invalid motor index")
         return motor
     
     def __init__(self, motor: Motor, encoder: Encoder):
