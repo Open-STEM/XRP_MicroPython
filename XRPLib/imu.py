@@ -74,7 +74,6 @@ class IMU():
         self.gyro_offsets = [0,0,0]
         self.acc_offsets = [0,0,0]
 
-        self.sensivity = 8.75
         self.update_time = 0.004
         self.gyro_pitch_bias = 0
         self.adjusted_pitch = 0
@@ -294,7 +293,7 @@ class IMU():
 
     def acc_scale(self, dat=None):
         """
-        Set the accelerometer scale. The scale can be 2, 4, 8, 16.
+        Set the accelerometer scale. The scale can be '2g', '4g', '8g', or '16g'.
         Pass in no parameters to retrieve the current value
         """
         if dat is None:
@@ -309,7 +308,7 @@ class IMU():
 
     def gyro_scale(self, dat=None):
         """
-        Set the gyroscope scale. The scale can be 125, 250, 500, 1000, 2000.
+        Set the gyroscope scale. The scale can be '125', '250', '500', '1000', or '2000'.
         Pass in no parameters to retrieve the current value
         """
         if (dat is None) or (dat == ''):
