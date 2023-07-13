@@ -350,7 +350,7 @@ class IMU():
             return (reg_val >> 4) & 0x04
         else:
             reg_val = LSM6DSO_ODRA.index(dat) << 4
-            return self._r_w_reg(LSM6DSO_CTRL1_XL, reg_val, 0xF0)
+            return self._r_w_reg(LSM6DSO_CTRL1_XL, reg_val, 0x0F)
 
     def gyro_rate(self, dat=None):
         """
@@ -362,7 +362,7 @@ class IMU():
             return (reg_val >> 4) & 0x04
         else:
             reg_val = LSM6DSO_ODRG.index(dat) << 4
-            return self._r_w_reg(LSM6DSO_CTRL2_G, reg_val, 0xF0)
+            return self._r_w_reg(LSM6DSO_CTRL2_G, reg_val, 0x0F)
 
     def power(self, on:bool=None):
         """
