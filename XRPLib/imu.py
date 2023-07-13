@@ -361,17 +361,29 @@ class IMU():
         self.gyro_offsets = [0,0,0]
         avg_vals = [[0,0,0],[0,0,0]]
         num_vals = 0
+        # Wait a bit for sensor to start measuring (data registers may default to something nonsensical)
+        time.sleep(.1)
         while time.ticks_ms() < start_time + calibration_time*1000:
             cur_vals = self._get_acc_gyro_rates()
             # Accelerometer averages
-            avg_vals[0][0] = (avg_vals[0][0]*num_vals+cur_vals[0][0])/(num_vals+1)
-            avg_vals[0][1] = (avg_vals[0][1]*num_vals+cur_vals[0][1])/(num_vals+1)
-            avg_vals[0][2] = (avg_vals[0][2]*num_vals+cur_vals[0][2])/(num_vals+1)
+            avg_vals[0][0] += cur_vals[0][0]
+            avg_vals[0][1] += cur_vals[0][1]
+            avg_vals[0][2] += cur_vals[0][2]
             # Gyroscope averages
-            avg_vals[1][0] = (avg_vals[1][0]*num_vals+cur_vals[1][0])/(num_vals+1)
-            avg_vals[1][1] = (avg_vals[1][1]*num_vals+cur_vals[1][1])/(num_vals+1)
-            avg_vals[1][2] = (avg_vals[1][2]*num_vals+cur_vals[1][2])/(num_vals+1)
-            time.sleep(0.05)
+            avg_vals[1][0] += cur_vals[1][0]
+            avg_vals[1][1] += cur_vals[1][1]
+            avg_vals[1][2] += cur_vals[1][2]
+            # Increment counter and wait for next loop
+            num_vals += 1
+            time.sleep(update_time / 1000)
+
+        # Compute averages
+        avg_vals[0][0] /= num_vals
+        avg_vals[0][1] /= num_vals
+        avg_vals[0][2] /= num_vals
+        avg_vals[1][0] /= num_vals
+        avg_vals[1][1] /= num_vals
+        avg_vals[1][2] /= num_vals
 
         avg_vals[0][vertical_axis] -= 1000 #in mg
 
