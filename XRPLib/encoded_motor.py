@@ -59,8 +59,8 @@ class EncodedMotor:
 
         self.target_speed = None
         self.DEFAULT_SPEED_CONTROLLER = PID(
-            kp=5,
-            ki=0.25,
+            kp=0.035,
+            ki=0.03,
             kd=0,
         )
         self.speedController = self.DEFAULT_SPEED_CONTROLLER
@@ -110,7 +110,7 @@ class EncodedMotor:
         :rtype: float
         """
         # Convert from ticks per 20ms to rpm (60 sec/min, 50 Hz)
-        return self.speed*(60*50)/self._encoder.ticks_per_rev
+        return self.speed*(60*50)
 
     def set_speed(self, speed_rpm: float | None = None):
         """
@@ -127,7 +127,7 @@ class EncodedMotor:
         # If the update timer is not running, start it at 50 Hz (20ms updates)
         self.updateTimer.init(period=20, callback=lambda t:self._update())
         # Convert from rev per min to ticks per 20ms (60 sec/min, 50 Hz)
-        self.target_speed = speed_rpm*self._encoder.ticks_per_rev/(60*50)
+        self.target_speed = speed_rpm/(60*50)
 
     def set_speed_controller(self, new_controller: Controller):
         """
@@ -142,7 +142,7 @@ class EncodedMotor:
         """
         Non-api method; used for updating motor efforts for speed control
         """
-        current_position = self.get_position_ticks()
+        current_position = self.get_position()
         self.speed = current_position - self.prev_position
         if self.target_speed is not None:
             error = self.target_speed - self.speed
