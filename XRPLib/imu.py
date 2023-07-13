@@ -56,10 +56,10 @@ class IMU():
         self._power = True
         self._power_a = 0x10
         self._power_g = 0x10
-        # ODR_XL=1 FS_XL=0
-        self._setreg(LSM6DSO_CTRL1_XL, 0x10)
-        # ODR_G=1 FS_125=1
-        self._setreg(LSM6DSO_CTRL2_G, 0x12)
+        # Set accelerometer ODR=208Hz and FS=16g
+        self._setreg(LSM6DSO_CTRL1_XL, 0x54)
+        # Set gyroscope ODR=208Hz and FS=2000dps
+        self._setreg(LSM6DSO_CTRL2_G, 0x5C)
         # BDU=1 IF_INC=1
         self._setreg(LSM6DSO_CTRL3_C, 0x44)
         self._setreg(LSM6DSO_CTRL8_XL, 0)
@@ -74,7 +74,7 @@ class IMU():
         self.gyro_offsets = [0,0,0]
         self.acc_offsets = [0,0,0]
 
-        self.update_time = 0.004
+        self.update_time = 0.005
         self.gyro_pitch_bias = 0
         self.adjusted_pitch = 0
 
@@ -342,7 +342,7 @@ class IMU():
                 self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
 
-    def calibrate(self, calibration_time:float=1, vertical_axis:int= 2, update_time:int=4):
+    def calibrate(self, calibration_time:float=1, vertical_axis:int= 2, update_time:int=5):
         """
         Collect readings for [calibration_time] seconds and calibrate the IMU based on those readings
         Do not move the robot during this time
