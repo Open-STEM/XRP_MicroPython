@@ -7,6 +7,7 @@
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
 
+LSM6DSO_WHO_AM_I = 0x0F
 LSM6DSO_CTRL1_XL = 0x10
 LSM6DSO_CTRL2_G = 0x11
 LSM6DSO_CTRL3_C = 0x12
@@ -56,6 +57,24 @@ class IMU():
         self._power = True
         self._power_a = 0x10
         self._power_g = 0x10
+
+        # Check WHO_AM_I register to verify IMU is connected
+        foo = self._getreg(LSM6DSO_WHO_AM_I)
+        if foo != 0x6C:
+            # Getting here indicates sensor isn't connected
+            # TODO - do somehting intelligent here
+            pass
+        
+        # Set SW_RESET and BOOT bits to completely reset the sensor
+        self._setreg(LSM6DSO_CTRL3_C, 0x81)
+        # Wait for register to return to default value, with timeout
+        t0 = time.ticks_ms()
+        timeout_ms = 100
+        while True:
+            foo = self._getreg(LSM6DSO_CTRL3_C)
+            if (foo == 0x04) or (time.ticks_ms() > (t0 + timeout_ms)):
+                break
+        
         # Set accelerometer ODR=208Hz and FS=16g
         self._setreg(LSM6DSO_CTRL1_XL, 0x54)
         # Set gyroscope ODR=208Hz and FS=2000dps
