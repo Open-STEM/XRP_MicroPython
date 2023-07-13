@@ -22,3 +22,9 @@ class Controller:
         :rtype: bool
         """
         pass
+
+    def clear_history(self):
+        """
+        Clears all past data, such as integral sums or any other previous data
+        """
+        pass

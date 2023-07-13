@@ -112,3 +112,9 @@ class PID(Controller):
         """
 
         return self.times >= self.toleranceCount
+    
+    def clear_history(self):
+        self.prevError = 0
+        self.prevIntegral = 0
+        self.prevOutput = 0
+        self.times = 0
