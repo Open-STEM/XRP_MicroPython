@@ -399,13 +399,13 @@ class IMU():
         :type update_time: int
         """
         self.update_timer.deinit()
-        start_time = time.ticks_ms()
         self.acc_offsets = [0,0,0]
         self.gyro_offsets = [0,0,0]
         avg_vals = [[0,0,0],[0,0,0]]
         num_vals = 0
         # Wait a bit for sensor to start measuring (data registers may default to something nonsensical)
         time.sleep(.1)
+        start_time = time.ticks_ms()
         while time.ticks_ms() < start_time + calibration_time*1000:
             cur_vals = self._get_acc_gyro_rates()
             # Accelerometer averages
