@@ -27,6 +27,8 @@ LSM6DSO_OUTZ_L_A = 0x2C
 """
 LSM6DSO_SCALEA = ('2g', '16g', '4g', '8g')
 LSM6DSO_SCALEG = ('250', '125', '500', '', '1000', '', '2000')
+LSM6DSO_ODRA = ('0', '12.5', '26', '52', '104', '208', '416', '833', '1660', '3330', '6660')
+LSM6DSO_ODRG = ('0', '12.5', '26', '52', '104', '208', '416', '833', '1660', '3330', '6660')
 
 class IMU():
 
@@ -75,10 +77,6 @@ class IMU():
             if (foo == 0x04) or (time.ticks_ms() > (t0 + timeout_ms)):
                 break
         
-        # Set accelerometer ODR=208Hz and FS=16g
-        self._setreg(LSM6DSO_CTRL1_XL, 0x54)
-        # Set gyroscope ODR=208Hz and FS=2000dps
-        self._setreg(LSM6DSO_CTRL2_G, 0x5C)
         # BDU=1 IF_INC=1
         self._setreg(LSM6DSO_CTRL3_C, 0x44)
         self._setreg(LSM6DSO_CTRL8_XL, 0)
@@ -89,6 +87,8 @@ class IMU():
         self._scale_g_c = 1
         self.acc_scale('16g')
         self.gyro_scale('2000')
+        self.acc_rate('208')
+        self.gyro_rate('208')
 
         self.gyro_offsets = [0,0,0]
         self.acc_offsets = [0,0,0]
@@ -339,6 +339,30 @@ class IMU():
                 self._scale_g_c = int(dat)//125
             else: return
             self._r_w_reg(LSM6DSO_CTRL2_G, self._scale_g<<1, 0xF1)
+
+    def acc_rate(self, dat=None):
+        """
+        Set the accelerometer rate. The rate can be '0', '12.5', '26', '52', '104', '208', '416', '833', '1660', '3330', '6660'.
+        Pass in no parameters to retrieve the current value
+        """
+        if (dat is None) or (type(dat) is not str) or (dat not in LSM6DSO_ODRA):
+            reg_val = self._getreg(LSM6DSO_CTRL1_XL)
+            return (reg_val >> 4) & 0x04
+        else:
+            reg_val = LSM6DSO_ODRA.index(dat) << 4
+            return self._r_w_reg(LSM6DSO_CTRL1_XL, reg_val, 0xF0)
+
+    def gyro_rate(self, dat=None):
+        """
+        Set the gyroscope rate. The rate can be '0', '12.5', '26', '52', '104', '208', '416', '833', '1660', '3330', '6660'.
+        Pass in no parameters to retrieve the current value
+        """
+        if (dat is None) or (type(dat) is not str) or (dat not in LSM6DSO_ODRG):
+            reg_val = self._getreg(LSM6DSO_CTRL2_G)
+            return (reg_val >> 4) & 0x04
+        else:
+            reg_val = LSM6DSO_ODRG.index(dat) << 4
+            return self._r_w_reg(LSM6DSO_CTRL2_G, reg_val, 0xF0)
 
     def power(self, on:bool=None):
         """
