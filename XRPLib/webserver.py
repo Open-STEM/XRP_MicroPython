@@ -54,11 +54,10 @@ class Webserver:
             self._handleUserFunctionRequest(text)
             return self._generateHTML()
 
+
     def _wrong_host_redirect(self, request):
-        # Captive portal redirects any other host request to self.DOMAIN
-        body = "<!DOCTYPE html><head><meta http-equiv=\"refresh\" content=\"0;URL='http://"+self.DOMAIN+"'/ /></head>"
-        logging.info("Redirecting to https://"+self.DOMAIN+"/")
-        return body
+        # Catch all sends here. No special behavior really needed, just give them the control page 
+        return self._generateHTML()
 
     def _hotspot(self, request):
         # Redirect to Index Page
