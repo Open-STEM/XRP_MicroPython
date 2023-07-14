@@ -33,12 +33,12 @@ class Webserver:
 
     def start_server(self, robot_number:int):
         """
-        Start the webserver. The network password is the same as the name
+        Start the webserver. The network password is "remote.xrp"
 
         :param robot_number: The number of the robot, used to generate the access point name
         :type robot_number: int
         """
-        self.access_point = access_point(f"XRP_{robot_number}", f"XRP_{robot_number}")
+        self.access_point = access_point(f"XRP_{robot_number}", "remote.xrp")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
