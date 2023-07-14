@@ -54,11 +54,6 @@ class Webserver:
             self._handleUserFunctionRequest(text)
             return self._generateHTML()
 
-
-    def _wrong_host_redirect(self, request):
-        # Catch all sends here. No special behavior really needed, just give them the control page 
-        return self._generateHTML()
-
     def _hotspot(self, request):
         # Redirect to Index Page
         return self._generateHTML()
@@ -66,7 +61,7 @@ class Webserver:
     def _catch_all(self, request):
         # Catch all requests and redirect if necessary
         if request.headers.get("host") != self.DOMAIN:
-            return redirect("http://"+self.DOMAIN+"/wrong-host-redirect")
+            return redirect("http://"+self.DOMAIN+"/")
         return self._index_page(request=request)
         
     def log_data(self, label:str, data):
@@ -186,10 +181,6 @@ webserver = Webserver()
 @server.route("/", methods=['GET','POST'])
 def index(request):
     return webserver._index_page(request)
-
-@server.route("/wrong-host-redirect", methods=['GET'])
-def wrong_host_redirect(request):
-    return webserver._wrong_host_redirect(request)
 
 @server.route("/hotspot-detect.html", methods=["GET"])
 def hotspot(request):
