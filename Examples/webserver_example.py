@@ -31,6 +31,6 @@ def log_time_and_range():
     webserver.log_data("Button State", board.is_button_pressed())
 
 timer = Timer(-1)
-timer.init(freq=1, mode=Timer.PERIODIC, callback=lambda t: log_time_and_range())
+timer.init(freq=4, mode=Timer.PERIODIC, callback=lambda t: log_time_and_range())
 
 webserver.start_server(1)
