@@ -44,6 +44,10 @@ class Encoder:
         :rtype: int
         """
         ticks = self.sm.get()
+        ticks = self.sm.get()
+        ticks = self.sm.get()
+        ticks = self.sm.get()
+        ticks = self.sm.get()
         if(ticks > 2**31):
             ticks -= 2**32
         return ticks
