@@ -40,11 +40,6 @@ class IMU():
         # Vector of IMU measurements
         self.irq_v = [[0, 0, 0], [0, 0, 0]]
 
-        # Power control
-        self._power = True
-        self._power_a = 0x10
-        self._power_g = 0x10
-        
         # Copies of registers. Bytes and structs share the same memory
         # addresses, so changing one changes the other
         self.reg_ctrl1_xl_byte   = bytearray(1)
@@ -422,27 +417,6 @@ class IMU():
             # Update timer frequency
             self.timer_frequency = int(value.rstrip('Hz'))
             self._start_timer()
-
-    def power(self, on:bool=None):
-        """
-        Turn the LSM6DSO on or off.
-        Pass in no parameters to retrieve the current value
-
-        :param on: Whether to turn the LSM6DSO on or off, or None
-        :type on: bool (or None)
-        """
-        if on is None:
-            return self._power
-        else:
-            self._power = on
-            if on:
-                self._r_w_reg(LSM_REG_CTRL1_XL, self._power_a, 0x0F)
-                self._r_w_reg(LSM_REG_CTRL2_G, self._power_g, 0x0F)
-            else:
-                self._power_a = self._getreg(LSM_REG_CTRL1_XL) & 0xF0
-                self._power_g = self._getreg(LSM_REG_CTRL2_G) & 0xF0
-                self._r_w_reg(LSM_REG_CTRL1_XL, 0, 0x0F)
-                self._r_w_reg(LSM_REG_CTRL2_G, 0, 0x0F)
 
     def calibrate(self, calibration_time:float=1, vertical_axis:int= 2):
         """
