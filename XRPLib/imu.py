@@ -72,7 +72,7 @@ class IMU():
         self.gyro_offsets = [0,0,0]
         self.acc_offsets = [0,0,0]
 
-        self.update_time = 0.005
+        self.timer_frequency = 208
         self.gyro_pitch_bias = 0
         self.adjusted_pitch = 0
 
@@ -418,6 +418,10 @@ class IMU():
             self.reg_ctrl2_g_struct.ODR_G = LSM_ODR[value]
             self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte)
 
+            # Update timer frequency
+            self.timer_frequency = int(value.rstrip('Hz'))
+            self._start_timer()
+
     def power(self, on:bool=None):
         """
         Turn the LSM6DSO on or off.
@@ -439,7 +443,7 @@ class IMU():
                 self._r_w_reg(LSM_REG_CTRL1_XL, 0, 0x0F)
                 self._r_w_reg(LSM_REG_CTRL2_G, 0, 0x0F)
 
-    def calibrate(self, calibration_time:float=1, vertical_axis:int= 2, update_time:int=5):
+    def calibrate(self, calibration_time:float=1, vertical_axis:int= 2):
         """
         Collect readings for [calibration_time] seconds and calibrate the IMU based on those readings
         Do not move the robot during this time
@@ -449,10 +453,8 @@ class IMU():
         :type calibration_time: float
         :param vertical_axis: The axis that is vertical. 0 for X, 1 for Y, 2 for Z
         :type vertical_axis: int
-        :param update_time: The time in milliseconds between each update of the IMU
-        :type update_time: int
         """
-        self.update_timer.deinit()
+        self._stop_timer()
         self.acc_offsets = [0,0,0]
         self.gyro_offsets = [0,0,0]
         avg_vals = [[0,0,0],[0,0,0]]
@@ -472,7 +474,7 @@ class IMU():
             avg_vals[1][2] += cur_vals[1][2]
             # Increment counter and wait for next loop
             num_vals += 1
-            time.sleep(update_time / 1000)
+            time.sleep(1 / self.timer_frequency)
 
         # Compute averages
         avg_vals[0][0] /= num_vals
@@ -486,16 +488,20 @@ class IMU():
 
         self.acc_offsets = avg_vals[0]
         self.gyro_offsets = avg_vals[1]
-        self.update_timer.init(period=update_time, callback=lambda t:self._update_imu_readings())
-        self.update_time = update_time/1000
+        self._start_timer()
 
+    def _start_timer(self):
+        self.update_timer.init(freq=self.timer_frequency, callback=lambda t:self._update_imu_readings())
+
+    def _stop_timer(self):
+        self.update_timer.deinit()
 
     def _update_imu_readings(self):
         # Called every tick through a callback timer
 
-        delta_pitch = self._get_gyro_x_rate()*self.update_time / 1000
-        delta_roll = self._get_gyro_y_rate()*self.update_time / 1000
-        delta_yaw = self._get_gyro_z_rate()*self.update_time / 1000
+        delta_pitch = self._get_gyro_x_rate() / 1000 / self.timer_frequency
+        delta_roll = self._get_gyro_y_rate() / 1000 / self.timer_frequency
+        delta_yaw = self._get_gyro_z_rate() / 1000 / self.timer_frequency
 
         state = disable_irq()
         self.running_pitch += delta_pitch
