@@ -4,31 +4,10 @@
 # Author: shaoziyang (shaoziyang@micropython.org.cn)
 # v1.0 2019.7
 
+from .imu_defs import *
+from uctypes import struct, addressof
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
-
-LSM6DSO_WHO_AM_I = 0x0F
-LSM6DSO_CTRL1_XL = 0x10
-LSM6DSO_CTRL2_G = 0x11
-LSM6DSO_CTRL3_C = 0x12
-LSM6DSO_CTRL6_C = 0x15
-LSM6DSO_CTRL8_XL = 0x17
-LSM6DSO_STATUS = 0x1E
-LSM6DSO_OUT_TEMP_L = 0x20
-LSM6DSO_OUTX_L_G = 0x22
-LSM6DSO_OUTY_L_G = 0x24
-LSM6DSO_OUTZ_L_G = 0x26
-LSM6DSO_OUTX_L_A = 0x28
-LSM6DSO_OUTY_L_A = 0x2A
-LSM6DSO_OUTZ_L_A = 0x2C
-
-"""
-    Options for accelerometer and gyroscope scale factors
-"""
-LSM6DSO_SCALEA = ('2g', '16g', '4g', '8g')
-LSM6DSO_SCALEG = ('250', '125', '500', '', '1000', '', '2000')
-LSM6DSO_ODRA = ('0', '12.5', '26', '52', '104', '208', '416', '833', '1660', '3330', '6660')
-LSM6DSO_ODRG = ('0', '12.5', '26', '52', '104', '208', '416', '833', '1660', '3330', '6660')
 
 class IMU():
 
@@ -44,7 +23,7 @@ class IMU():
             cls._DEFAULT_IMU_INSTANCE = cls(
                 scl_pin=19,
                 sda_pin=18,
-                addr=0x6B
+                addr=LSM_ADDR_PRIMARY
             )  
             cls._DEFAULT_IMU_INSTANCE.calibrate()
         return cls._DEFAULT_IMU_INSTANCE
@@ -59,27 +38,27 @@ class IMU():
         self._power = True
         self._power_a = 0x10
         self._power_g = 0x10
+        
+        # Copies of registers. Bytes and structs share the same memory
+        # addresses, so changing one changes the other
+        self.reg_ctrl1_xl_byte   = bytearray(1)
+        self.reg_ctrl2_g_byte    = bytearray(1)
+        self.reg_ctrl3_c_byte    = bytearray(1)
+        self.reg_ctrl1_xl_struct = struct(addressof(self.reg_ctrl1_xl_byte), LSM_REG_LAYOUT_CTRL1_XL)
+        self.reg_ctrl2_g_struct  = struct(addressof(self.reg_ctrl2_g_byte), LSM_REG_LAYOUT_CTRL2_G)
+        self.reg_ctrl3_c_struct  = struct(addressof(self.reg_ctrl3_c_byte), LSM_REG_LAYOUT_CTRL3_C)
 
-        # Check WHO_AM_I register to verify IMU is connected
-        foo = self._getreg(LSM6DSO_WHO_AM_I)
-        if foo != 0x6C:
-            # Getting here indicates sensor isn't connected
+        # Check if the IMU is connected
+        if not self.is_connected():
             # TODO - do somehting intelligent here
             pass
         
-        # Set SW_RESET and BOOT bits to completely reset the sensor
-        self._setreg(LSM6DSO_CTRL3_C, 0x81)
-        # Wait for register to return to default value, with timeout
-        t0 = time.ticks_ms()
-        timeout_ms = 100
-        while True:
-            foo = self._getreg(LSM6DSO_CTRL3_C)
-            if (foo == 0x04) or (time.ticks_ms() > (t0 + timeout_ms)):
-                break
+        # Reset sensor to clear any previous configuration
+        self.reset()
         
-        # BDU=1 IF_INC=1
-        self._setreg(LSM6DSO_CTRL3_C, 0x44)
-        self._setreg(LSM6DSO_CTRL8_XL, 0)
+        # Enable block data update
+        self._set_bdu()
+
         # scale=2G
         self._scale_a = 0
         self._scale_g = 0
@@ -129,6 +108,63 @@ class IMU():
         self.rb[0] = (self.rb[0] & mask) | dat
         self._setreg(reg, self.rb[0])
 
+    def is_connected(self):
+        """
+        Checks whether the IMU is connected
+
+        :return: True if WHO_AM_I value is correct, otherwise False
+        :rtype: bool
+        """
+        who_am_i = self._getreg(LSM_REG_WHO_AM_I)
+        return who_am_i == 0x6C
+
+    def reset(self, wait_for_reset = True, wait_timeout_ms = 100):
+        """
+        Resets the IMU, and restores all registers to their default values
+
+        :param wait_for_reset: Whether to wait for reset to complete
+        :type wait_for_reset: bool
+        :param wait_timeout_ms: Timeout in milliseconds when waiting for reset
+        :type wait_timeout_ms: int
+        :return: False if timeout occurred, otherwise True
+        :rtype: bool
+        """
+        # Set BOOT and SW_RESET bits
+        self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
+        self.reg_ctrl3_c_struct.BOOT = 1
+        self.reg_ctrl3_c_struct.SW_RESET = 1
+        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
+
+        # Wait for reset to complete, if requested
+        if wait_for_reset:
+            # Loop with timeout
+            t0 = time.ticks_ms()
+            while time.ticks_ms() < (t0 + wait_timeout_ms):
+                # Check if register has returned to default value (0x04)
+                self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
+                if self.reg_ctrl3_c_byte == 0x04:
+                    return True
+            # Timeout occurred
+            return False
+        else:
+            return True
+
+    def _set_bdu(self, bdu = True):
+        """
+        Sets Block Data Update bit
+        """
+        self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
+        self.reg_ctrl3_c_struct.BDU = bdu
+        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
+
+    def _set_if_inc(self, if_inc = True):
+        """
+        Sets interface increment bit
+        """
+        self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
+        self.reg_ctrl3_c_struct.IF_INC = if_inc
+        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
+
     def _mg(self, reg):
         return round(self._int16(self._get2reg(reg)) * 0.061 * self._scale_a_c)
 
@@ -139,19 +175,19 @@ class IMU():
         """
             Individual axis read for the Gyroscope's X-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTX_L_G) - self.gyro_offsets[0]
+        return self._mdps(LSM_REG_OUTX_L_G) - self.gyro_offsets[0]
 
     def _get_gyro_y_rate(self):
         """
             Individual axis read for the Gyroscope's Y-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTY_L_G) - self.gyro_offsets[1]
+        return self._mdps(LSM_REG_OUTY_L_G) - self.gyro_offsets[1]
 
     def _get_gyro_z_rate(self):
         """
             Individual axis read for the Gyroscope's Z-axis, in mg
         """
-        return self._mdps(LSM6DSO_OUTZ_L_G) - self.gyro_offsets[2]
+        return self._mdps(LSM_REG_OUTZ_L_G) - self.gyro_offsets[2]
 
     def _get_gyro_rates(self):
         """
@@ -182,21 +218,21 @@ class IMU():
         :return: The current reading for the accelerometer's X-axis, in mg
         :rtype: int
         """
-        return self._mg(LSM6DSO_OUTX_L_A) - self.acc_offsets[0]
+        return self._mg(LSM_REG_OUTX_L_A) - self.acc_offsets[0]
 
     def get_acc_y(self):
         """
         :return: The current reading for the accelerometer's Y-axis, in mg
         :rtype: int
         """
-        return self._mg(LSM6DSO_OUTY_L_A) - self.acc_offsets[1]
+        return self._mg(LSM_REG_OUTY_L_A) - self.acc_offsets[1]
 
     def get_acc_z(self):
         """
         :return: The current reading for the accelerometer's Z-axis, in mg
         :rtype: int
         """
-        return self._mg(LSM6DSO_OUTZ_L_A) - self.acc_offsets[2]
+        return self._mg(LSM_REG_OUTZ_L_A) - self.acc_offsets[2]
     
     def get_acc_rates(self):
         """
@@ -299,70 +335,88 @@ class IMU():
         # The LSM6DSO's temperature can be read from the OUT_TEMP_L register
         # We use OUT_TEMP_L+1 if OUT_TEMP_L cannot be read
         try:
-            return self._int16(self._get2reg(LSM6DSO_OUT_TEMP_L))/256 + 25
+            return self._int16(self._get2reg(LSM_REG_OUT_TEMP_L))/256 + 25
         except MemoryError:
             return self._temperature_irq()
 
     def _temperature_irq(self):
         # Helper function for temperature() to read the alternate temperature register
-        self._getreg(LSM6DSO_OUT_TEMP_L+1)
+        self._getreg(LSM_REG_OUT_TEMP_L+1)
         if self.rb[0] & 0x80:
             self.rb[0] -= 256
         return self.rb[0] + 25
 
-    def acc_scale(self, dat=None):
+    def acc_scale(self, value=None):
         """
-        Set the accelerometer scale. The scale can be '2g', '4g', '8g', or '16g'.
+        Set the accelerometer scale in g. The scale can be:
+        '2g', '4g', '8g', or '16g'
         Pass in no parameters to retrieve the current value
         """
-        if dat is None:
-            return LSM6DSO_SCALEA[self._scale_a]
+        # Get register value
+        self.reg_ctrl1_xl_byte = self._getreg(LSM_REG_CTRL1_XL)
+        #  Check if the provided value is in the dictionary
+        if value not in LSM_ACCEL_FS:
+            # Return string representation of this value
+            index = list(LSM_ACCEL_FS.values()).index(self.reg_ctrl1_xl_struct.FS_XL)
+            return list(LSM_ACCEL_FS.keys())[index]
         else:
-            if type(dat) is str:
-                if not dat in LSM6DSO_SCALEA: return
-                self._scale_a = LSM6DSO_SCALEA.index(dat)
-                self._scale_a_c = int(dat.rstrip('g'))//2
-            else:
-                return self._r_w_reg(LSM6DSO_CTRL1_XL, self._scale_a<<2, 0xF3)
+            # Set value as requested
+            self.reg_ctrl1_xl_struct.FS_XL = LSM_ACCEL_FS[value]
+            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte)
 
-    def gyro_scale(self, dat=None):
+    def gyro_scale(self, value=None):
         """
-        Set the gyroscope scale. The scale can be '125', '250', '500', '1000', or '2000'.
+        Set the gyroscope scale in dps. The scale can be:
+        '125', '250', '500', '1000', or '2000'
         Pass in no parameters to retrieve the current value
         """
-        if (dat is None) or (dat == ''):
-            return LSM6DSO_SCALEG[self._scale_g]
+        # Get register value
+        self.reg_ctrl2_g_byte = self._getreg(LSM_REG_CTRL2_G)
+        #  Check if the provided value is in the dictionary
+        if value not in LSM_GYRO_FS:
+            # Return string representation of this value
+            index = list(LSM_GYRO_FS.values()).index(self.reg_ctrl2_g_struct.FS_G)
+            return list(LSM_GYRO_FS.keys())[index]
         else:
-            if type(dat) is str:
-                if not dat in LSM6DSO_SCALEG: return
-                self._scale_g = LSM6DSO_SCALEG.index(dat)
-                self._scale_g_c = int(dat)//125
-            else: return
-            self._r_w_reg(LSM6DSO_CTRL2_G, self._scale_g<<1, 0xF1)
+            # Set value as requested
+            self.reg_ctrl2_g_struct.FS_G = LSM_GYRO_FS[value]
+            self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte)
 
-    def acc_rate(self, dat=None):
+    def acc_rate(self, value=None):
         """
-        Set the accelerometer rate. The rate can be '0', '12.5', '26', '52', '104', '208', '416', '833', '1660', '3330', '6660'.
+        Set the accelerometer rate in Hz. The rate can be:
+        '0Hz', '12.5Hz', '26Hz', '52Hz', '104Hz', '208Hz', '416Hz', '833Hz', '1660Hz', '3330Hz', '6660Hz'
         Pass in no parameters to retrieve the current value
         """
-        if (dat is None) or (type(dat) is not str) or (dat not in LSM6DSO_ODRA):
-            reg_val = self._getreg(LSM6DSO_CTRL1_XL)
-            return (reg_val >> 4) & 0x04
+        # Get register value
+        self.reg_ctrl1_xl_byte = self._getreg(LSM_REG_CTRL1_XL)
+        #  Check if the provided value is in the dictionary
+        if value not in LSM_ODR:
+            # Return string representation of this value
+            index = list(LSM_ODR.values()).index(self.reg_ctrl1_xl_struct.ODR_XL)
+            return list(LSM_ODR.keys())[index]
         else:
-            reg_val = LSM6DSO_ODRA.index(dat) << 4
-            return self._r_w_reg(LSM6DSO_CTRL1_XL, reg_val, 0x0F)
+            # Set value as requested
+            self.reg_ctrl1_xl_struct.ODR_XL = LSM_ODR[value]
+            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte)
 
-    def gyro_rate(self, dat=None):
+    def gyro_rate(self, value=None):
         """
-        Set the gyroscope rate. The rate can be '0', '12.5', '26', '52', '104', '208', '416', '833', '1660', '3330', '6660'.
+        Set the gyroscope rate in Hz. The rate can be:
+        '0Hz', '12.5Hz', '26Hz', '52Hz', '104Hz', '208Hz', '416Hz', '833Hz', '1660Hz', '3330Hz', '6660Hz'
         Pass in no parameters to retrieve the current value
         """
-        if (dat is None) or (type(dat) is not str) or (dat not in LSM6DSO_ODRG):
-            reg_val = self._getreg(LSM6DSO_CTRL2_G)
-            return (reg_val >> 4) & 0x04
+        # Get register value
+        self.reg_ctrl2_g_byte = self._getreg(LSM_REG_CTRL2_G)
+        #  Check if the provided value is in the dictionary
+        if value not in LSM_ODR:
+            # Return string representation of this value
+            index = list(LSM_ODR.values()).index(self.reg_ctrl1_xl_struct.ODR_G)
+            return list(LSM_ODR.keys())[index]
         else:
-            reg_val = LSM6DSO_ODRG.index(dat) << 4
-            return self._r_w_reg(LSM6DSO_CTRL2_G, reg_val, 0x0F)
+            # Set value as requested
+            self.reg_ctrl2_g_struct.ODR_G = LSM_ODR[value]
+            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl2_g_byte)
 
     def power(self, on:bool=None):
         """
@@ -377,13 +431,13 @@ class IMU():
         else:
             self._power = on
             if on:
-                self._r_w_reg(LSM6DSO_CTRL1_XL, self._power_a, 0x0F)
-                self._r_w_reg(LSM6DSO_CTRL2_G, self._power_g, 0x0F)
+                self._r_w_reg(LSM_REG_CTRL1_XL, self._power_a, 0x0F)
+                self._r_w_reg(LSM_REG_CTRL2_G, self._power_g, 0x0F)
             else:
-                self._power_a = self._getreg(LSM6DSO_CTRL1_XL) & 0xF0
-                self._power_g = self._getreg(LSM6DSO_CTRL2_G) & 0xF0
-                self._r_w_reg(LSM6DSO_CTRL1_XL, 0, 0x0F)
-                self._r_w_reg(LSM6DSO_CTRL2_G, 0, 0x0F)
+                self._power_a = self._getreg(LSM_REG_CTRL1_XL) & 0xF0
+                self._power_g = self._getreg(LSM_REG_CTRL2_G) & 0xF0
+                self._r_w_reg(LSM_REG_CTRL1_XL, 0, 0x0F)
+                self._r_w_reg(LSM_REG_CTRL2_G, 0, 0x0F)
 
     def calibrate(self, calibration_time:float=1, vertical_axis:int= 2, update_time:int=5):
         """
