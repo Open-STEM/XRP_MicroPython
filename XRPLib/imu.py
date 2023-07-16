@@ -65,9 +65,9 @@ class IMU():
         self._scale_a_c = 1
         self._scale_g_c = 1
         self.acc_scale('16g')
-        self.gyro_scale('2000')
-        self.acc_rate('208')
-        self.gyro_rate('208')
+        self.gyro_scale('2000dps')
+        self.acc_rate('208Hz')
+        self.gyro_rate('208Hz')
 
         self.gyro_offsets = [0,0,0]
         self.acc_offsets = [0,0,0]
@@ -416,7 +416,7 @@ class IMU():
         else:
             # Set value as requested
             self.reg_ctrl2_g_struct.ODR_G = LSM_ODR[value]
-            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl2_g_byte)
+            self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte)
 
     def power(self, on:bool=None):
         """
