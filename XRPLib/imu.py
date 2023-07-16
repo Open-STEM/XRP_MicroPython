@@ -29,12 +29,18 @@ class IMU():
         return cls._DEFAULT_IMU_INSTANCE
 
     def __init__(self, scl_pin: int, sda_pin: int, addr):
+        # I2C values
         self.i2c = I2C(id=1, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=400000)
         self.addr = addr
+
+        # Transmit and recieve buffers
         self.tb = bytearray(1)
         self.rb = bytearray(1)
-        self.oneshot = False
+
+        # Vector of IMU measurements
         self.irq_v = [[0, 0, 0], [0, 0, 0]]
+
+        # Power control
         self._power = True
         self._power_a = 0x10
         self._power_g = 0x10
@@ -59,29 +65,24 @@ class IMU():
         # Enable block data update
         self._set_bdu()
 
-        # scale=2G
-        self._scale_a = 0
-        self._scale_g = 0
-        self._scale_a_c = 1
-        self._scale_g_c = 1
+        # Set default scale for each sensor
         self.acc_scale('16g')
         self.gyro_scale('2000dps')
+
+        # Set default rate for each sensor
         self.acc_rate('208Hz')
         self.gyro_rate('208Hz')
 
+        # Initialize offsets to zero
         self.gyro_offsets = [0,0,0]
         self.acc_offsets = [0,0,0]
 
-        self.timer_frequency = 208
-        self.gyro_pitch_bias = 0
-        self.adjusted_pitch = 0
-
-        self.gyro_pitch_running_total = 0
-
+        # Initialize integrators to zero
         self.running_pitch = 0
         self.running_yaw = 0
         self.running_roll = 0
 
+        # Create timer
         self.update_timer = Timer(-1)
 
 
@@ -159,17 +160,17 @@ class IMU():
 
     def _set_if_inc(self, if_inc = True):
         """
-        Sets interface increment bit
+        Sets InterFace INCrement bit
         """
         self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
         self.reg_ctrl3_c_struct.IF_INC = if_inc
         self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
 
     def _mg(self, reg):
-        return round(self._int16(self._get2reg(reg)) * 0.061 * self._scale_a_c)
+        return round(self._int16(self._get2reg(reg)) * LSM_MG_PER_LSB)
 
     def _mdps(self, reg):
-        return round(self._int16(self._get2reg(reg)) * 4.375 * self._scale_g_c)
+        return round(self._int16(self._get2reg(reg)) * LSM_MDPS_PER_LSB)
 
     def _get_gyro_x_rate(self):
         """

@@ -74,3 +74,9 @@ LSM_GYRO_FS = {
 	"1000dps" : 0x4,
 	"2000dps" : 0x6,
 }
+
+"""
+    Other contants
+"""
+LSM_MG_PER_LSB   = 0.061
+LSM_MDPS_PER_LSB = 4.375
