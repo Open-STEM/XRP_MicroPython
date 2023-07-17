@@ -6,8 +6,8 @@ import time
 
 class Encoder:
     _gear_ratio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
-    _ticks_per_motor_shaft_revolution = 12
-    ticks_per_rev = _ticks_per_motor_shaft_revolution * _gear_ratio # 585
+    _counts_per_motor_shaft_revolution = 12
+    resolution = _counts_per_motor_shaft_revolution * _gear_ratio # 585
     
     def __init__(self, index, encAPin, encBPin):
         """
@@ -38,26 +38,27 @@ class Encoder:
         # reset both x and the program counter. But that's excessive.
         self.sm.exec("set(x, 0)")
     
-    def get_position_ticks(self):
+    def get_position_counts(self):
         """
-        :return: The position of the encoded motor, in ticks, relative to the last time reset was called.
+        :return: The position of the encoded motor, in counts, relative to the last time reset was called.
         :rtype: int
         """
-        ticks = self.sm.get()
-        ticks = self.sm.get()
-        ticks = self.sm.get()
-        ticks = self.sm.get()
-        ticks = self.sm.get()
-        if(ticks > 2**31):
-            ticks -= 2**32
-        return ticks
+        # Read 5 times for it to get past the buffer
+        counts = self.sm.get()
+        counts = self.sm.get()
+        counts = self.sm.get()
+        counts = self.sm.get()
+        counts = self.sm.get()
+        if(counts > 2**31):
+            counts -= 2**32
+        return counts
     
     def get_position(self):
         """
         :return: The position of the encoded motor, in revolutions, relative to the last time reset was called.
         :rtype: float
         """
-        return self.get_position_ticks() / self.ticks_per_rev
+        return self.get_position_counts() / self.resolution
 
     @rp2.asm_pio(in_shiftdir=rp2.PIO.SHIFT_LEFT, out_shiftdir=rp2.PIO.SHIFT_RIGHT)
     def _encoder():

@@ -87,16 +87,16 @@ class EncodedMotor:
             invert = 1
         return self._encoder.get_position()*invert
     
-    def get_position_ticks(self) -> int:
+    def get_position_counts(self) -> int:
         """
-        :return: The position of the encoded motor, in encoder ticks, relative to the last time reset was called.
+        :return: The position of the encoded motor, in encoder counts, relative to the last time reset was called.
         :rtype: int
         """
         if self._motor.flip_dir:
             invert = -1
         else:
             invert = 1
-        return self._encoder.get_position_ticks()*invert
+        return self._encoder.get_position_counts()*invert
 
     def reset_encoder_position(self):
         """
@@ -109,8 +109,8 @@ class EncodedMotor:
         :return: The speed of the motor, in rpm
         :rtype: float
         """
-        # Convert from ticks per 20ms to rpm (60 sec/min, 50 Hz)
-        return self.speed*(60*50)/self._encoder.ticks_per_rev
+        # Convert from counts per 20ms to rpm (60 sec/min, 50 Hz)
+        return self.speed*(60*50)/self._encoder.resolution
 
     def set_speed(self, speed_rpm: float | None = None):
         """
@@ -127,8 +127,8 @@ class EncodedMotor:
             return
         # If the update timer is not running, start it at 50 Hz (20ms updates)
         self.updateTimer.init(period=20, callback=lambda t:self._update())
-        # Convert from rev per min to ticks per 20ms (60 sec/min, 50 Hz)
-        self.target_speed = speed_rpm*self._encoder.ticks_per_rev/(60*50)
+        # Convert from rev per min to counts per 20ms (60 sec/min, 50 Hz)
+        self.target_speed = speed_rpm*self._encoder.resolution/(60*50)
         self.speedController.clear_history()
 
     def set_speed_controller(self, new_controller: Controller):
@@ -145,11 +145,11 @@ class EncodedMotor:
         """
         Non-api method; used for updating motor efforts for speed control
         """
-        current_position = self.get_position_ticks()
+        current_position = self.get_position_counts()
         self.speed = current_position - self.prev_position
         if self.target_speed is not None:
             error = self.target_speed - self.speed
-            effort = self.speedController.tick(error)
+            effort = self.speedController.update(error)
             self._motor.set_effort(effort)
         else:
             self.updateTimer.deinit()

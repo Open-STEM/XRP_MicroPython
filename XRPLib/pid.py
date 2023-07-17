@@ -55,9 +55,9 @@ class PID(Controller):
             # otherwise, reset times in tolerance, because we need to be in tolerance for numTimesInTolerance consecutive times
             self.times = 0
 
-    def tick(self, error: float) -> float:
+    def update(self, error: float) -> float:
         """
-        Handle a new tick of this PID loop given an error.
+        Handle a new update of this PID loop given an error.
 
         :param error: The error of the system being controlled by this PID controller
         :type error: float
@@ -67,13 +67,13 @@ class PID(Controller):
         """
         currentTime = time.ticks_ms()
         if self.prevTime is None:
-            # First tick after instantiation
+            # First update after instantiation
             self.startTime = currentTime
             timestep = 0.01
         else:
             # get time delta in seconds
             timestep = time.ticks_diff(currentTime, self.prevTime) / 1000
-        self.prevTime = currentTime # cache time for next tick
+        self.prevTime = currentTime # cache time for next update
 
         self._handle_exit_condition(error)
 
@@ -100,7 +100,7 @@ class PID(Controller):
             upperBound = self.prevOutput + self.maxDerivative * timestep
             output = max(lowerBound, min(upperBound, output))
 
-        # cache output for next tick
+        # cache output for next update
         self.prevOutput = output
 
         return output

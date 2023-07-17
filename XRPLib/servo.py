@@ -27,10 +27,10 @@ class Servo:
         self.MICROSEC_PER_DEGREE: int = 10000
         self.LOW_ANGLE_OFFSET: int = 1000000
 
-    def set_angle(self, degrees: float):
+    def set_position(self, degrees: float):
         """
         Sets the angle of the servo
-        :param degrees: The angle to set the servo to [0,135]
+        :param degrees: The angle to set the servo to [0,180]
         :ptype degrees: float
         """
         self._servo.duty_ns(int(degrees * self.MICROSEC_PER_DEGREE + self.LOW_ANGLE_OFFSET))
