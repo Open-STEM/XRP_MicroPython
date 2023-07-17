@@ -46,9 +46,9 @@ class MotorGroup(EncodedMotor):
             avg += motor.get_position()
         return avg / len(self.motors)
 
-    def get_position_ticks(self) -> int:
+    def get_position_counts(self) -> int:
         """
-        :return: The average position of all motors in this group, in encoder ticks, relative to the last time reset was called.
+        :return: The average position of all motors in this group, in encoder counts, relative to the last time reset was called.
         :rtype: int
         """
         avg = 0
