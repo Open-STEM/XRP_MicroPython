@@ -130,10 +130,10 @@ class IMU():
         :rtype: bool
         """
         # Set BOOT and SW_RESET bits
-        self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
+        self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
         self.reg_ctrl3_c_bits.BOOT = 1
         self.reg_ctrl3_c_bits.SW_RESET = 1
-        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
+        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
 
         # Wait for reset to complete, if requested
         if wait_for_reset:
@@ -141,8 +141,8 @@ class IMU():
             t0 = time.ticks_ms()
             while time.ticks_ms() < (t0 + wait_timeout_ms):
                 # Check if register has returned to default value (0x04)
-                self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
-                if self.reg_ctrl3_c_byte == 0x04:
+                self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
+                if self.reg_ctrl3_c_byte[0] == 0x04:
                     return True
             # Timeout occurred
             return False
@@ -153,17 +153,17 @@ class IMU():
         """
         Sets Block Data Update bit
         """
-        self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
+        self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
         self.reg_ctrl3_c_bits.BDU = bdu
-        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
+        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
 
     def _set_if_inc(self, if_inc = True):
         """
         Sets InterFace INCrement bit
         """
-        self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
+        self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
         self.reg_ctrl3_c_bits.IF_INC = if_inc
-        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
+        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
 
     def _raw_to_mg(self, raw):
         return self._int16((raw[1] << 8) | raw[0]) * LSM_MG_PER_LSB
@@ -396,7 +396,7 @@ class IMU():
         Pass in no parameters to retrieve the current value
         """
         # Get register value
-        self.reg_ctrl1_xl_byte = self._getreg(LSM_REG_CTRL1_XL)
+        self.reg_ctrl1_xl_byte[0] = self._getreg(LSM_REG_CTRL1_XL)
         #  Check if the provided value is in the dictionary
         if value not in LSM_ACCEL_FS:
             # Return string representation of this value
@@ -405,7 +405,7 @@ class IMU():
         else:
             # Set value as requested
             self.reg_ctrl1_xl_bits.FS_XL = LSM_ACCEL_FS[value]
-            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte)
+            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte[0])
 
     def gyro_scale(self, value=None):
         """
@@ -414,7 +414,7 @@ class IMU():
         Pass in no parameters to retrieve the current value
         """
         # Get register value
-        self.reg_ctrl2_g_byte = self._getreg(LSM_REG_CTRL2_G)
+        self.reg_ctrl2_g_byte[0] = self._getreg(LSM_REG_CTRL2_G)
         #  Check if the provided value is in the dictionary
         if value not in LSM_GYRO_FS:
             # Return string representation of this value
@@ -423,7 +423,7 @@ class IMU():
         else:
             # Set value as requested
             self.reg_ctrl2_g_bits.FS_G = LSM_GYRO_FS[value]
-            self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte)
+            self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte[0])
 
     def acc_rate(self, value=None):
         """
@@ -432,7 +432,7 @@ class IMU():
         Pass in no parameters to retrieve the current value
         """
         # Get register value
-        self.reg_ctrl1_xl_byte = self._getreg(LSM_REG_CTRL1_XL)
+        self.reg_ctrl1_xl_byte[0] = self._getreg(LSM_REG_CTRL1_XL)
         #  Check if the provided value is in the dictionary
         if value not in LSM_ODR:
             # Return string representation of this value
@@ -441,7 +441,7 @@ class IMU():
         else:
             # Set value as requested
             self.reg_ctrl1_xl_bits.ODR_XL = LSM_ODR[value]
-            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte)
+            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte[0])
 
     def gyro_rate(self, value=None):
         """
@@ -450,7 +450,7 @@ class IMU():
         Pass in no parameters to retrieve the current value
         """
         # Get register value
-        self.reg_ctrl2_g_byte = self._getreg(LSM_REG_CTRL2_G)
+        self.reg_ctrl2_g_byte[0] = self._getreg(LSM_REG_CTRL2_G)
         #  Check if the provided value is in the dictionary
         if value not in LSM_ODR:
             # Return string representation of this value
@@ -459,7 +459,7 @@ class IMU():
         else:
             # Set value as requested
             self.reg_ctrl2_g_bits.ODR_G = LSM_ODR[value]
-            self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte)
+            self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte[0])
 
             # Update timer frequency
             self.timer_frequency = int(value.rstrip('Hz'))
