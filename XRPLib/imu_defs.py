@@ -78,5 +78,5 @@ LSM_GYRO_FS = {
 """
     Other contants
 """
-LSM_MG_PER_LSB   = 0.061
-LSM_MDPS_PER_LSB = 4.375
+LSM_MG_PER_LSB_2G       = 0.061
+LSM_MDPS_PER_LSB_125DPS = 4.375

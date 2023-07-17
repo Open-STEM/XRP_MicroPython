@@ -39,6 +39,10 @@ class IMU():
 
         # Vector of IMU measurements
         self.irq_v = [[0, 0, 0], [0, 0, 0]]
+        
+        # Scale factors when ranges are changed
+        self._acc_scale_factor = 1
+        self._gyro_scale_factor = 1
 
         # Copies of registers. Bytes and structs share the same memory
         # addresses, so changing one changes the other
@@ -166,10 +170,10 @@ class IMU():
         self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
 
     def _raw_to_mg(self, raw):
-        return self._int16((raw[1] << 8) | raw[0]) * LSM_MG_PER_LSB
+        return self._int16((raw[1] << 8) | raw[0]) * LSM_MG_PER_LSB_2G * self._acc_scale_factor
 
     def _raw_to_mdps(self, raw):
-        return self._int16((raw[1] << 8) | raw[0]) * LSM_MDPS_PER_LSB
+        return self._int16((raw[1] << 8) | raw[0]) * LSM_MDPS_PER_LSB_125DPS * self._gyro_scale_factor
 
     def _get_gyro_x_rate(self):
         """
@@ -406,6 +410,8 @@ class IMU():
             # Set value as requested
             self.reg_ctrl1_xl_bits.FS_XL = LSM_ACCEL_FS[value]
             self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte[0])
+            # Update scale factor for converting raw data
+            self._acc_scale_factor = int(value.rstrip('g')) // 2
 
     def gyro_scale(self, value=None):
         """
@@ -424,6 +430,8 @@ class IMU():
             # Set value as requested
             self.reg_ctrl2_g_bits.FS_G = LSM_GYRO_FS[value]
             self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte[0])
+            # Update scale factor for converting raw data
+            self._gyro_scale_factor = int(value.rstrip('dps')) // 125
 
     def acc_rate(self, value=None):
         """
