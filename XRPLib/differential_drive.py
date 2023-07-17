@@ -148,7 +148,7 @@ class DifferentialDrive:
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.25, kd=0.0025,
+                kp = 0.025, kd=0.0025,
             )
 
         if self.imu is not None:
@@ -166,7 +166,7 @@ class DifferentialDrive:
 
             # PID for distance
             distanceError = distance - distTraveled
-            effort = main_controller.tick(distanceError)
+            effort = main_controller.update(distanceError)
             
             if main_controller.is_done() or time_out.is_done():
                 break
@@ -178,8 +178,8 @@ class DifferentialDrive:
             else:
                 current_heading = ((rightDelta-leftDelta)/2)*360/(self.track_width*math.pi)
 
-            headingCorrection = secondary_controller.tick(initial_heading - current_heading)
-
+            headingCorrection = secondary_controller.update(initial_heading - current_heading)
+            
             self.set_effort(effort - headingCorrection, effort + headingCorrection)
 
             time.sleep(0.01)
@@ -243,7 +243,7 @@ class DifferentialDrive:
             # calculate encoder correction to minimize drift
             leftDelta = self.get_left_encoder_position() - startingLeft
             rightDelta = self.get_right_encoder_position() - startingRight
-            encoderCorrection = secondary_controller.tick(leftDelta + rightDelta)
+            encoderCorrection = secondary_controller.update(leftDelta + rightDelta)
 
             if use_imu and (self.imu is not None):
                 # calculate turn error (in degrees) from the imu
@@ -253,7 +253,7 @@ class DifferentialDrive:
                 turnError = turn_degrees - ((rightDelta-leftDelta)/2)*360/(self.track_width*math.pi)
 
             # Pass the turn error to the main controller to get a turn speed
-            turnSpeed = main_controller.tick(turnError)
+            turnSpeed = main_controller.update(turnError)
             
             # exit if timeout or tolerance reached
             if main_controller.is_done() or time_out.is_done():
