@@ -18,10 +18,10 @@ def ivp():
     print("Testing Servo")
     test_servo()
     print("Testing LEDs")
-    wait_for_button()
+    board.wait_for_button()
     test_leds()
     print("Testing Drivetrain:")
-    wait_for_button()
+    board.wait_for_button()
     test_drive()
 
 ivp()
