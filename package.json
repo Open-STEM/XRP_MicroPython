@@ -2,19 +2,28 @@
     "urls": [
       ["XRPLib/__init__.py", "github:Open-STEM/XRP_Micropython/XRPLib/__init__.py"],
       ["XRPLib/board.py", "github:Open-STEM/XRP_Micropython/XRPLib/board.py"],
+      ["XRPLib/controller.py", "github:Open-STEM/XRP_Micropython/XRPLib/controller.py"],
       ["XRPLib/defaults.py", "github:Open-STEM/XRP_Micropython/XRPLib/defaults.py"],
       ["XRPLib/differential_drive.py", "github:Open-STEM/XRP_Micropython/XRPLib/differential_drive.py"],
       ["XRPLib/encoded_motor.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoded_motor.py"],
       ["XRPLib/encoder.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoder.py"],
-      ["XRPLib/motor.py", "github:Open-STEM/XRP_Micropython/XRPLib/motor.py"],
       ["XRPLib/imu.py", "github:Open-STEM/XRP_Micropython/XRPLib/imu.py"],
+      ["XRPLib/motor_group.py", "github:Open-STEM/XRP_Micropython/XRPLib/motor_group.py"],
+      ["XRPLib/motor.py", "github:Open-STEM/XRP_Micropython/XRPLib/motor.py"],
+      ["XRPLib/pid.py", "github:Open-STEM/XRP_Micropython/XRPLib/pid.py"],
       ["XRPLib/rangefinder.py", "github:Open-STEM/XRP_Micropython/XRPLib/rangefinder.py"],
       ["XRPLib/reflectance.py", "github:Open-STEM/XRP_Micropython/XRPLib/reflectance.py"],
+      ["XRPLib/resetbot.py", "github:Open-STEM/XRP_Micropython/XRPLib/resetbot.py"],
       ["XRPLib/servo.py", "github:Open-STEM/XRP_Micropython/XRPLib/servo.py"],
+      ["XRPLib/timeout.py", "github:Open-STEM/XRP_Micropython/XRPLib/timeout.py"],
+      ["XRPLib/version.py", "github:Open-STEM/XRP_Micropython/XRPLib/version.py"],
       ["XRPLib/webserver.py", "github:Open-STEM/XRP_Micropython/XRPLib/webserver.py"],
       ["XRPLib/resetbot.py", "github:Open-STEM/XRP_Micropython/XRPLib/resetbot.py"],
-      ["XRPLib/pid.py", "github:Open-STEM/XRP_Micropython/XRPLib/pid.py"],
       ["XRPExamples/__init__.py", "github:Open-STEM/XRP_Micropython/Examples/__init__.py"],
+      ["XRPExamples/drive_examples.py", "github:Open-STEM/XRP_Micropython/Examples/drive_examples.py"],
+      ["XRPExamples/installation_verification.py", "github:Open-STEM/XRP_Micropython/Examples/installation_verification.py"],
+      ["XRPExamples/misc_examples.py", "github:Open-STEM/XRP_Micropython/Examples/misc_examples.py"],
+      ["XRPExamples/sensor_examples.py", "github:Open-STEM/XRP_Micropython/Examples/sensor_examples.py"],
       ["XRPExamples/webserver_example.py", "github:Open-STEM/XRP_Micropython/Examples/webserver_example.py"],
       ["XRPExamples/xrp_test.py", "github:Open-STEM/XRP_Micropython/Examples/xrp_test.py"]
     ],
@@ -23,5 +32,5 @@
       ["collections-defaultdict", "latest"],
       ["os-path", "latest"]
     ],
-    "version": "0.8"
+    "version": "0.9.5"
   }
