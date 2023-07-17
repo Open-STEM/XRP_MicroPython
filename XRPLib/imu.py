@@ -248,7 +248,7 @@ class IMU():
         raw_bytes = self._getregs(LSM_REG_OUTX_L_A, 2)
 
         # Convert raw data to mg's
-        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[0]
+        return self._raw_to_mg(raw_bytes[0:2]) - self.acc_offsets[0]
 
     def get_acc_y(self):
         """
@@ -259,7 +259,7 @@ class IMU():
         raw_bytes = self._getregs(LSM_REG_OUTY_L_A, 2)
 
         # Convert raw data to mg's
-        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[1]
+        return self._raw_to_mg(raw_bytes[0:2]) - self.acc_offsets[1]
 
     def get_acc_z(self):
         """
@@ -270,7 +270,7 @@ class IMU():
         raw_bytes = self._getregs(LSM_REG_OUTZ_L_A, 2)
 
         # Convert raw data to mg's
-        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[2]
+        return self._raw_to_mg(raw_bytes[0:2]) - self.acc_offsets[2]
     
     def get_acc_rates(self):
         """
