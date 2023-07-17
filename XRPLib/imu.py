@@ -49,6 +49,9 @@ class IMU():
         self.reg_ctrl2_g_bits    = struct(addressof(self.reg_ctrl2_g_byte), LSM_REG_LAYOUT_CTRL2_G)
         self.reg_ctrl3_c_bits    = struct(addressof(self.reg_ctrl3_c_byte), LSM_REG_LAYOUT_CTRL3_C)
 
+        # Create timer
+        self.update_timer = Timer(-1)
+
         # Check if the IMU is connected
         if not self.is_connected():
             # TODO - do somehting intelligent here
@@ -76,10 +79,6 @@ class IMU():
         self.running_pitch = 0
         self.running_yaw = 0
         self.running_roll = 0
-
-        # Create timer
-        self.update_timer = Timer(-1)
-
 
     """
         The following are private helper methods to read and write registers, as well as to convert the read values to the correct unit.
