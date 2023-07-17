@@ -45,9 +45,9 @@ class IMU():
         self.reg_ctrl1_xl_byte   = bytearray(1)
         self.reg_ctrl2_g_byte    = bytearray(1)
         self.reg_ctrl3_c_byte    = bytearray(1)
-        self.reg_ctrl1_xl_struct = struct(addressof(self.reg_ctrl1_xl_byte), LSM_REG_LAYOUT_CTRL1_XL)
-        self.reg_ctrl2_g_struct  = struct(addressof(self.reg_ctrl2_g_byte), LSM_REG_LAYOUT_CTRL2_G)
-        self.reg_ctrl3_c_struct  = struct(addressof(self.reg_ctrl3_c_byte), LSM_REG_LAYOUT_CTRL3_C)
+        self.reg_ctrl1_xl_bits   = struct(addressof(self.reg_ctrl1_xl_byte), LSM_REG_LAYOUT_CTRL1_XL)
+        self.reg_ctrl2_g_bits    = struct(addressof(self.reg_ctrl2_g_byte), LSM_REG_LAYOUT_CTRL2_G)
+        self.reg_ctrl3_c_bits    = struct(addressof(self.reg_ctrl3_c_byte), LSM_REG_LAYOUT_CTRL3_C)
 
         # Check if the IMU is connected
         if not self.is_connected():
@@ -127,8 +127,8 @@ class IMU():
         """
         # Set BOOT and SW_RESET bits
         self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
-        self.reg_ctrl3_c_struct.BOOT = 1
-        self.reg_ctrl3_c_struct.SW_RESET = 1
+        self.reg_ctrl3_c_bits.BOOT = 1
+        self.reg_ctrl3_c_bits.SW_RESET = 1
         self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
 
         # Wait for reset to complete, if requested
@@ -150,7 +150,7 @@ class IMU():
         Sets Block Data Update bit
         """
         self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
-        self.reg_ctrl3_c_struct.BDU = bdu
+        self.reg_ctrl3_c_bits.BDU = bdu
         self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
 
     def _set_if_inc(self, if_inc = True):
@@ -158,7 +158,7 @@ class IMU():
         Sets InterFace INCrement bit
         """
         self.reg_ctrl3_c_byte = self._getreg(LSM_REG_CTRL3_C)
-        self.reg_ctrl3_c_struct.IF_INC = if_inc
+        self.reg_ctrl3_c_bits.IF_INC = if_inc
         self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
 
     def _mg(self, reg):
@@ -353,11 +353,11 @@ class IMU():
         #  Check if the provided value is in the dictionary
         if value not in LSM_ACCEL_FS:
             # Return string representation of this value
-            index = list(LSM_ACCEL_FS.values()).index(self.reg_ctrl1_xl_struct.FS_XL)
+            index = list(LSM_ACCEL_FS.values()).index(self.reg_ctrl1_xl_bits.FS_XL)
             return list(LSM_ACCEL_FS.keys())[index]
         else:
             # Set value as requested
-            self.reg_ctrl1_xl_struct.FS_XL = LSM_ACCEL_FS[value]
+            self.reg_ctrl1_xl_bits.FS_XL = LSM_ACCEL_FS[value]
             self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte)
 
     def gyro_scale(self, value=None):
@@ -371,11 +371,11 @@ class IMU():
         #  Check if the provided value is in the dictionary
         if value not in LSM_GYRO_FS:
             # Return string representation of this value
-            index = list(LSM_GYRO_FS.values()).index(self.reg_ctrl2_g_struct.FS_G)
+            index = list(LSM_GYRO_FS.values()).index(self.reg_ctrl2_g_bits.FS_G)
             return list(LSM_GYRO_FS.keys())[index]
         else:
             # Set value as requested
-            self.reg_ctrl2_g_struct.FS_G = LSM_GYRO_FS[value]
+            self.reg_ctrl2_g_bits.FS_G = LSM_GYRO_FS[value]
             self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte)
 
     def acc_rate(self, value=None):
@@ -389,11 +389,11 @@ class IMU():
         #  Check if the provided value is in the dictionary
         if value not in LSM_ODR:
             # Return string representation of this value
-            index = list(LSM_ODR.values()).index(self.reg_ctrl1_xl_struct.ODR_XL)
+            index = list(LSM_ODR.values()).index(self.reg_ctrl1_xl_bits.ODR_XL)
             return list(LSM_ODR.keys())[index]
         else:
             # Set value as requested
-            self.reg_ctrl1_xl_struct.ODR_XL = LSM_ODR[value]
+            self.reg_ctrl1_xl_bits.ODR_XL = LSM_ODR[value]
             self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte)
 
     def gyro_rate(self, value=None):
@@ -407,11 +407,11 @@ class IMU():
         #  Check if the provided value is in the dictionary
         if value not in LSM_ODR:
             # Return string representation of this value
-            index = list(LSM_ODR.values()).index(self.reg_ctrl1_xl_struct.ODR_G)
+            index = list(LSM_ODR.values()).index(self.reg_ctrl1_xl_bits.ODR_G)
             return list(LSM_ODR.keys())[index]
         else:
             # Set value as requested
-            self.reg_ctrl2_g_struct.ODR_G = LSM_ODR[value]
+            self.reg_ctrl2_g_bits.ODR_G = LSM_ODR[value]
             self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte)
 
             # Update timer frequency
