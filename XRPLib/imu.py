@@ -112,47 +112,6 @@ class IMU():
         self.rb[0] = (self.rb[0] & mask) | dat
         self._setreg(reg, self.rb[0])
 
-    def is_connected(self):
-        """
-        Checks whether the IMU is connected
-
-        :return: True if WHO_AM_I value is correct, otherwise False
-        :rtype: bool
-        """
-        who_am_i = self._getreg(LSM_REG_WHO_AM_I)
-        return who_am_i == 0x6C
-
-    def reset(self, wait_for_reset = True, wait_timeout_ms = 100):
-        """
-        Resets the IMU, and restores all registers to their default values
-
-        :param wait_for_reset: Whether to wait for reset to complete
-        :type wait_for_reset: bool
-        :param wait_timeout_ms: Timeout in milliseconds when waiting for reset
-        :type wait_timeout_ms: int
-        :return: False if timeout occurred, otherwise True
-        :rtype: bool
-        """
-        # Set BOOT and SW_RESET bits
-        self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
-        self.reg_ctrl3_c_bits.BOOT = 1
-        self.reg_ctrl3_c_bits.SW_RESET = 1
-        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
-
-        # Wait for reset to complete, if requested
-        if wait_for_reset:
-            # Loop with timeout
-            t0 = time.ticks_ms()
-            while time.ticks_ms() < (t0 + wait_timeout_ms):
-                # Check if register has returned to default value (0x04)
-                self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
-                if self.reg_ctrl3_c_byte[0] == 0x04:
-                    return True
-            # Timeout occurred
-            return False
-        else:
-            return True
-
     def _set_bdu(self, bdu = True):
         """
         Sets Block Data Update bit
@@ -242,6 +201,47 @@ class IMU():
     """
         Public facing API Methods
     """
+
+    def is_connected(self):
+        """
+        Checks whether the IMU is connected
+
+        :return: True if WHO_AM_I value is correct, otherwise False
+        :rtype: bool
+        """
+        who_am_i = self._getreg(LSM_REG_WHO_AM_I)
+        return who_am_i == 0x6C
+
+    def reset(self, wait_for_reset = True, wait_timeout_ms = 100):
+        """
+        Resets the IMU, and restores all registers to their default values
+
+        :param wait_for_reset: Whether to wait for reset to complete
+        :type wait_for_reset: bool
+        :param wait_timeout_ms: Timeout in milliseconds when waiting for reset
+        :type wait_timeout_ms: int
+        :return: False if timeout occurred, otherwise True
+        :rtype: bool
+        """
+        # Set BOOT and SW_RESET bits
+        self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
+        self.reg_ctrl3_c_bits.BOOT = 1
+        self.reg_ctrl3_c_bits.SW_RESET = 1
+        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
+
+        # Wait for reset to complete, if requested
+        if wait_for_reset:
+            # Loop with timeout
+            t0 = time.ticks_ms()
+            while time.ticks_ms() < (t0 + wait_timeout_ms):
+                # Check if register has returned to default value (0x04)
+                self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
+                if self.reg_ctrl3_c_byte[0] == 0x04:
+                    return True
+            # Timeout occurred
+            return False
+        else:
+            return True
 
     def get_acc_x(self):
         """
