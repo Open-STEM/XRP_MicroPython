@@ -96,6 +96,11 @@ class IMU():
         self.i2c.readfrom_mem_into(self.addr, reg, self.rb)
         return self.rb[0]
 
+    def _getregs(self, reg, num_bytes):
+        rx_buf = bytearray(num_bytes)
+        self.i2c.readfrom_mem_into(self.addr, reg, rx_buf)
+        return rx_buf
+
     def _get2reg(self, reg):
         return self._getreg(reg) + self._getreg(reg+1) * 256
 
@@ -161,38 +166,55 @@ class IMU():
         self.reg_ctrl3_c_bits.IF_INC = if_inc
         self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte)
 
-    def _mg(self, reg):
-        return round(self._int16(self._get2reg(reg)) * LSM_MG_PER_LSB)
+    def _raw_to_mg(self, raw):
+        return self._int16((raw[1] << 8) | raw[0]) * LSM_MG_PER_LSB
 
-    def _mdps(self, reg):
-        return round(self._int16(self._get2reg(reg)) * LSM_MDPS_PER_LSB)
+    def _raw_to_mdps(self, raw):
+        return self._int16((raw[1] << 8) | raw[0]) * LSM_MDPS_PER_LSB
 
     def _get_gyro_x_rate(self):
         """
             Individual axis read for the Gyroscope's X-axis, in mg
         """
-        return self._mdps(LSM_REG_OUTX_L_G) - self.gyro_offsets[0]
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 2)
+
+        # Convert raw data to mdps
+        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[0]
 
     def _get_gyro_y_rate(self):
         """
             Individual axis read for the Gyroscope's Y-axis, in mg
         """
-        return self._mdps(LSM_REG_OUTY_L_G) - self.gyro_offsets[1]
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTY_L_G, 2)
+
+        # Convert raw data to mdps
+        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[1]
 
     def _get_gyro_z_rate(self):
         """
             Individual axis read for the Gyroscope's Z-axis, in mg
         """
-        return self._mdps(LSM_REG_OUTZ_L_G) - self.gyro_offsets[2]
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTZ_L_G, 2)
+
+        # Convert raw data to mdps
+        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[2]
 
     def _get_gyro_rates(self):
         """
             Retrieves the array of readings from the Gyroscope, in mdps
             The order of the values is x, y, z.
         """
-        self.irq_v[1][0] = self._get_gyro_x_rate()
-        self.irq_v[1][1] = self._get_gyro_y_rate()
-        self.irq_v[1][2] = self._get_gyro_z_rate()
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 6)
+
+        # Convert raw data to mdps
+        self.irq_v[1][0] = self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[0]
+        self.irq_v[1][1] = self._raw_to_mdps(raw_bytes[2:4]) - self.gyro_offsets[1]
+        self.irq_v[1][2] = self._raw_to_mdps(raw_bytes[4:6]) - self.gyro_offsets[2]
+
         return self.irq_v[1]
 
     def _get_acc_gyro_rates(self):
@@ -201,8 +223,17 @@ class IMU():
             The first row is the acceleration values, the second row is the gyro values.
             The order of the values is x, y, z.
         """
-        self.get_acc_rates()
-        self._get_gyro_rates()
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 12)
+
+        # Convert raw data to mg's and mdps
+        self.irq_v[0][0] = self._raw_to_mg(raw_bytes[6:8]) - self.acc_offsets[0]
+        self.irq_v[0][1] = self._raw_to_mg(raw_bytes[8:10]) - self.acc_offsets[1]
+        self.irq_v[0][2] = self._raw_to_mg(raw_bytes[10:12]) - self.acc_offsets[2]
+        self.irq_v[1][0] = self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[0]
+        self.irq_v[1][1] = self._raw_to_mdps(raw_bytes[2:4]) - self.gyro_offsets[1]
+        self.irq_v[1][2] = self._raw_to_mdps(raw_bytes[4:6]) - self.gyro_offsets[2]
+
         return self.irq_v
     
     """
@@ -214,30 +245,47 @@ class IMU():
         :return: The current reading for the accelerometer's X-axis, in mg
         :rtype: int
         """
-        return self._mg(LSM_REG_OUTX_L_A) - self.acc_offsets[0]
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTX_L_A, 2)
+
+        # Convert raw data to mg's
+        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[0]
 
     def get_acc_y(self):
         """
         :return: The current reading for the accelerometer's Y-axis, in mg
         :rtype: int
         """
-        return self._mg(LSM_REG_OUTY_L_A) - self.acc_offsets[1]
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTY_L_A, 2)
+
+        # Convert raw data to mg's
+        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[1]
 
     def get_acc_z(self):
         """
         :return: The current reading for the accelerometer's Z-axis, in mg
         :rtype: int
         """
-        return self._mg(LSM_REG_OUTZ_L_A) - self.acc_offsets[2]
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTZ_L_A, 2)
+
+        # Convert raw data to mg's
+        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[2]
     
     def get_acc_rates(self):
         """
         :return: the list of readings from the Accelerometer, in mg. The order of the values is x, y, z.
         :rtype: list<int>
         """
-        self.irq_v[0][0] = self.get_acc_x()
-        self.irq_v[0][1] = self.get_acc_y()
-        self.irq_v[0][2] = self.get_acc_z()
+        # Burst read data registers
+        raw_bytes = self._getregs(LSM_REG_OUTX_L_A, 6)
+
+        # Convert raw data to mg's
+        self.irq_v[0][0] = self._raw_to_mg(raw_bytes[0:2]) - self.acc_offsets[0]
+        self.irq_v[0][1] = self._raw_to_mg(raw_bytes[2:4]) - self.acc_offsets[1]
+        self.irq_v[0][2] = self._raw_to_mg(raw_bytes[4:6]) - self.acc_offsets[2]
+
         return self.irq_v[0]
     
     def get_pitch(self):
@@ -473,10 +521,10 @@ class IMU():
 
     def _update_imu_readings(self):
         # Called every tick through a callback timer
-
-        delta_pitch = self._get_gyro_x_rate() / 1000 / self.timer_frequency
-        delta_roll = self._get_gyro_y_rate() / 1000 / self.timer_frequency
-        delta_yaw = self._get_gyro_z_rate() / 1000 / self.timer_frequency
+        self._get_gyro_rates()
+        delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
+        delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
+        delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
 
         state = disable_irq()
         self.running_pitch += delta_pitch
