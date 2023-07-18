@@ -150,7 +150,7 @@ class IMU():
         :rtype: bool
         """
         who_am_i = self._getreg(LSM_REG_WHO_AM_I)
-        return who_am_i == 0x6C
+        return who_am_i == LSM_WHO_AM_I_VALUE
 
     def reset(self, wait_for_reset = True, wait_timeout_ms = 100):
         """
