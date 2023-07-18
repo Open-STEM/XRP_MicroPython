@@ -31,15 +31,35 @@ class Webserver:
         self.FUNCTION_SUFFIX = "endfunction"
         self.display_arrows = False
 
-    def start_server(self, robot_number:int):
+    def start_network(self, robot_number:int):
         """
-        Start the webserver. The network password is "remote.xrp"
-
-        :param robot_number: The number of the robot, used to generate the access point name
-        :type robot_number: int
+        Open an access point from the XRP board to be used as a captive host. The network password is "remote.xrp"
         """
         self.access_point = access_point(f"XRP_{robot_number}", "remote.xrp")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
+
+    def connect_to_network(self, ssid:str, password:str, timeout = 10):
+        """
+        Connect to a wifi network with the given ssid and password. 
+        If the connection fails, the board will disconnect from the network and return.
+        """
+        self.wlan = network.WLAN(network.STA_IF)
+        self.wlan.active(True) # configure board to connect to wifi
+        self.wlan.connect(ssid,password)
+        start_time = time.time()
+        while not self.wlan.isconnected():
+            print("Connecting to network, may take a second")
+            if time.time() > start_time+timeout:
+                print("Failed to connect to network, please try again")
+                self.wlan.disconnect()
+                return False
+            time.sleep(0.25)
+        self.ip = self.wlan.ifconfig()[0]
+
+    def start_server(self):
+        """
+        Begin the webserver on whatever network is configured, at the ip 'remote.xrp'
+        """
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
         server.run()
