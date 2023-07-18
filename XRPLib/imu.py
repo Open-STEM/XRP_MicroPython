@@ -33,16 +33,12 @@ class IMU():
         self.i2c = I2C(id=1, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=400000)
         self.addr = addr
 
+        # Initialize member variables
+        self._reset_member_variables()
+
         # Transmit and recieve buffers
         self.tb = bytearray(1)
         self.rb = bytearray(1)
-
-        # Vector of IMU measurements
-        self.irq_v = [[0, 0, 0], [0, 0, 0]]
-        
-        # Scale factors when ranges are changed
-        self._acc_scale_factor = 1
-        self._gyro_scale_factor = 1
 
         # Copies of registers. Bytes and structs share the same memory
         # addresses, so changing one changes the other
@@ -75,18 +71,26 @@ class IMU():
         self.acc_rate('208Hz')
         self.gyro_rate('208Hz')
 
-        # Initialize offsets to zero
-        self.gyro_offsets = [0,0,0]
-        self.acc_offsets = [0,0,0]
-
-        # Initialize integrators to zero
-        self.running_pitch = 0
-        self.running_yaw = 0
-        self.running_roll = 0
-
     """
         The following are private helper methods to read and write registers, as well as to convert the read values to the correct unit.
     """
+
+    def _reset_member_variables(self):
+        # Vector of IMU measurements
+        self.irq_v = [[0, 0, 0], [0, 0, 0]]
+
+        # Sensor offsets
+        self.gyro_offsets = [0,0,0]
+        self.acc_offsets = [0,0,0]
+
+        # Scale factors when ranges are changed
+        self._acc_scale_factor = 1
+        self._gyro_scale_factor = 1
+
+        # Angle integrators
+        self.running_pitch = 0
+        self.running_yaw = 0
+        self.running_roll = 0
 
     def _int16(self, d):
         return d if d < 0x8000 else d - 0x10000
@@ -223,6 +227,12 @@ class IMU():
         :return: False if timeout occurred, otherwise True
         :rtype: bool
         """
+        # Stop timer
+        self._stop_timer()
+
+        # Reset member variables
+        self._reset_member_variables()
+
         # Set BOOT and SW_RESET bits
         self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
         self.reg_ctrl3_c_bits.BOOT = 1
