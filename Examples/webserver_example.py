@@ -12,9 +12,9 @@ webserver.registerStopButton(lambda: drivetrain.set_effort(0, 0))
 # Binding functions to custom buttons
 webserver.add_button("test", lambda: print("test"))
 webserver.add_button("blink", lambda: board.led_blink(2))
-webserver.add_button("LED_Off", lambda: board.led_off())
-webserver.add_button("Servo_Up", lambda: servo_one.set_angle(0))
-webserver.add_button("Servo_Down", lambda: servo_one.set_angle(135))
+webserver.add_button("LED Off", lambda: board.led_off())
+webserver.add_button("Servo_Up", lambda: servo_one.set_angle(90))
+webserver.add_button("Servo_Down", lambda: servo_one.set_angle(0))
 
 # Logging static data to the webserver
 # webserver.log_data("test", "test")

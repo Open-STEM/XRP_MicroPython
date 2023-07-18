@@ -50,7 +50,10 @@ class Webserver:
         if request.method == 'GET':
             return self._generateHTML()
         if request.method == 'POST':
-            text = list(request.form.keys())[0]
+            if str(list(request.form.values())[0]).count(" ") == 0:
+                text = str(list(request.form.keys())[0])
+            else:
+                text = str(list(request.form.values())[0])
             self._handleUserFunctionRequest(text)
             return self._generateHTML()
 
