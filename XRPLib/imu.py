@@ -4,7 +4,7 @@
 # Author: shaoziyang (shaoziyang@micropython.org.cn)
 # v1.0 2019.7
 
-from .imu_defs import *
+from ._IMUHelpers.imu_defs import *
 from uctypes import struct, addressof
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
