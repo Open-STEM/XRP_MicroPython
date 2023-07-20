@@ -31,14 +31,14 @@ class Webserver:
         self.FUNCTION_SUFFIX = "endfunction"
         self.display_arrows = False
 
-    def start_network(self, robot_number:int):
+    def start_network(self, robot_id:int):
         """
         Open an access point from the XRP board to be used as a captive host. The network password is "remote.xrp"
         """
-        self.access_point = access_point(f"XRP_{robot_number}", "remote.xrp")
+        self.access_point = access_point(f"XRP_{robot_id}", "remote.xrp")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
 
-    def connect_to_network(self, ssid:str, password:str, timeout = 10):
+    def connect_to_network(self, ssid:str, password:str, robot_id:int, timeout = 10):
         """
         Connect to a wifi network with the given ssid and password. 
         If the connection fails, the board will disconnect from the network and return.
@@ -62,8 +62,9 @@ class Webserver:
         """
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
+        self.DOMAIN = self.ip
+        logging.disable_logging_types(logging.LOG_INFO)
         server.run()
-        logging.info("Webserver Started")
 
     def _index_page(self, request):
         # Render index page and respond to form requests
@@ -164,12 +165,12 @@ class Webserver:
         try:
             user_function = self.buttons[text]
             if user_function is None:
-                print("User function "+text+" not found")
+                logging.warning("User function "+text+" not found")
                 return False
             user_function()
             return True
         except:
-            print("User function "+text+" caused an exception")
+            logging.error("User function "+text+" caused an exception")
             return False
 
     def _generateHTML(self):
