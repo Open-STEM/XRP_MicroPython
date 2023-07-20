@@ -33,4 +33,12 @@ def log_time_and_range():
 timer = Timer(-1)
 timer.init(freq=4, mode=Timer.PERIODIC, callback=lambda t: log_time_and_range())
 
-webserver.start_server(1)
+def connect_and_start_webserver(ssid, password, robot_id):
+    # Connect to the network and start the webserver in bridge mode
+    webserver.connect_to_network(ssid, password, robot_id)
+    webserver.start_server()
+
+def start_network_and_webserver(robot_id):
+    # Start the webserver in access point mode
+    webserver.start_network(robot_id)
+    webserver.start_server()

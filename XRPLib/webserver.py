@@ -20,7 +20,6 @@ class Webserver:
         """
 
         gc.threshold(50000) # garbage collection
-        self.DOMAIN = "remote.xrp"
         self.logged_data = {}
         self.buttons = {"forwardButton":    lambda: logging.debug("Button not initialized"),
                         "backButton":   lambda: logging.debug("Button not initialized"),
@@ -58,7 +57,9 @@ class Webserver:
 
     def start_server(self):
         """
-        Begin the webserver on whatever network is configured, at the ip 'remote.xrp'
+        Begin the webserver in either access point or bridge mode. The IP is printed to the console.
+
+        Preconditions: Either start_network or connect_to_network must be called before this method.
         """
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
