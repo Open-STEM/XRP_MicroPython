@@ -42,10 +42,10 @@ class Rangefinder:
         We use the method `machine.time_pulse_us()` to get the microseconds until the echo is received.
         """
         self._trigger.value(0) # Stabilize the sensor
-        time.sleep_us(5)
+        self._delay_us(5)
         self._trigger.value(1)
         # Send a 10us pulse.
-        time.sleep_us(10)
+        self._delay_us(10)
         self._trigger.value(0)
         try:
             pulse_time = machine.time_pulse_us(self.echo, 1, self.timeout_us)
@@ -74,3 +74,12 @@ class Rangefinder:
         # 0.034320 cm/us that is 1cm each 29.1us
         cms = (pulse_time / 2) / 29.1
         return cms
+
+    def _delay_us(self, delay:int):
+        """
+        Custom implementation of time.sleep_us(), used to get around the bug in MicroPython where time.sleep_us() 
+        doesn't work properly and causes the IDE to hang when uploading the code
+        """
+        start = time.ticks_us()
+        while time.ticks_diff(time.ticks_us(), start) < delay:
+            pass
