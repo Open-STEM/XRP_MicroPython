@@ -37,7 +37,7 @@ class Webserver:
         self.access_point = access_point(f"XRP_{robot_id}", "remote.xrp")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
 
-    def connect_to_network(self, ssid:str, password:str, robot_id:int, timeout = 10):
+    def connect_to_network(self, ssid:str, password:str, timeout = 10):
         """
         Connect to a wifi network with the given ssid and password. 
         If the connection fails, the board will disconnect from the network and return.
