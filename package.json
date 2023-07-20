@@ -7,6 +7,7 @@
       ["XRPLib/differential_drive.py", "github:Open-STEM/XRP_Micropython/XRPLib/differential_drive.py"],
       ["XRPLib/encoded_motor.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoded_motor.py"],
       ["XRPLib/encoder.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoder.py"],
+      ["XRPLib/imu_defs.py", "github:Open-STEM/XRP_Micropython/XRPLib/imu_defs.py"],
       ["XRPLib/imu.py", "github:Open-STEM/XRP_Micropython/XRPLib/imu.py"],
       ["XRPLib/motor_group.py", "github:Open-STEM/XRP_Micropython/XRPLib/motor_group.py"],
       ["XRPLib/motor.py", "github:Open-STEM/XRP_Micropython/XRPLib/motor.py"],
@@ -18,7 +19,6 @@
       ["XRPLib/timeout.py", "github:Open-STEM/XRP_Micropython/XRPLib/timeout.py"],
       ["XRPLib/version.py", "github:Open-STEM/XRP_Micropython/XRPLib/version.py"],
       ["XRPLib/webserver.py", "github:Open-STEM/XRP_Micropython/XRPLib/webserver.py"],
-      ["XRPLib/resetbot.py", "github:Open-STEM/XRP_Micropython/XRPLib/resetbot.py"],
       ["XRPExamples/__init__.py", "github:Open-STEM/XRP_Micropython/Examples/__init__.py"],
       ["XRPExamples/drive_examples.py", "github:Open-STEM/XRP_Micropython/Examples/drive_examples.py"],
       ["XRPExamples/installation_verification.py", "github:Open-STEM/XRP_Micropython/Examples/installation_verification.py"],
@@ -32,5 +32,5 @@
       ["collections-defaultdict", "latest"],
       ["os-path", "latest"]
     ],
-    "version": "0.9.5"
+    "version": "0.9.6"
   }
