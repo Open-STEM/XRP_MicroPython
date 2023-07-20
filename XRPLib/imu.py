@@ -5,6 +5,8 @@
 # v1.0 2019.7
 
 from ._IMUHelpers.imu_defs import *
+from ._IMUHelpers.madgewick import MadgwickAHRS
+from ._IMUHelpers.quaternion import Quaternion
 from uctypes import struct, addressof
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
@@ -88,9 +90,9 @@ class IMU():
         self._gyro_scale_factor = 1
 
         # Angle integrators
-        self.running_pitch = 0
-        self.running_yaw = 0
-        self.running_roll = 0
+        self.pitch = 0
+        self.yaw = 0
+        self.roll = 0
 
     def _int16(self, d):
         return d if d < 0x8000 else d - 0x10000
@@ -308,7 +310,7 @@ class IMU():
         :return: The pitch of the IMU in degrees
         :rtype: float
         """
-        return self.running_pitch
+        return self.pitch
     
     def get_yaw(self):
         """
@@ -317,7 +319,7 @@ class IMU():
         :return: The yaw (heading) of the IMU in degrees
         :rtype: float
         """
-        return self.running_yaw
+        return self.yaw
     
     def get_heading(self):
         """
@@ -326,7 +328,7 @@ class IMU():
         :return: The heading of the IMU in degrees, bound between [0, 360)
         :rtype: float
         """
-        return self.running_yaw % 360
+        return self.yaw % 360
     
     def get_roll(self):
         """
@@ -335,25 +337,25 @@ class IMU():
         :return: The roll of the IMU in degrees
         :rtype: float
         """
-        return self.running_roll
+        return self.roll
     
     def reset_pitch(self):
         """
         Reset the pitch to 0
         """
-        self.running_pitch = 0
+        self.pitch = 0
 
     def reset_yaw(self):
         """
         Reset the yaw (heading) to 0
         """
-        self.running_yaw = 0
+        self.yaw = 0
     
     def reset_roll(self):
         """
         Reset the roll to 0
         """
-        self.running_roll = 0
+        self.roll = 0
 
     def set_pitch(self, pitch):
         """
@@ -362,7 +364,7 @@ class IMU():
         :param pitch: The pitch to set the IMU to
         :type pitch: float
         """
-        self.running_pitch = pitch
+        self.pitch = pitch
 
     def set_yaw(self, yaw):
         """
@@ -371,7 +373,7 @@ class IMU():
         :param yaw: The yaw (heading) to set the IMU to
         :type yaw: float
         """
-        self.running_yaw = yaw
+        self.yaw = yaw
 
     def set_roll(self, roll):
         """
@@ -380,7 +382,7 @@ class IMU():
         :param roll: The roll to set the IMU to
         :type roll: float
         """
-        self.running_roll = roll
+        self.roll = roll
 
     def temperature(self):
         """
@@ -528,6 +530,7 @@ class IMU():
 
         self.acc_offsets = avg_vals[0]
         self.gyro_offsets = avg_vals[1]
+        self.ahrs = MadgwickAHRS(sampleperiod=1/self.timer_frequency)
         self._start_timer()
 
     def _start_timer(self):
@@ -538,13 +541,14 @@ class IMU():
 
     def _update_imu_readings(self):
         # Called every tick through a callback timer
-        self.get_gyro_rates()
-        delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
-        delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
-        delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
+        self.get_acc_gyro_rates()
+        self.ahrs.update_imu(self.irq_v[1],self.irq_v[0])
+        
+        # Update running values
+        angles = self.ahrs.quaternion.to_euler()
 
         state = disable_irq()
-        self.running_pitch += delta_pitch
-        self.running_roll += delta_roll
-        self.running_yaw += delta_yaw
+        self.pitch = angles[0]
+        self.roll = angles[1]
+        self.yaw = angles[2]
         enable_irq(state)
