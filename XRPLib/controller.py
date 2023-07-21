@@ -3,11 +3,11 @@ class Controller:
     An abstract class to be entended to demonstrate different types of control. A PID subclass has also been provided
     """
 
-    def tick(self, input) -> float:
+    def update(self, input) -> float:
         """
-        Handle a new tick of this control loop given an effected input.
+        Handle a new ypdate of this control loop given an effected input.
 
-        :param error: The input to this controller for a given tick. Usually an error or some other correctable value
+        :param error: The input to this controller for a given update. Usually an error or some other correctable value
         :type error: float
 
         :return: The system output from the controller, to be used as an effort value or for any other purpose
