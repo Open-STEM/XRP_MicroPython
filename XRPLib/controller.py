@@ -5,7 +5,7 @@ class Controller:
 
     def update(self, input) -> float:
         """
-        Handle a new ypdate of this control loop given an effected input.
+        Handle a new update of this control loop given an effected input.
 
         :param error: The input to this controller for a given update. Usually an error or some other correctable value
         :type error: float
