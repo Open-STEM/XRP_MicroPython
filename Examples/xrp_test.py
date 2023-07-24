@@ -22,7 +22,8 @@ def benchmark_encoder_isr():
     N = 100000
     a = time.time()
     for i in range(N):
-        drivetrain.left_motor._encoder.isr()
+        print("This function no longer exists")
+        # drivetrain.left_motor._encoder.isr()
     b = time.time()
     
     # Print benchmark
@@ -73,4 +74,16 @@ def encoder_test():
         print(f"Left: {left_motor.get_position()}\tRight:{right_motor.get_position()}")
         time.sleep(0.1)
 
-test_rangefinder()
+def benchmark_madgwick_imu():
+    print("start benchmark")
+    N = 10000
+    a = time.time()
+    for i in range(N):
+        imu._update_imu_readings()
+    b = time.time()
+    
+    # Print benchmark
+    print(f"Time for {N} calls: {b-a}s")
+    print(f"Time per call: {(b-a)/N}s") # ~0.06 ms per call
+
+benchmark_madgwick_imu()

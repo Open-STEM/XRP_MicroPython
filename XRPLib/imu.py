@@ -5,7 +5,7 @@
 # v1.0 2019.7
 
 from ._IMUHelpers.imu_defs import *
-from ._IMUHelpers.madgewick import MadgwickAHRS
+from ._IMUHelpers.madgwick import MadgwickAHRS
 from ._IMUHelpers.quaternion import Quaternion
 from uctypes import struct, addressof
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
@@ -310,7 +310,7 @@ class IMU():
         :return: The pitch of the IMU in degrees
         :rtype: float
         """
-        return self.pitch
+        return self.pitch * 180 / math.pi
     
     def get_yaw(self):
         """
@@ -319,7 +319,7 @@ class IMU():
         :return: The yaw (heading) of the IMU in degrees
         :rtype: float
         """
-        return self.yaw
+        return self.yaw * 180 / math.pi
     
     def get_heading(self):
         """
@@ -328,7 +328,7 @@ class IMU():
         :return: The heading of the IMU in degrees, bound between [0, 360)
         :rtype: float
         """
-        return self.yaw % 360
+        return self.get_yaw() % 360
     
     def get_roll(self):
         """
@@ -337,7 +337,7 @@ class IMU():
         :return: The roll of the IMU in degrees
         :rtype: float
         """
-        return self.roll
+        return self.roll * 180 / math.pi
     
     def reset_pitch(self):
         """
@@ -530,23 +530,24 @@ class IMU():
 
         self.acc_offsets = avg_vals[0]
         self.gyro_offsets = avg_vals[1]
-        self.ahrs = MadgwickAHRS(sampleperiod=1/self.timer_frequency)
-        self._start_timer()
+        self._start_updates(MadgwickAHRS(sample_period=1/self.timer_frequency))
 
-    def _start_timer(self):
+    def _start_updates(self, ahrs):
+        # Begin updates with a new AHRS instance
+        self.ahrs = ahrs
         self.update_timer.init(freq=self.timer_frequency, callback=lambda t:self._update_imu_readings())
 
-    def _stop_timer(self):
+    def _stop_updates(self):
         self.update_timer.deinit()
 
     def _update_imu_readings(self):
         # Called every tick through a callback timer
         self.get_acc_gyro_rates()
-        self.ahrs.update_imu(self.irq_v[1],self.irq_v[0])
         
         # Update running values
-        angles = self.ahrs.quaternion.to_euler()
+        angles = self.ahrs.update_imu(self.irq_v[1], self.irq_v[0]).to_euler()
 
+        # Disable interrupts and timer callbacks while saving new values
         state = disable_irq()
         self.pitch = angles[0]
         self.roll = angles[1]
