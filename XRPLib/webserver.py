@@ -45,13 +45,13 @@ class Webserver:
         :type password: str, optional
         """
         if ssid is None:
-            with open("../secrets.json") as secrets_file:
+            with open("../../secrets.json") as secrets_file:
                 secrets = json.load(secrets_file)
                 ssid = secrets["ap_ssid"]
                 password = secrets["ap_password"]
                 if robot_id is None:
                     robot_id = secrets["robot_id"]
-                ssid.replace("{robot_id}", robot_id)
+                ssid = ssid.replace("{robot_id}", str(robot_id))
         self.access_point = access_point(ssid, password)
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
 
@@ -70,7 +70,7 @@ class Webserver:
         self.wlan = network.WLAN(network.STA_IF)
         self.wlan.active(True) # configure board to connect to wifi
         if ssid is None:
-            with open("../secrets.json") as secrets_file:
+            with open("../../secrets.json") as secrets_file:
                 secrets = json.load(secrets_file)
                 ssid = secrets["wifi_ssid"]
                 password = secrets["wifi_password"]
