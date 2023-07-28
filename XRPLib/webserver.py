@@ -4,6 +4,7 @@ from phew.server import redirect
 import gc
 import network
 import time
+import json
 
 logging.log_file = "webserverLog.txt"
 
@@ -39,13 +40,18 @@ class Webserver:
         self.access_point = access_point(f"XRP_{robot_id}", "remote.xrp")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
 
-    def connect_to_network(self, ssid:str, password:str, timeout = 10):
+    def connect_to_network(self, ssid:str=None, password:str=None, timeout = 10):
         """
         Connect to a wifi network with the given ssid and password. 
         If the connection fails, the board will disconnect from the network and return.
         """
         self.wlan = network.WLAN(network.STA_IF)
         self.wlan.active(True) # configure board to connect to wifi
+        if ssid is None:
+            with open("../secrets.json") as secrets_file:
+                secrets = json.load(secrets_file)
+                ssid = secrets["wifi_ssid"]
+                password = secrets["wifi_password"]
         self.wlan.connect(ssid,password)
         start_time = time.time()
         while not self.wlan.isconnected():
