@@ -5,6 +5,8 @@ import gc
 import network
 import time
 
+logging.log_file = "webserverLog.txt"
+
 class Webserver:
 
     @classmethod

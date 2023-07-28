@@ -7,10 +7,12 @@
 import os
 import sys
 import datetime
+import json
 
 sys.path.insert(0, os.path.abspath(".."))
 
-from XRPLib.version import __version__
+with open("../package.json", "r") as read_file:
+    __version__ = json.load(read_file)["version"]
 
 # -- General configuration ------------------------------------------------
 
