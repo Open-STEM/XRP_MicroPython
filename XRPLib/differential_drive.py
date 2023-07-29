@@ -84,6 +84,20 @@ class DifferentialDrive:
         self.right_motor.set_speed()
         self.set_effort(0,0)
 
+    def arcade(self, straight:float, turn:float):
+        """
+        Sets the raw effort of both motors based on the arcade drive scheme
+
+        :param straight: The base effort (Bounded from -1 to 1) used to drive forwards or backwards.
+        :type straight: float
+        :param turn: The modifier effort (Bounded from -1 to 1) used to skew robot left (positive) or right (negative).
+        :type turn: float
+        """
+        scale = max(abs(straight), abs(turn))/(abs(straight) + abs(turn))
+        left_speed = (straight - turn)*scale
+        right_speed = (straight + turn)*scale
+        self.set_speed(left_speed, right_speed)
+
     def reset_encoder_position(self) -> None:
         """
         Resets the position of both motors' encoders to 0
