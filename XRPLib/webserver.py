@@ -53,7 +53,7 @@ class Webserver:
                     if robot_id is None:
                         robot_id = secrets["robot_id"]
                 ssid = ssid.replace("{robot_id}", str(robot_id))
-            except OSError:
+            except (OSError, KeyError, ValueError):
                 if robot_id is None:
                     robot_id = 1
                 ssid = f"XRP_{robot_id}"
@@ -81,7 +81,7 @@ class Webserver:
                     secrets = json.load(secrets_file)
                     ssid = secrets["wifi_ssid"]
                     password = secrets["wifi_password"]
-            except OSError:
+            except (OSError, KeyError, ValueError):
                 print("secrets.json not found or improperly formatted")
                 return False
         self.wlan.connect(ssid,password)
