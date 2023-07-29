@@ -48,11 +48,11 @@ class Webserver:
             try:
                 with open("../../secrets.json") as secrets_file:
                     secrets = json.load(secrets_file)
-                    ssid = secrets["ap_ssid"]
-                    password = secrets["ap_password"]
+                    ssid = str(secrets["ap_ssid"])
+                    password = str(secrets["ap_password"])
                     if robot_id is None:
-                        robot_id = secrets["robot_id"]
-                ssid = ssid.replace("{robot_id}", str(robot_id))
+                        robot_id = str(secrets["robot_id"])
+                ssid = ssid.replace("{robot_id}", robot_id)
             except (OSError, KeyError, ValueError):
                 if robot_id is None:
                     robot_id = 1
@@ -79,8 +79,8 @@ class Webserver:
             try:
                 with open("../../secrets.json") as secrets_file:
                     secrets = json.load(secrets_file)
-                    ssid = secrets["wifi_ssid"]
-                    password = secrets["wifi_password"]
+                    ssid = str(secrets["wifi_ssid"])
+                    password = str(secrets["wifi_password"])
             except (OSError, KeyError, ValueError):
                 print("secrets.json not found or improperly formatted")
                 return False
