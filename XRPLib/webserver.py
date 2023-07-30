@@ -259,7 +259,7 @@ _HTML1 = """
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <meta http-equiv="refresh" content="0.25">
+            <meta http-equiv="refresh" content="1">
             
             <style>
                 a { text-decoration: none; }
