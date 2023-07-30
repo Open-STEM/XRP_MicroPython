@@ -74,7 +74,7 @@ class MotorGroup(EncodedMotor):
         return avg / len(self.motors)
 
 
-    def set_target_speed(self, target_speed_rpm: float | None = None):
+    def set_target_speed(self, target_speed_rpm: float = None):
         """
         Sets target speed (in rpm) to be maintained passively by all motors in this group
         Call with no parameters to turn off speed control

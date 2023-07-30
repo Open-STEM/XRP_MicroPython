@@ -41,7 +41,8 @@ autodoc_mock_imports = [
     'btree',
     'rp2',
     'phew',
-    'gc']
+    'gc',
+    'uctypes']
 
 autodoc_preserve_defaults = True
 

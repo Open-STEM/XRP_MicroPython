@@ -112,7 +112,7 @@ class EncodedMotor:
         # Convert from counts per 20ms to rpm (60 sec/min, 50 Hz)
         return self.speed*(60*50)/self._encoder.resolution
 
-    def set_speed(self, speed_rpm: float | None = None):
+    def set_speed(self, speed_rpm: float = None):
         """
         Sets target speed (in rpm) to be maintained passively
         Call with no parameters to turn off speed control
