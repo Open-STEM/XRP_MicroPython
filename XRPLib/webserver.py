@@ -1,6 +1,6 @@
 from phew import server, template, logging, access_point, dns
 from phew.template import render_template
-from phew.server import redirect
+from phew.server import redirect, stop
 import gc
 import network
 import time
@@ -101,11 +101,19 @@ class Webserver:
 
         Preconditions: Either start_network or connect_to_network must be called before this method.
         """
+        self.wlan.active(True)
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
         self.DOMAIN = self.ip
         logging.disable_logging_types(logging.LOG_INFO)
         server.run()
+
+    def stop_server(self):
+        """
+        Shuts off the webserver and network and stops handling requests
+        """
+        stop()
+        self.wlan.active(False)
 
     def _index_page(self, request):
         # Render index page and respond to form requests

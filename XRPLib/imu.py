@@ -5,10 +5,10 @@
 # v1.0 2019.7
 try:
     from .imu_defs import *
-    from uctypes import struct, addressof
-except (TypeError, ImportError):
+except TypeError:
     # Import wrapped in a try/except so that autodoc generation can process properly
     pass
+from uctypes import struct, addressof
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
 

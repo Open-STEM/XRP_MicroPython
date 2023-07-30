@@ -1,4 +1,5 @@
 .vscode/
 .git/
+docs/_build/
 
 secrets.json
