@@ -6,7 +6,7 @@
 try:
     from .imu_defs import *
     from uctypes import struct, addressof
-except TypeError, ModuleNotFoundError:
+except (TypeError, ModuleNotFoundError):
     # Import wrapped in a try/except so that autodoc generation can process properly
     pass
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
