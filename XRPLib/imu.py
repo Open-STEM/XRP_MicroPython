@@ -352,51 +352,12 @@ class IMU():
             self.roll = math.atan2(self.q[0]*self.q[1] + self.q[2]*self.q[3], 0.5 - self.q[1]*self.q[1] - self.q[2]*self.q[2]) * 57.23
             self.rollComputed = True
         return self.roll
-    
-    def reset_pitch(self):
-        """
-        Reset the pitch to 0
-        """
-        self.running_pitch = 0
 
-    def reset_yaw(self):
+    def reset_angles(self):
         """
-        Reset the yaw (heading) to 0
+        Reset all angles to 0
         """
-        self.running_yaw = 0
-    
-    def reset_roll(self):
-        """
-        Reset the roll to 0
-        """
-        self.running_roll = 0
-
-    def set_pitch(self, pitch):
-        """
-        Set the pitch to a specific angle in degrees
-
-        :param pitch: The pitch to set the IMU to
-        :type pitch: float
-        """
-        self.running_pitch = pitch
-
-    def set_yaw(self, yaw):
-        """
-        Set the yaw (heading) to a specific angle in degrees
-
-        :param yaw: The yaw (heading) to set the IMU to
-        :type yaw: float
-        """
-        self.running_yaw = yaw
-
-    def set_roll(self, roll):
-        """
-        Set the roll to a specific angle in degrees
-
-        :param roll: The roll to set the IMU to
-        :type roll: float
-        """
-        self.running_roll = roll
+        self.q = [1, 0, 0, 0]
 
     def temperature(self):
         """
