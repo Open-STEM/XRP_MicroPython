@@ -10,7 +10,7 @@ webserver.registerBackwardButton(lambda: drivetrain.set_effort(-0.5, -0.5))
 webserver.registerStopButton(lambda: drivetrain.set_effort(0, 0))
 
 # Binding functions to custom buttons
-webserver.add_button("Test", lambda: print("test"))
+webserver.add_button("Close Server", lambda: webserver.stop_server())
 webserver.add_button("Blink", lambda: board.led_blink(2))
 webserver.add_button("LED Off", lambda: board.led_off())
 webserver.add_button("Servo Up", lambda: servo_one.set_angle(90))
@@ -44,3 +44,5 @@ def start_network_and_webserver():
     # Network ssid and password are stored in root/secrets.json
     webserver.start_network()
     webserver.start_server()
+
+start_network_and_webserver()

@@ -1,6 +1,6 @@
 from phew import server, template, logging, access_point, dns
 from phew.template import render_template
-from phew.server import redirect, stop
+from phew.server import redirect, stop, close
 import gc
 import network
 import time
@@ -59,7 +59,9 @@ class Webserver:
                 ssid = f"XRP_{robot_id}"
                 password = "remote.xrp"
         self.access_point = access_point(ssid, password)
-        self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
+        logging.info(f"Starting Access Point \"{ssid}\"")
+        self.wlan = network.WLAN(network.AP_IF)
+        self.ip = self.wlan.ifconfig()[0]
 
     def connect_to_network(self, ssid:str=None, password:str=None, timeout = 10):
         """
@@ -112,6 +114,9 @@ class Webserver:
         """
         Shuts off the webserver and network and stops handling requests
         """
+        logging.enable_logging_types(logging.LOG_INFO)
+        logging.info("Stopping Webserver and Network Connections")
+        
         stop()
         self.wlan.active(False)
 
@@ -218,8 +223,8 @@ class Webserver:
                 return False
             user_function()
             return True
-        except:
-            logging.error("User function "+text+" caused an exception")
+        except RuntimeError as xcpt:
+            logging.error("User function "+text+" caused an exception: "+str(xcpt))
             return False
 
     def _generateHTML(self):
