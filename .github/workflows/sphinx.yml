@@ -11,9 +11,6 @@ jobs:
       - name: Install Sphinx theme
         run: |
           pip install sphinx sphinx_rtd_theme
-      - name: Install mock imports
-        run: |
-          pip install micropython-uctypes
       - name: Sphinx build
         run: |
           sphinx-build docs _build
