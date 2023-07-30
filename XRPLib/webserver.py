@@ -4,6 +4,7 @@ from phew.server import redirect
 import gc
 import network
 import time
+import json
 
 logging.log_file = "webserverLog.txt"
 
@@ -32,20 +33,57 @@ class Webserver:
         self.FUNCTION_SUFFIX = "endfunction"
         self.display_arrows = False
 
-    def start_network(self, robot_id:int):
+    def start_network(self, ssid:str=None, robot_id:int= None, password:str=None):
         """
-        Open an access point from the XRP board to be used as a captive host. The network password is "remote.xrp"
+        Open an access point from the XRP board to be used as a captive host. The default network information can be set in secrets.json
+
+        :param ssid: The ssid of the access point, defaults to value from secrets.json
+        :type ssid: str, optional
+        :param robot_id: Replaces "{robot_id}" in ssid, defaults to value from secrets.json
+        :type robot_id: int, optional
+        :param password: The password of the access point, defaults to value from secrets.json
+        :type password: str, optional
         """
-        self.access_point = access_point(f"XRP_{robot_id}", "remote.xrp")
+        if ssid is None:
+            try:
+                with open("../../secrets.json") as secrets_file:
+                    secrets = json.load(secrets_file)
+                    ssid = str(secrets["ap_ssid"])
+                    password = str(secrets["ap_password"])
+                    if robot_id is None:
+                        robot_id = str(secrets["robot_id"])
+                ssid = ssid.replace("{robot_id}", robot_id)
+            except (OSError, KeyError, ValueError):
+                if robot_id is None:
+                    robot_id = 1
+                ssid = f"XRP_{robot_id}"
+                password = "remote.xrp"
+        self.access_point = access_point(ssid, password)
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
 
-    def connect_to_network(self, ssid:str, password:str, timeout = 10):
+    def connect_to_network(self, ssid:str=None, password:str=None, timeout = 10):
         """
         Connect to a wifi network with the given ssid and password. 
         If the connection fails, the board will disconnect from the network and return.
+
+        :param ssid: The ssid of the network, defaults to value from secrets.json
+        :type ssid: str, optional
+        :param password: The password of the network, defaults to value from secrets.json
+        :type password: str, optional
+        :param timeout: The amount of time to wait for the connection to succeed, defaults to 10
+        :type timeout: int, optional
         """
         self.wlan = network.WLAN(network.STA_IF)
         self.wlan.active(True) # configure board to connect to wifi
+        if ssid is None:
+            try:
+                with open("../../secrets.json") as secrets_file:
+                    secrets = json.load(secrets_file)
+                    ssid = str(secrets["wifi_ssid"])
+                    password = str(secrets["wifi_password"])
+            except (OSError, KeyError, ValueError):
+                print("secrets.json not found or improperly formatted")
+                return False
         self.wlan.connect(ssid,password)
         start_time = time.time()
         while not self.wlan.isconnected():
