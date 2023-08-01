@@ -36,6 +36,10 @@ class Rangefinder:
         # Init echo pin (in)
         self.echo = Pin(echo_pin, mode=Pin.IN, pull=None)
 
+        self.cms = 0
+        self.last_echo_time = 0
+        self.cache_time_us = 3000
+
     def _send_pulse_and_wait(self):
         """
         Send the pulse to trigger and listen on echo pin.
@@ -57,6 +61,9 @@ class Rangefinder:
         """
         Get the distance in centimeters by measuring the echo pulse time
         """
+        if time.ticks_diff(time.ticks_us(), self.last_echo_time) < self.cache_time_us and not self.cms == 65535:
+            return self.cms
+
         try:
             pulse_time = self._send_pulse_and_wait()
             if pulse_time <= 0:
@@ -72,8 +79,9 @@ class Rangefinder:
         # (the pulse walk the distance twice) and by 29.1 becasue
         # the sound speed on air (343.2 m/s), that It's equivalent to
         # 0.034320 cm/us that is 1cm each 29.1us
-        cms = (pulse_time / 2) / 29.1
-        return cms
+        self.cms = (pulse_time / 2) / 29.1
+        self.last_echo_time = time.ticks_us()
+        return self.cms
 
     def _delay_us(self, delay:int):
         """
