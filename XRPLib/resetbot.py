@@ -14,9 +14,6 @@ for i in range(4):
     motor.set_effort(0)
     motor.reset_encoder_position()
 
-# Reset IMU registers
-IMU.get_default_imu().reset()
-
 # Turn off the on-board LED
 Board.get_default_board().led_off()
 
