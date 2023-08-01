@@ -115,15 +115,16 @@ class EncodedMotor:
     def set_speed(self, speed_rpm: float = None):
         """
         Sets target speed (in rpm) to be maintained passively
-        Call with no parameters to turn off speed control
+        Call with no parameters or 0 to turn off speed control
 
         :param target_speed_rpm: The target speed for the motor in rpm, or None
         :type target_speed_rpm: float, or None
         """
-        if speed_rpm is None:
+        if speed_rpm is None or speed_rpm == 0:
             self.target_speed = None
             self.set_effort(0)
             self.speed = 0
+            self.updateTimer.deinit()
             return
         # If the update timer is not running, start it at 50 Hz (20ms updates)
         self.updateTimer.init(period=20, callback=lambda t:self._update())
