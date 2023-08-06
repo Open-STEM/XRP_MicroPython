@@ -38,7 +38,7 @@ def circle():
 # Follow the perimeter of a square with variable sidelength
 def square(sidelength):
     for sides in range(4):
-        drivetrain.straight(sidelength, 80)
+        drivetrain.straight(sidelength, 0.8)
         drivetrain.turn(90)
     # Alternatively:
     # polygon(sidelength, 4)

@@ -203,7 +203,7 @@ class DifferentialDrive:
         return not time_out.is_done()
 
 
-    def turn(self, turn_degrees: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
+    def turn(self, turn_degrees: float, max_speed: float = 40, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
         Speed is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
@@ -211,8 +211,8 @@ class DifferentialDrive:
 
         :param turnDegrees: The number of angle for the robot to turn (In Degrees)
         :type turnDegrees: float
-        :param max_effort: The max effort for which the robot to travel (Bounded from -1 to 1). Default is half effort forward.
-        :type max_effort: float
+        :param max_speed: The max speed for each wheel of the robot to spin, in cm/s. Default is 40 cm/s.
+        :type max_speed: float
         :param timeout: The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)
         :type timeout: float
         :param main_controller: The main controller, for handling the angle turned
@@ -225,8 +225,8 @@ class DifferentialDrive:
         :rtype: bool
         """
 
-        if max_effort < 0:
-            max_effort *= -1
+        if max_speed < 0:
+            max_speed *= -1
             turn_degrees *= -1
 
         time_out = Timeout(timeout)
@@ -238,7 +238,7 @@ class DifferentialDrive:
                 kp = .015,
                 kd = 0.0012,
                 minOutput = 0.25,
-                maxOutput = max_effort,
+                maxOutput = max_speed,
                 tolerance = 0.5,
                 toleranceCount = 3
             )
@@ -273,7 +273,7 @@ class DifferentialDrive:
             if main_controller.is_done() or time_out.is_done():
                 break
 
-            self.set_effort(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
+            self.set_speed(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
 
             time.sleep(0.01)
 

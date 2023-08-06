@@ -118,3 +118,4 @@ class PID(Controller):
         self.prevIntegral = 0
         self.prevOutput = 0
         self.times = 0
+        self.prevTime = None
