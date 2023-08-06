@@ -235,18 +235,21 @@ class DifferentialDrive:
 
         if main_controller is None:
             main_controller = PID(
-                kp = .015,
-                kd = 0.0012,
-                minOutput = 0.25,
-                maxOutput = max_speed,
+                kp = 0.02,
+                ki = 0.005,
+                kd = 0.012,
+                minOutput = 0.35,
+                maxOutput = 0.5,
+                maxDerivative = 0.5,
+                maxIntegral = 50,
                 tolerance = 0.5,
-                toleranceCount = 3
+                toleranceCount = 2
             )
 
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.0175,
+                kp = 1,
             )
  
         if use_imu and (self.imu is not None):
