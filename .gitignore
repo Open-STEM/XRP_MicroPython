@@ -1,5 +1,6 @@
 .vscode/
 .git/
 docs/_build/
-
+.micropico
+.picowgo
 secrets.json
