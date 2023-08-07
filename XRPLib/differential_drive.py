@@ -145,8 +145,8 @@ class DifferentialDrive:
             distance *= -1
 
         time_out = Timeout(timeout)
-        startingLeft = self.get_left_encoder_position()
-        startingRight = self.get_right_encoder_position()
+        starting_left = self.get_left_encoder_position()
+        starting_right = self.get_right_encoder_position()
 
 
         if main_controller is None:
@@ -154,11 +154,11 @@ class DifferentialDrive:
                 kp = 0.04,
                 ki = 0.0125,
                 kd = 0.025,
-                minOutput = 0.225,
-                maxOutput = 0.5,
-                maxIntegral = 35,
+                min_output = 0.225,
+                max_output = 0.5,
+                max_integral = 35,
                 tolerance = 0.1,
-                toleranceCount = 3,
+                tolerance_count = 3,
             )
 
         # Secondary controller to keep encoder values in sync
@@ -176,13 +176,13 @@ class DifferentialDrive:
         while True:
 
             # calculate the distance traveled
-            leftDelta = self.get_left_encoder_position() - startingLeft
-            rightDelta = self.get_right_encoder_position() - startingRight
-            distTraveled = (leftDelta + rightDelta) / 2
+            left_delta = self.get_left_encoder_position() - starting_left
+            right_delta = self.get_right_encoder_position() - starting_right
+            dist_traveled = (left_delta + right_delta) / 2
 
             # PID for distance
-            distanceError = distance - distTraveled
-            effort = main_controller.update(distanceError)
+            distance_error = distance - dist_traveled
+            effort = main_controller.update(distance_error)
             
             if main_controller.is_done() or time_out.is_done():
                 break
@@ -192,7 +192,7 @@ class DifferentialDrive:
                 # record current heading to maintain it
                 current_heading = self.imu.get_yaw()
             else:
-                current_heading = ((rightDelta-leftDelta)/2)*360/(self.track_width*math.pi)
+                current_heading = ((right_delta-left_delta)/2)*360/(self.track_width*math.pi)
 
             headingCorrection = secondary_controller.update(initial_heading - current_heading)
             
@@ -232,20 +232,20 @@ class DifferentialDrive:
             turn_degrees *= -1
 
         time_out = Timeout(timeout)
-        startingLeft = self.get_left_encoder_position()
-        startingRight = self.get_right_encoder_position()
+        starting_left = self.get_left_encoder_position()
+        starting_right = self.get_right_encoder_position()
 
         if main_controller is None:
             main_controller = PID(
                 kp = 0.02,
                 ki = 0.005,
                 kd = 0.012,
-                minOutput = 0.35,
-                maxOutput = max_effort,
-                maxDerivative = 0.5,
-                maxIntegral = 50,
+                min_output = 0.35,
+                max_output = max_effort,
+                max_derivative = 0.5,
+                max_integral = 50,
                 tolerance = 0.5,
-                toleranceCount = 2
+                tolerance_count = 2
             )
 
         # Secondary controller to keep encoder values in sync
@@ -260,25 +260,25 @@ class DifferentialDrive:
         while True:
             
             # calculate encoder correction to minimize drift
-            leftDelta = self.get_left_encoder_position() - startingLeft
-            rightDelta = self.get_right_encoder_position() - startingRight
-            encoderCorrection = secondary_controller.update(leftDelta + rightDelta)
+            left_delta = self.get_left_encoder_position() - starting_left
+            right_delta = self.get_right_encoder_position() - starting_right
+            encoder_correction = secondary_controller.update(left_delta + right_delta)
 
             if use_imu and (self.imu is not None):
                 # calculate turn error (in degrees) from the imu
-                turnError = turn_degrees - self.imu.get_yaw()
+                turn_error = turn_degrees - self.imu.get_yaw()
             else:
                 # calculate turn error (in degrees) from the encoder counts
-                turnError = turn_degrees - ((rightDelta-leftDelta)/2)*360/(self.track_width*math.pi)
+                turn_error = turn_degrees - ((right_delta-left_delta)/2)*360/(self.track_width*math.pi)
 
             # Pass the turn error to the main controller to get a turn speed
-            turnSpeed = main_controller.update(turnError)
+            turn_speed = main_controller.update(turn_error)
             
             # exit if timeout or tolerance reached
             if main_controller.is_done() or time_out.is_done():
                 break
 
-            self.set_speed(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
+            self.set_speed(-turn_speed - encoder_correction, turn_speed - encoder_correction)
 
             time.sleep(0.01)
 
