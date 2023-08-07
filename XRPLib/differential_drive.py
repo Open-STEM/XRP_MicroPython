@@ -151,10 +151,12 @@ class DifferentialDrive:
 
         if main_controller is None:
             main_controller = PID(
-                kp = 0.075,
-                kd = 0.005,
-                minOutput = 0.25,
-                maxOutput = max_effort,
+                kp = 0.04,
+                ki = 0.0125,
+                kd = 0.025,
+                minOutput = 0.225,
+                maxOutput = 0.5,
+                maxIntegral = 35,
                 tolerance = 0.1,
                 toleranceCount = 3,
             )
@@ -162,7 +164,7 @@ class DifferentialDrive:
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.025, kd=0.0025,
+                kp = 0.03, kd=0.003,
             )
 
         if self.imu is not None:
@@ -203,16 +205,16 @@ class DifferentialDrive:
         return not time_out.is_done()
 
 
-    def turn(self, turn_degrees: float, max_speed: float = 40, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
+    def turn(self, turn_degrees: float, max_effort: float = 40, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
-        Speed is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
+        effort is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
         Uses the IMU to determine the heading of the robot and P control for the motor controller.
 
         :param turnDegrees: The number of angle for the robot to turn (In Degrees)
         :type turnDegrees: float
-        :param max_speed: The max speed for each wheel of the robot to spin, in cm/s. Default is 40 cm/s.
-        :type max_speed: float
+        :param max_effort: The max speed for which the robot to travel (Bounded from -1 to 1)
+        :type max_effort: float
         :param timeout: The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)
         :type timeout: float
         :param main_controller: The main controller, for handling the angle turned
@@ -225,8 +227,8 @@ class DifferentialDrive:
         :rtype: bool
         """
 
-        if max_speed < 0:
-            max_speed *= -1
+        if max_effort < 0:
+            max_effort *= -1
             turn_degrees *= -1
 
         time_out = Timeout(timeout)
@@ -239,7 +241,7 @@ class DifferentialDrive:
                 ki = 0.005,
                 kd = 0.012,
                 minOutput = 0.35,
-                maxOutput = 0.5,
+                maxOutput = max_effort,
                 maxDerivative = 0.5,
                 maxIntegral = 50,
                 tolerance = 0.5,
