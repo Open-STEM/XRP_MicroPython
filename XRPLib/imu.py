@@ -9,6 +9,7 @@ try:
 except (TypeError, ModuleNotFoundError):
     # Import wrapped in a try/except so that autodoc generation can process properly
     pass
+from .thread_controller import ThreadController
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
 
@@ -73,6 +74,9 @@ class IMU():
         # Set default rate for each sensor
         self.acc_rate('208Hz')
         self.gyro_rate('208Hz')
+
+        self.thread_controller = ThreadController.get_default_thread_controller()
+        self.thread_lock = self.thread_controller.allocate_lock()
 
     """
         The following are private helper methods to read and write registers, as well as to convert the read values to the correct unit.
@@ -534,7 +538,8 @@ class IMU():
         self._start_timer()
 
     def _start_timer(self):
-        self.update_timer.init(freq=self.timer_frequency, callback=lambda t:self._update_imu_readings())
+        ThreadController.get_default_thread_controller().run(lambda:
+            self.update_timer.init(freq=self.timer_frequency, callback=lambda t:self._update_imu_readings()))
 
     def _stop_timer(self):
         self.update_timer.deinit()

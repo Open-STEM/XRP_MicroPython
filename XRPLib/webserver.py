@@ -5,6 +5,7 @@ import gc
 import network
 import time
 import json
+from .thread_controller import ThreadController
 
 logging.log_file = "webserverLog.txt"
 
@@ -32,6 +33,12 @@ class Webserver:
         self.FUNCTION_PREFIX = "startfunction"
         self.FUNCTION_SUFFIX = "endfunction"
         self.display_arrows = False
+
+        self.thread_controller = ThreadController.get_default_thread_controller()
+        self.thread_lock = self.thread_controller.allocate_lock()
+        
+        self.is_func_to_call = False
+        self.func_to_call = None
 
     def start_network(self, ssid:str=None, robot_id:int= None, password:str=None):
         """
@@ -100,6 +107,7 @@ class Webserver:
     def start_server(self):
         """
         Begin the webserver in either access point or bridge mode. The IP is printed to the console.
+        The webserver operates on the second thread, so the main thread is free to run other code.
 
         Preconditions: Either start_network or connect_to_network must be called before this method.
         """
@@ -108,7 +116,7 @@ class Webserver:
         dns.run_catchall(self.ip)
         self.DOMAIN = self.ip
         logging.disable_logging_types(logging.LOG_INFO)
-        server.run()
+        self.second_thread.run(server.run)
 
     def stop_server(self):
         """
