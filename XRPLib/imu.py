@@ -315,7 +315,8 @@ class IMU():
         :return: The pitch of the IMU in degrees
         :rtype: float
         """
-        return self.running_pitch
+        with self.thread_lock:
+            return self.running_pitch
     
     def get_yaw(self):
         """
@@ -324,7 +325,8 @@ class IMU():
         :return: The yaw (heading) of the IMU in degrees
         :rtype: float
         """
-        return self.running_yaw
+        with self.thread_lock:
+            return self.running_yaw
     
     def get_heading(self):
         """
@@ -333,7 +335,8 @@ class IMU():
         :return: The heading of the IMU in degrees, bound between [0, 360)
         :rtype: float
         """
-        return self.running_yaw % 360
+        with self.thread_lock:
+            return self.running_yaw % 360
     
     def get_roll(self):
         """
@@ -342,25 +345,29 @@ class IMU():
         :return: The roll of the IMU in degrees
         :rtype: float
         """
-        return self.running_roll
+        with self.thread_lock:
+            return self.running_roll
     
     def reset_pitch(self):
         """
         Reset the pitch to 0
         """
-        self.running_pitch = 0
+        with self.thread_lock:
+            self.running_pitch = 0
 
     def reset_yaw(self):
         """
         Reset the yaw (heading) to 0
         """
-        self.running_yaw = 0
+        with self.thread_lock:
+            self.running_yaw = 0
     
     def reset_roll(self):
         """
         Reset the roll to 0
         """
-        self.running_roll = 0
+        with self.thread_lock:
+            self.running_roll = 0
 
     def set_pitch(self, pitch):
         """
@@ -369,7 +376,8 @@ class IMU():
         :param pitch: The pitch to set the IMU to
         :type pitch: float
         """
-        self.running_pitch = pitch
+        with self.thread_lock:
+            self.running_pitch = pitch
 
     def set_yaw(self, yaw):
         """
@@ -378,7 +386,8 @@ class IMU():
         :param yaw: The yaw (heading) to set the IMU to
         :type yaw: float
         """
-        self.running_yaw = yaw
+        with self.thread_lock:
+            self.running_yaw = yaw
 
     def set_roll(self, roll):
         """
@@ -387,7 +396,8 @@ class IMU():
         :param roll: The roll to set the IMU to
         :type roll: float
         """
-        self.running_roll = roll
+        with self.thread_lock:
+            self.running_roll = roll
 
     def temperature(self):
         """
@@ -546,13 +556,16 @@ class IMU():
 
     def _update_imu_readings(self):
         # Called every tick through a callback timer
-        self.get_gyro_rates()
-        delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
-        delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
-        delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
+        
+        gyro_rates = self.get_gyro_rates()
+        
+        delta_pitch = gyro_rates[0] / 1000 / self.timer_frequency
+        delta_roll = gyro_rates[1] / 1000 / self.timer_frequency
+        delta_yaw = gyro_rates[2] / 1000 / self.timer_frequency
 
-        state = disable_irq()
-        self.running_pitch += delta_pitch
-        self.running_roll += delta_roll
-        self.running_yaw += delta_yaw
-        enable_irq(state)
+        with self.thread_lock:
+            state = disable_irq()
+            self.running_pitch += delta_pitch
+            self.running_roll += delta_roll
+            self.running_yaw += delta_yaw
+            enable_irq(state)

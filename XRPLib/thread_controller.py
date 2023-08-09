@@ -56,21 +56,19 @@ class ThreadController():
                 self.lock.release()
             time.sleep(0.001)
 
-    def run(self, function, *args):
+    def run(self, function, args):
         """
         Sets a function to run on a separate thread.
         """
-        self.lock.acquire()
-        self.to_run_list.append(lambda: function(*args))
-        self.lock.release()
+        with self.lock:
+            self.to_run_list.append(lambda: function(*args))
 
     def is_running(self):
         """
-        Returns whether or not the thread is currently running.
+        Returns whether or not a function is currently running on this thread.
         """
-        self.lock.acquire()
-        currently_running = self.currently_running
-        self.lock.release()
+        with self.lock:
+            currently_running = self.currently_running
 
         return currently_running
     

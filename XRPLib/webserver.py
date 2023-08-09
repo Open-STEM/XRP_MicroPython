@@ -34,10 +34,12 @@ class Webserver:
         self.FUNCTION_SUFFIX = "endfunction"
         self.display_arrows = False
 
+        self.is_active = False
+
         self.thread_controller = ThreadController.get_default_thread_controller()
         self.thread_lock = self.thread_controller.allocate_lock()
         
-        self.is_func_to_call = False
+        self.has_func_to_call = False
         self.func_to_call = None
 
     def start_network(self, ssid:str=None, robot_id:int= None, password:str=None):
@@ -108,6 +110,7 @@ class Webserver:
         """
         Begin the webserver in either access point or bridge mode. The IP is printed to the console.
         The webserver operates on the second thread, so the main thread is free to run other code.
+        By default, web buttons are disabled, and need to be enabled by calling "handle_web_button_callbacks()"
 
         Preconditions: Either start_network or connect_to_network must be called before this method.
         """
@@ -116,6 +119,7 @@ class Webserver:
         dns.run_catchall(self.ip)
         self.DOMAIN = self.ip
         logging.disable_logging_types(logging.LOG_INFO)
+        self.is_active = True
         self.second_thread.run(server.run)
 
     def stop_server(self):
@@ -126,7 +130,25 @@ class Webserver:
         logging.info("Stopping Webserver and Network Connections")
         
         stop()
+        self.is_active = False
         self.wlan.active(False)
+
+    def handle_web_button_callbacks(self):
+        """
+        Blocks the main thread and handles future callbacks from the webserver buttons.
+        """
+        self.thread_lock.acquire()
+        while self.is_active:
+            if self.has_func_to_call:
+                self.has_func_to_call = False
+                func = self.func_to_call
+                self.thread_lock.release()
+                try:
+                    func()
+                except RuntimeError as e:
+                    logging.error(e)
+            time.sleep(0.01)
+            self.thread_lock.acquire()
 
     def _index_page(self, request):
         # Render index page and respond to form requests
@@ -159,7 +181,8 @@ class Webserver:
         :param data: The data to be displayed
         :type data: Any (converted to string)
         """
-        self.logged_data[label] = data
+        with self.thread_lock:
+            self.logged_data[label] = data
 
     def add_button(self, button_name:str, function):
         """
@@ -170,7 +193,8 @@ class Webserver:
         :param function: The function to be called when the button is pressed
         :type function: function
         """
-        self.buttons[button_name] = function
+        with self.thread_lock:
+            self.buttons[button_name] = function
 
     def registerForwardButton(self, function):
         """
@@ -179,8 +203,9 @@ class Webserver:
         :param function: The function to be called when the button is pressed
         :type function: function
         """
-        self.display_arrows = True
-        self.buttons["forwardButton"] = function
+        with self.thread_lock:
+            self.display_arrows = True
+            self.buttons["forwardButton"] = function
 
     def registerBackwardButton(self, function):
         """
@@ -189,8 +214,9 @@ class Webserver:
         :param function: The function to be called when the button is pressed
         :type function: function
         """
-        self.display_arrows = True
-        self.buttons["backButton"] = function
+        with self.thread_lock:
+            self.display_arrows = True
+            self.buttons["backButton"] = function
     
     def registerLeftButton(self, function):
         """
@@ -199,8 +225,9 @@ class Webserver:
         :param function: The function to be called when the button is pressed
         :type function: function
         """
-        self.display_arrows = True
-        self.buttons["leftButton"] = function
+        with self.thread_lock:
+            self.display_arrows = True
+            self.buttons["leftButton"] = function
 
     def registerRightButton(self, function):
         """
@@ -209,8 +236,9 @@ class Webserver:
         :param function: The function to be called when the button is pressed
         :type function: function
         """
-        self.display_arrows = True
-        self.buttons["rightButton"] = function
+        with self.thread_lock:
+            self.display_arrows = True
+            self.buttons["rightButton"] = function
     
     def registerStopButton(self, function):
         """
@@ -219,20 +247,22 @@ class Webserver:
         :param function: The function to be called when the button is pressed
         :type function: function
         """
-        self.display_arrows = True
-        self.buttons["stopButton"] = function
+        with self.thread_lock:
+            self.display_arrows = True
+            self.buttons["stopButton"] = function
 
     def _handleUserFunctionRequest(self, text) -> bool:
-        print(f"Running {text}")
+        print(f"User Function {text}")
         try:
             user_function = self.buttons[text]
             if user_function is None:
-                logging.warning("User function "+text+" not found")
                 return False
-            user_function()
+            with self.thread_lock:
+                self.has_func_to_call = True
+                self.func_to_call = user_function
             return True
         except RuntimeError as xcpt:
-            logging.error("User function "+text+" caused an exception: "+str(xcpt))
+            logging.warning("User function "+text+" not found")
             return False
 
     def _generateHTML(self):
