@@ -533,6 +533,13 @@ class IMU():
         gx = cur_vals[1][0] * 0.0000174533
         gy = cur_vals[1][1] * 0.0000174533
         gz = cur_vals[1][2] * 0.0000174533
+
+        # Roll and pitch are measured about the x and y axes respectively. The
+        # IMU on the XRP has the x and y axes pionting to the right and forwards,
+        # meaning roll and pitch are swapped from what's intuitive. This axis swap
+        # effectively rotates the x and y axes by -90 degrees
+        ax, ay = (-ay, ax)
+        gx, gy = (-gy, gx)
     
         # Rate of change of quaternion from gyroscope
         qDot1 = 0.5 * (-self.q[1] * gx - self.q[2] * gy - self.q[3] * gz)
