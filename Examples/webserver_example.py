@@ -36,8 +36,10 @@ timer.init(freq=4, mode=Timer.PERIODIC, callback=lambda t: log_time_and_range())
 def connect_and_start_webserver():
     # Connect to the network and start the webserver in bridge mode
     # Network ssid and password are stored in root/secrets.json
-    webserver.connect_to_network()
-    webserver.start_server()
+    if webserver.connect_to_network():
+        webserver.start_server()
+    else:
+        print("Connecting to network failed, please try again")
 
 def start_network_and_webserver():
     # Start the webserver in access point mode

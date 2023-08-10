@@ -1,5 +1,6 @@
 from XRPLib.defaults import *
 import time
+from XRPLib.thread_controller import ThreadController
 
 """
     By the end of this file students will learn how to read and use data from
@@ -55,7 +56,7 @@ def line_track():
 
 # Polling data from the IMU
 def imu_test():
-    while True:
+    while not board.is_button_pressed():
         print(f"Pitch: {imu.get_pitch()}, Heading: {imu.get_heading()}, Roll: {imu.get_yaw()}, Accelerometer output: {imu.get_acc_rates()}")
         time.sleep(0.1)
 
@@ -71,5 +72,3 @@ def climb_ramp(ramp_angle, angle_tolerance=3.5):
         time.sleep(0.05)
     # Then stop
     drivetrain.set_effort(0, 0)
-
-ultrasonic_test()

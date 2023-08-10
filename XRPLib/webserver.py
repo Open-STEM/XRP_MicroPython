@@ -120,7 +120,7 @@ class Webserver:
         self.DOMAIN = self.ip
         logging.disable_logging_types(logging.LOG_INFO)
         self.is_active = True
-        self.second_thread.run(server.run)
+        self.second_thread.run(server.run, ())
 
     def stop_server(self):
         """

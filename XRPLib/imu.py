@@ -12,6 +12,8 @@ except (TypeError, ModuleNotFoundError):
 from .thread_controller import ThreadController
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
+import _thread
+from .board import Board
 
 class IMU():
 
@@ -325,7 +327,9 @@ class IMU():
         :return: The yaw (heading) of the IMU in degrees
         :rtype: float
         """
+        start_time = time.ticks_ms()
         with self.thread_lock:
+            print(f"Time to get lock: {time.ticks_ms()-start_time} ms")
             return self.running_yaw
     
     def get_heading(self):
@@ -498,7 +502,6 @@ class IMU():
 
             # Update timer frequency
             self.timer_frequency = int(value.rstrip('Hz'))
-            self._start_timer()
 
     def calibrate(self, calibration_time:float=1, vertical_axis:int= 2):
         """
@@ -545,18 +548,24 @@ class IMU():
 
         self.acc_offsets = avg_vals[0]
         self.gyro_offsets = avg_vals[1]
-        self._start_timer()
+        # _thread.start_new_thread(self._start_timer,())
+        self.thread_controller.run(self._start_timer, ())
+        print(f"Main Thread: {_thread.get_ident()}")
 
     def _start_timer(self):
-        ThreadController.get_default_thread_controller().run(lambda:
-            self.update_timer.init(freq=self.timer_frequency, callback=lambda t:self._update_imu_readings()))
+        self.update_timer.init(freq=self.timer_frequency, callback=lambda t:self._update_imu_readings())
+        print(f"IMU Start Thread: {_thread.get_ident()}")
+        self.has_printed = False
 
     def _stop_timer(self):
         self.update_timer.deinit()
 
     def _update_imu_readings(self):
         # Called every tick through a callback timer
-        
+        if not self.has_printed:
+            print(f"IMU Update Thread: {_thread.get_ident()}")
+            self.has_printed = True
+            
         gyro_rates = self.get_gyro_rates()
         
         delta_pitch = gyro_rates[0] / 1000 / self.timer_frequency

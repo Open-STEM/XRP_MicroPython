@@ -20,25 +20,13 @@ class ThreadController():
         self.to_run_list = []
         self.currently_running = False
         self.lock = _thread.allocate_lock()
-        self.start_thread()
+        _thread.start_new_thread(self._loop, ())
 
     def allocate_lock(self):
         """
         Allocates a lock for the thread.
         """
         return _thread.allocate_lock()
-
-    def start_thread(self):
-        """
-        Starts the thread.
-        """
-        self.thread = _thread.start_new_thread(self._loop, ())
-
-    def stop_thread(self):
-        """
-        Stops the thread.
-        """
-        self.thread.exit()
 
     def _loop(self):
         """
@@ -49,12 +37,13 @@ class ThreadController():
             if len(self.to_run_list) > 0:
                 self.currently_running = True
                 func = self.to_run_list.pop(0)
+                print("Second thread received function")
                 self.lock.release()
                 func()
             else:
                 self.currently_running = False
                 self.lock.release()
-            time.sleep(0.001)
+            time.sleep(0.01)
 
     def run(self, function, args):
         """
@@ -77,4 +66,4 @@ class ThreadController():
         Waits until the thread is done running all functions in the to_run_list.
         """
         while self.is_running():
-            time.sleep(0.001)
+            time.sleep(0.01)

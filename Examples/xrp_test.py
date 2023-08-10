@@ -1,6 +1,8 @@
 from XRPLib.defaults import *
 from machine import Pin
 import time
+from XRPLib.thread_controller import ThreadController
+import _thread
 
 imu.reset_pitch()
 imu.reset_yaw()
@@ -8,7 +10,7 @@ imu.reset_roll()
 
 def log_imu_heading():
     # Set to true to log the IMU heading forever
-    while True:
+    while not board.is_button_pressed():
         print(imu.get_yaw())
         time.sleep(0.1)
 
@@ -73,4 +75,18 @@ def encoder_test():
         print(f"Left: {left_motor.get_position()}\tRight:{right_motor.get_position()}")
         time.sleep(0.1)
 
-test_rangefinder()
+def thread_test_1():
+    thread = ThreadController.get_default_thread_controller()
+    thread.run(board.led_blink, (5,))
+    time.sleep(3)
+    thread.run(board.led_off(), ())
+
+def thread_test_2():
+    _thread.start_new_thread(board.led_blink, (2,))
+    time.sleep(5)
+    board.led_off()
+
+def thread_test_3():
+    imu._stop_timer()
+    _thread.start_new_thread(imu._start_timer,())
+    log_imu_heading()
