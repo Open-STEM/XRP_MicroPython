@@ -1,5 +1,7 @@
 import _thread
 import time
+import gc
+from machine import Timer
 
 class ThreadController():
     """
@@ -21,6 +23,11 @@ class ThreadController():
         self.currently_running = False
         self.lock = _thread.allocate_lock()
         _thread.start_new_thread(self._loop, ())
+
+        # Set garbage collector to run every 50ms on the second thread to avoid memory leak
+        gc.enable()
+        self.gc_timer = Timer(-1)
+        self.run(lambda: self.gc_timer.init(period=50, callback= lambda t:gc.collect()), ())
 
     def allocate_lock(self):
         """

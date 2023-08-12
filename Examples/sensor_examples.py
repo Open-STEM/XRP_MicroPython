@@ -72,3 +72,5 @@ def climb_ramp(ramp_angle, angle_tolerance=3.5):
         time.sleep(0.05)
     # Then stop
     drivetrain.set_effort(0, 0)
+
+imu_test() # Need to put this here when running this file since the REPL stops working when the thread stalls

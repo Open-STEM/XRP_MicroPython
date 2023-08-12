@@ -327,9 +327,7 @@ class IMU():
         :return: The yaw (heading) of the IMU in degrees
         :rtype: float
         """
-        start_time = time.ticks_ms()
         with self.thread_lock:
-            print(f"Time to get lock: {time.ticks_ms()-start_time} ms")
             return self.running_yaw
     
     def get_heading(self):
