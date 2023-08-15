@@ -151,20 +151,20 @@ class DifferentialDrive:
 
         if main_controller is None:
             main_controller = PID(
-                kp = 0.04,
-                ki = 0.0125,
-                kd = 0.025,
-                min_output = 0.225,
-                max_output = max_effort,
-                max_integral = 35,
-                tolerance = 0.1,
+                kp = 0.1,
+                ki = 0.04,
+                kd = 0.06,
+                min_output = 0.25,
+                max_output = 0.5,
+                max_integral = 10,
+                tolerance = 0.25,
                 tolerance_count = 3,
             )
 
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.03, kd=0.003,
+                kp = 0.075, kd=0.005,
             )
 
         if self.imu is not None:
@@ -228,8 +228,8 @@ class DifferentialDrive:
         """
 
         if max_effort < 0:
-            max_effort *= -1
-            turn_degrees *= -1
+            max_effort = -max_effort
+            turn_degrees = -turn_degrees
 
         time_out = Timeout(timeout)
         starting_left = self.get_left_encoder_position()
@@ -238,20 +238,19 @@ class DifferentialDrive:
         if main_controller is None:
             main_controller = PID(
                 kp = 0.02,
-                ki = 0.005,
-                kd = 0.012,
+                ki = 0.001,
+                kd = 0.00165,
                 min_output = 0.35,
-                max_output = max_effort,
-                max_derivative = 0.5,
-                max_integral = 50,
-                tolerance = 0.5,
-                tolerance_count = 2
+                max_output = 0.5,
+                max_integral = 75,
+                tolerance = 1,
+                tolerance_count = 3
             )
 
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 1,
+                kp = 1.0,
             )
  
         if use_imu and (self.imu is not None):
