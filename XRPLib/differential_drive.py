@@ -277,7 +277,7 @@ class DifferentialDrive:
             if main_controller.is_done() or time_out.is_done():
                 break
 
-            self.set_speed(-turn_speed - encoder_correction, turn_speed - encoder_correction)
+            self.set_effort(-turn_speed - encoder_correction, turn_speed - encoder_correction)
 
             time.sleep(0.01)
 
