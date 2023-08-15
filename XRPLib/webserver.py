@@ -32,6 +32,8 @@ class Webserver:
         self.FUNCTION_PREFIX = "startfunction"
         self.FUNCTION_SUFFIX = "endfunction"
         self.display_arrows = False
+        # Instantiate self.wlan now so that running stop before start doesn't cause an error
+        self.wlan = network.WLAN(network.STA_IF)
 
     def start_network(self, ssid:str=None, robot_id:int= None, password:str=None):
         """
@@ -58,6 +60,8 @@ class Webserver:
                     robot_id = 1
                 ssid = f"XRP_{robot_id}"
                 password = "remote.xrp"
+        if password is not None and len(password) < 8:
+            logging.warning("Password is less than 8 characters, this may cause issues with some devices")
         self.access_point = access_point(ssid, password)
         logging.info(f"Starting Access Point \"{ssid}\"")
         self.wlan = network.WLAN(network.AP_IF)
