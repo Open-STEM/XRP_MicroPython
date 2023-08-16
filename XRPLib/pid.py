@@ -87,7 +87,7 @@ class PID(Controller):
         derivative = (error - self.prev_error) / timestep
 
         # derive output
-        output = self.kp * error + self.ki * integral - self.kd * derivative
+        output = self.kp * error + self.ki * integral + self.kd * derivative
         self.prev_error = error
         self.prev_integral = integral
 
