@@ -68,6 +68,8 @@ class EncodedMotor:
         self.speed = 0
         # Use a virtual timer so we can leave the hardware timers up for the user
         self.updateTimer = Timer(-1)
+        # If the update timer is not running, start it at 50 Hz (20ms updates)
+        self.updateTimer.init(period=20, callback=lambda t:self._update())
 
     def set_effort(self, effort: float):
         """
@@ -123,11 +125,7 @@ class EncodedMotor:
         if speed_rpm is None or speed_rpm == 0:
             self.target_speed = None
             self.set_effort(0)
-            self.speed = 0
-            self.updateTimer.deinit()
             return
-        # If the update timer is not running, start it at 50 Hz (20ms updates)
-        self.updateTimer.init(period=20, callback=lambda t:self._update())
         # Convert from rev per min to counts per 20ms (60 sec/min, 50 Hz)
         self.target_speed = speed_rpm*self._encoder.resolution/(60*50)
         self.speedController.clear_history()
@@ -153,8 +151,4 @@ class EncodedMotor:
             error = self.target_speed - self.speed
             effort = self.speedController.update(error)
             self._motor.set_effort(effort)
-        else:
-            self.updateTimer.deinit()
-
         self.prev_position = current_position
-
