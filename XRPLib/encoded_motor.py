@@ -15,7 +15,7 @@ class EncodedMotor:
     def get_default_encoded_motor(cls, index:int = 1):
         """
         Get one of the default XRP v2 motor instances. These are singletons, so only one instance of each of these will ever exist.
-        Left Motor is the default, so if no index (or an invalid index) is specified, the left motor will be returned.
+        Raises an exception if an invalid index is requested.
 
         :param index: The index of the motor to get; 1 for left, 2 for right, 3 for motor 3, 4 for motor 4
         :type index: int
