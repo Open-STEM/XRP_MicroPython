@@ -145,24 +145,26 @@ class DifferentialDrive:
             distance *= -1
 
         time_out = Timeout(timeout)
-        startingLeft = self.get_left_encoder_position()
-        startingRight = self.get_right_encoder_position()
+        starting_left = self.get_left_encoder_position()
+        starting_right = self.get_right_encoder_position()
 
 
         if main_controller is None:
             main_controller = PID(
-                kp = 0.075,
-                kd = 0.005,
-                minOutput = 0.25,
-                maxOutput = max_effort,
-                tolerance = 0.1,
-                toleranceCount = 3,
+                kp = 0.1,
+                ki = 0.04,
+                kd = 0.06,
+                min_output = 0.25,
+                max_output = 0.5,
+                max_integral = 10,
+                tolerance = 0.25,
+                tolerance_count = 3,
             )
 
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.025, kd=0.0025,
+                kp = 0.075, kd=0.005,
             )
 
         if self.imu is not None:
@@ -174,13 +176,13 @@ class DifferentialDrive:
         while True:
 
             # calculate the distance traveled
-            leftDelta = self.get_left_encoder_position() - startingLeft
-            rightDelta = self.get_right_encoder_position() - startingRight
-            distTraveled = (leftDelta + rightDelta) / 2
+            left_delta = self.get_left_encoder_position() - starting_left
+            right_delta = self.get_right_encoder_position() - starting_right
+            dist_traveled = (left_delta + right_delta) / 2
 
             # PID for distance
-            distanceError = distance - distTraveled
-            effort = main_controller.update(distanceError)
+            distance_error = distance - dist_traveled
+            effort = main_controller.update(distance_error)
             
             if main_controller.is_done() or time_out.is_done():
                 break
@@ -190,7 +192,7 @@ class DifferentialDrive:
                 # record current heading to maintain it
                 current_heading = self.imu.get_yaw()
             else:
-                current_heading = ((rightDelta-leftDelta)/2)*360/(self.track_width*math.pi)
+                current_heading = ((right_delta-left_delta)/2)*360/(self.track_width*math.pi)
 
             headingCorrection = secondary_controller.update(initial_heading - current_heading)
             
@@ -206,12 +208,12 @@ class DifferentialDrive:
     def turn(self, turn_degrees: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
-        Speed is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
+        effort is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
         Uses the IMU to determine the heading of the robot and P control for the motor controller.
 
         :param turnDegrees: The number of angle for the robot to turn (In Degrees)
         :type turnDegrees: float
-        :param max_effort: The max effort for which the robot to travel (Bounded from -1 to 1). Default is half effort forward.
+        :param max_effort: The max speed for which the robot to travel (Bounded from -1 to 1)
         :type max_effort: float
         :param timeout: The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)
         :type timeout: float
@@ -226,27 +228,29 @@ class DifferentialDrive:
         """
 
         if max_effort < 0:
-            max_effort *= -1
-            turn_degrees *= -1
+            max_effort = -max_effort
+            turn_degrees = -turn_degrees
 
         time_out = Timeout(timeout)
-        startingLeft = self.get_left_encoder_position()
-        startingRight = self.get_right_encoder_position()
+        starting_left = self.get_left_encoder_position()
+        starting_right = self.get_right_encoder_position()
 
         if main_controller is None:
             main_controller = PID(
-                kp = .015,
-                kd = 0.0012,
-                minOutput = 0.25,
-                maxOutput = max_effort,
-                tolerance = 0.5,
-                toleranceCount = 3
+                kp = 0.02,
+                ki = 0.001,
+                kd = 0.00165,
+                min_output = 0.35,
+                max_output = 0.5,
+                max_integral = 75,
+                tolerance = 1,
+                tolerance_count = 3
             )
 
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.002,
+                kp = 1.0,
             )
  
         if use_imu and (self.imu is not None):
@@ -255,25 +259,25 @@ class DifferentialDrive:
         while True:
             
             # calculate encoder correction to minimize drift
-            leftDelta = self.get_left_encoder_position() - startingLeft
-            rightDelta = self.get_right_encoder_position() - startingRight
-            encoderCorrection = secondary_controller.update(leftDelta + rightDelta)
+            left_delta = self.get_left_encoder_position() - starting_left
+            right_delta = self.get_right_encoder_position() - starting_right
+            encoder_correction = secondary_controller.update(left_delta + right_delta)
 
             if use_imu and (self.imu is not None):
                 # calculate turn error (in degrees) from the imu
-                turnError = turn_degrees - self.imu.get_yaw()
+                turn_error = turn_degrees - self.imu.get_yaw()
             else:
                 # calculate turn error (in degrees) from the encoder counts
-                turnError = turn_degrees - ((rightDelta-leftDelta)/2)*360/(self.track_width*math.pi)
+                turn_error = turn_degrees - ((right_delta-left_delta)/2)*360/(self.track_width*math.pi)
 
             # Pass the turn error to the main controller to get a turn speed
-            turnSpeed = main_controller.update(turnError)
+            turn_speed = main_controller.update(turn_error)
             
             # exit if timeout or tolerance reached
             if main_controller.is_done() or time_out.is_done():
                 break
 
-            self.set_effort(-turnSpeed - encoderCorrection, turnSpeed - encoderCorrection)
+            self.set_effort(-turn_speed - encoder_correction, turn_speed - encoder_correction)
 
             time.sleep(0.01)
 

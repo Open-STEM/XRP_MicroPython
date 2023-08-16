@@ -11,7 +11,7 @@ Run this file after interrupting a program to stop the robot by running "import 
 # using the EncodedMotor since the default drivetrain uses the IMU and takes 3 seconds to init
 for i in range(4):
     motor = EncodedMotor.get_default_encoded_motor(i+1)
-    motor.set_effort(0)
+    motor.set_speed(0)
     motor.reset_encoder_position()
 
 # Turn off the on-board LED
