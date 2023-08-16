@@ -83,9 +83,9 @@ class Board:
         self.led.off()
         self._virt_timer.deinit()
 
-    def led_blink(self, frequency: int):
+    def led_blink(self, frequency: int=0):
         """
-        Blinks the LED at a given frequency
+        Blinks the LED at a given frequency. If the frequency is 0, the LED will stop blinking.
 
         :param frequency: The frequency to blink the LED at (in Hz)
         :type frequency: int
@@ -95,6 +95,10 @@ class Board:
             self._virt_timer.deinit()
         # We set it to twice in input frequency so that
         # the led flashes on and off frequency times per second
-        self._virt_timer.init(freq=frequency*2, mode=Timer.PERIODIC,
-            callback=lambda t:self.led.toggle())
-        self.is_led_blinking = True
+        if frequency == 0:
+            self._virt_timer.init(freq=frequency*2, mode=Timer.PERIODIC,
+                callback=lambda t:self.led.toggle())
+            self.is_led_blinking = True
+        else:
+            self._virt_timer.deinit()
+            self.is_led_blinking = False
