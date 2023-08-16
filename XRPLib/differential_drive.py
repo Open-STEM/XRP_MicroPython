@@ -96,7 +96,7 @@ class DifferentialDrive:
         scale = max(abs(straight), abs(turn))/(abs(straight) + abs(turn))
         left_speed = (straight - turn)*scale
         right_speed = (straight + turn)*scale
-        self.set_speed(left_speed, right_speed)
+        self.set_effort(left_speed, right_speed)
 
     def reset_encoder_position(self) -> None:
         """
