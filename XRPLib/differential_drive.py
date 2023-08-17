@@ -155,7 +155,7 @@ class DifferentialDrive:
                 ki = 0.04,
                 kd = 0.06,
                 min_output = 0.25,
-                max_output = 0.5,
+                max_output = max_effort,
                 max_integral = 10,
                 tolerance = 0.25,
                 tolerance_count = 3,
@@ -241,7 +241,7 @@ class DifferentialDrive:
                 ki = 0.001,
                 kd = 0.00165,
                 min_output = 0.35,
-                max_output = 0.5,
+                max_output = max_effort,
                 max_integral = 75,
                 tolerance = 1,
                 tolerance_count = 3
