@@ -20,8 +20,8 @@ for i in range(4):
 Board.get_default_board().led_off()
 
 # Turn off both Servos
-Servo.get_default_servo().free()
-Servo(17).free()
+Servo.get_default_servo(1).free()
+Servo.get_default_servo(2).free()
 
 # Shut off the webserver and close network connections
 Webserver.get_default_webserver().stop_server()
