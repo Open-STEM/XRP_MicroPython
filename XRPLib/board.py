@@ -95,7 +95,7 @@ class Board:
             self._virt_timer.deinit()
         # We set it to twice in input frequency so that
         # the led flashes on and off frequency times per second
-        if frequency == 0:
+        if frequency != 0:
             self._virt_timer.init(freq=frequency*2, mode=Timer.PERIODIC,
                 callback=lambda t:self.led.toggle())
             self.is_led_blinking = True

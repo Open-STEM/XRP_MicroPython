@@ -250,7 +250,7 @@ class DifferentialDrive:
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 1.0,
+                kp = 0.8,
             )
  
         if use_imu and (self.imu is not None):
