@@ -36,7 +36,8 @@ class Servo:
 
         self._servo = PWM(Pin(signal_pin, Pin.OUT))
         # Initialize base frequency for the PWM
-        self._servo.freq(50)
+        self._servo.init(freq=50)
+        self._is_init = True
         self.MICROSEC_PER_DEGREE: int = 10000
         self.LOW_ANGLE_OFFSET: int = 500000
 
@@ -46,10 +47,14 @@ class Servo:
         :param degrees: The angle to set the servo to [0,200]
         :ptype degrees: float
         """
+        if not self._is_init:
+            self._servo.init(freq=50)
+            self._is_init = True
         self._servo.duty_ns(int(degrees * self.MICROSEC_PER_DEGREE + self.LOW_ANGLE_OFFSET))
 
     def free(self):
         """
         Allows the servo to spin freely without holding position
         """
-        self._servo.duty_ns(0)
+        self._servo.deinit()
+        self._is_init = False
