@@ -3,7 +3,6 @@ import sys
 A simple file for shutting off all of the motors after a program gets interrupted from the REPL.
 Run this file after interrupting a program to stop the robot by running "import XRPLib.resetbot" in the REPL.
 """
-print(sys.modules)
 
 def reset_motors():
     from XRPLib.encoded_motor import EncodedMotor
