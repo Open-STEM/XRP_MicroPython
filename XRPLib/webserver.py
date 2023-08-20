@@ -62,9 +62,8 @@ class Webserver:
                 password = "remote.xrp"
         if password is not None and len(password) < 8:
             logging.warning("Password is less than 8 characters, this may cause issues with some devices")
-        self.access_point = access_point(ssid, password)
+        self.wlan = access_point(ssid, password)
         logging.info(f"Starting Access Point \"{ssid}\"")
-        self.wlan = network.WLAN(network.AP_IF)
         self.ip = self.wlan.ifconfig()[0]
 
     def connect_to_network(self, ssid:str=None, password:str=None, timeout = 10):
@@ -118,11 +117,12 @@ class Webserver:
         """
         Shuts off the webserver and network and stops handling requests
         """
-        logging.enable_logging_types(logging.LOG_INFO)
-        logging.info("Stopping Webserver and Network Connections")
-        
-        stop()
-        self.wlan.active(False)
+        if self.wlan.active():
+            logging.enable_logging_types(logging.LOG_INFO)
+            logging.info("Stopping Webserver and Network Connections")
+            
+            stop()
+            self.wlan.active(False)
 
     def _index_page(self, request):
         # Render index page and respond to form requests

@@ -2,16 +2,29 @@ from machine import Pin, PWM
 
 class Servo:
 
-    _DEFAULT_SERVO_INSTANCE = None
+    _DEFAULT_SERVO_ONE_INSTANCE = None
+    _DEFAULT_SERVO_TWO_INSTANCE = None
 
     @classmethod
-    def get_default_servo(cls):
+    def get_default_servo(cls, index:int):
         """
-        Get the default XRP v2 servo instance. This is a singleton, so only one instance of the servo will ever exist.
+        Gets one of the default XRP v2 servo instances. These are singletons, so only one instance of each servo will ever exist.
+        Raises an exception if an invalid index is requested.
+
+        :param index: The index of the servo to get (1 or 2)
+        :type index: int
         """
-        if cls._DEFAULT_SERVO_INSTANCE is None:
-            cls._DEFAULT_SERVO_INSTANCE = cls(16)
-        return cls._DEFAULT_SERVO_INSTANCE
+        if index == 1:
+            if cls._DEFAULT_SERVO_ONE_INSTANCE is None:
+                cls._DEFAULT_SERVO_ONE_INSTANCE = cls(16)
+            servo = cls._DEFAULT_SERVO_ONE_INSTANCE
+        elif index == 2:
+            if cls._DEFAULT_SERVO_TWO_INSTANCE is None:
+                cls._DEFAULT_SERVO_TWO_INSTANCE = cls(17)
+            servo = cls._DEFAULT_SERVO_TWO_INSTANCE
+        else:
+            return Exception("Invalid servo index")
+        return servo
 
     def __init__(self, signal_pin:int):
         """

@@ -53,7 +53,7 @@ class MotorGroup(EncodedMotor):
         """
         avg = 0
         for motor in self.motors:
-            avg += motor.get_position_ticks()
+            avg += motor.get_position_counts()
         return round(avg / len(self.motors))
 
     def reset_encoder_position(self):
@@ -74,7 +74,7 @@ class MotorGroup(EncodedMotor):
         return avg / len(self.motors)
 
 
-    def set_target_speed(self, target_speed_rpm: float = None):
+    def set_speed(self, target_speed_rpm: float = None):
         """
         Sets target speed (in rpm) to be maintained passively by all motors in this group
         Call with no parameters to turn off speed control
@@ -83,7 +83,7 @@ class MotorGroup(EncodedMotor):
         :type target_speed_rpm: float, or None
         """
         for motor in self.motors:
-            motor.set_target_speed(target_speed_rpm)
+            motor.set_speed(target_speed_rpm)
 
     def set_speed_controller(self, new_controller):
         """

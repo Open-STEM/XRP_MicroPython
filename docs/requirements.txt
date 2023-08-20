@@ -1,5 +1,5 @@
-# SPDX-FileCopyrightText: 2021 Kattni Rembor for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Kevin Siegall, written for OpenSTEM @ WPI
 #
-# SPDX-License-Identifier: Unlicense
+# SPDX-License-Identifier: MIT
 
 sphinx>=4.0.0
