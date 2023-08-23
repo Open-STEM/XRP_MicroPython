@@ -27,13 +27,14 @@ Table of Contents
     :caption: Curriculum
 
     XRP Curriculum <https://introtoroboticsv2.readthedocs.io>
+    XRP User Guide <https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html>
+    XRPLib on GitHub <https://github.com/Open-STEM/XRP_MicroPython/releases/latest>
     XRP Support Forum <https://xrp.discourse.group>
 
 .. toctree::
     :caption: Other Links
 
-    XRP_MicroPython on GitHub <https://github.com/Open-STEM/XRP_MicroPython/releases/latest>
-    Download Micropython <https://micropython.org/download/>
+    Download MicroPython <https://micropython.org/download/>
     MicroPython Reference Documentation <https://docs.micropython.org/en/latest/>
     MicroPython Support Forum <https://github.com/orgs/micropython/discussions>
 

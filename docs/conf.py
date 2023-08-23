@@ -64,7 +64,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "MicroPython XRP Library"
+project = "XRPLib - MicroPython"
 creation_year = "2023"
 current_year = str(datetime.datetime.now().year)
 year_duration = (
@@ -153,7 +153,7 @@ html_static_path = ["_static"]
 html_favicon = "_static/xrplogo.ico"
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "MicroPython_XRP_Library_Doc"
+htmlhelp_basename = "MicroPython_XRPLib_Doc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -174,8 +174,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "MicroPython_XRP_Library.tex",
-        "MicroPython XRP Library Documentation",
+        "MicroPython_XRPLib.tex",
+        "MicroPython XRPLib Documentation",
         author,
         "manual",
     ),
@@ -188,8 +188,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "MicroPython_XRP_Library",
-        "MicroPython XRP Library Documentation",
+        "MicroPython_XRPLib",
+        "MicroPython XRPLib Documentation",
         [author],
         1,
     ),
@@ -203,11 +203,11 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "MicroPython_XRP_Library",
-        "MicroPython XRP Library Documentation",
+        "MicroPython_XRPLib",
+        "MicroPython XRPLib Documentation",
         author,
-        "MicroPython_XRP_Library",
-        "One line description of project.",
-        "Miscellaneous",
+        "MicroPython_XRPLib",
+        "The API Documentation for XRPLib",
+        "Robotics",
     ),
 ]

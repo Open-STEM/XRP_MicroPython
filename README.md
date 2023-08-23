@@ -1,4 +1,6 @@
-# Getting Starting with your XRP Robot
+# Welcome to XRPLib!!!
+
+## Getting Starting with your XRP Robot
 
 ### Step 1: Plug XRP Robot Controller Board into Computer
 
