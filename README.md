@@ -1,4 +1,4 @@
-# Welcome to XRPLib!!!
+# Welcome to XRPLib!
 
 ## Getting Starting with your XRP Robot
 
