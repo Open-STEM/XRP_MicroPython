@@ -1,8 +1,8 @@
+XRPLib - Table of Contents
+==========================
 
-.. include:: ../README.rst
-
-Table of Contents
-=================
+.. image:: _static/xrp-robot.jpg
+    :width: 50%
 
 .. toctree::
     :maxdepth: 4
