@@ -93,6 +93,8 @@ class DifferentialDrive:
         :param turn: The modifier effort (Bounded from -1 to 1) used to skew robot left (positive) or right (negative).
         :type turn: float
         """
+        if straight == 0 and turn == 0:
+            self.set_effort(0, 0)
         scale = max(abs(straight), abs(turn))/(abs(straight) + abs(turn))
         left_speed = (straight - turn)*scale
         right_speed = (straight + turn)*scale
