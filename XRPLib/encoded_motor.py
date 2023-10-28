@@ -177,18 +177,19 @@ class EncodedMotor:
             degrees *= -1
 
         time_out = Timeout(timeout)
-        starting = self.get_position()*360
+        starting = self.get_position_counts()
 
+        degrees *= self._encoder.resolution/360
 
         if main_controller is None:
             main_controller = PID(
                 kp = 0.1,
-                ki = 0.04,
-                kd = 0.04,
+                ki = 0.065,
+                kd = 0.0275,
                 min_output = 0.3,
                 max_output = max_effort,
-                max_integral = 10,
-                tolerance = 0.25,
+                max_integral = 25,
+                tolerance = 3,
                 tolerance_count = 3,
             )
 
@@ -196,7 +197,7 @@ class EncodedMotor:
         while True:
 
             # calculate the distance traveled
-            delta = 360*self.get_position() - starting
+            delta = self.get_position_counts() - starting
 
             # PID for distance
             error = degrees - delta
