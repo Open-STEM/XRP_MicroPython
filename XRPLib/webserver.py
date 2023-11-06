@@ -61,7 +61,7 @@ class Webserver:
                 ssid = f"XRP_{robot_id}"
                 password = "remote.xrp"
         if password is not None and len(password) < 8:
-            logging.warning("Password is less than 8 characters, this may cause issues with some devices")
+            logging.warn("Password is less than 8 characters, this may cause issues with some devices")
         self.wlan = access_point(ssid, password)
         logging.info(f"Starting Access Point \"{ssid}\"")
         self.ip = self.wlan.ifconfig()[0]
