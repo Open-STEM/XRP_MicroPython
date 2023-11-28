@@ -1,5 +1,8 @@
 from .encoded_motor import EncodedMotor
 from .controller import Controller
+from .pid import PID
+from .timeout import Timeout
+import time
 
 class MotorGroup(EncodedMotor):
     def __init__(self, *motors: EncodedMotor):
@@ -111,5 +114,45 @@ class MotorGroup(EncodedMotor):
         :return: if the distance was reached before the timeout
         :rtype: bool
         """
-        for motor in self.motors:
-            motor.rotate(degrees, max_effort, timeout, main_controller)
+        # ensure effort is always positive while distance could be either positive or negative
+        if max_effort < 0:
+            max_effort *= -1
+            degrees *= -1
+
+        time_out = Timeout(timeout)
+        starting = self.get_position_counts()
+
+        degrees *= self._encoder.resolution/360
+
+        if main_controller is None:
+            main_controller = PID(
+                kp = 58.5,
+                ki = 38.025,
+                kd = 16.0875,
+                min_output = 0.3,
+                max_output = max_effort,
+                max_integral = 0.04,
+                tolerance = 0.01,
+                tolerance_count = 3,
+            )
+
+
+        while True:
+
+            # calculate the distance traveled
+            delta = self.get_position_counts() - starting
+
+            # PID for distance
+            error = degrees - delta
+            effort = main_controller.update(error)
+            
+            if main_controller.is_done() or time_out.is_done():
+                break
+
+            self.set_effort(effort)
+
+            time.sleep(0.01)
+
+        self.set_effort(0)
+
+        return not time_out.is_done()
