@@ -233,29 +233,31 @@ class Webserver:
 
     def _generateHTML(self):
 
-        string = _HTML1
+        # string = _HTML1
         
-        if self.display_arrows:
-            string += _HTML_ARROWS
+        # if self.display_arrows:
+        #     string += _HTML_ARROWS
 
-        string += f'<h3>Custom Function Bindings:</h3>'
-        # add each button's href to html
-        for button in self.buttons.keys():
-            if(["forwardButton","backButton","leftButton","rightButton","stopButton"].count(button) > 0):
-                # Slightly cursed solution to not display the arrow buttons as text buttons
-                continue
-            string += f'<p><form action="{button}" method="post"><input type="submit" class="user-button" name={button} value="{button}" /></form></p>'
-            string += "\n"
+        # string += f'<h3>Custom Function Bindings:</h3>'
+        # # add each button's href to html
+        # for button in self.buttons.keys():
+        #     if(["forwardButton","backButton","leftButton","rightButton","stopButton"].count(button) > 0):
+        #         # Slightly cursed solution to not display the arrow buttons as text buttons
+        #         continue
+        #     string += f'<p><form action="{button}" method="post"><input type="submit" class="user-button" name={button} value="{button}" /></form></p>'
+        #     string += "\n"
 
-        string += f'<h3>Logged Data:</h3>'
-        # add logged data to the html
-        for data_label in self.logged_data.keys():
-            string += f'<p>{data_label}: {str(self.logged_data[data_label])}</p>'
-            string += "\n"
+        # string += f'<h3>Logged Data:</h3>'
+        # # add logged data to the html
+        # for data_label in self.logged_data.keys():
+        #     string += f'<p>{data_label}: {str(self.logged_data[data_label])}</p>'
+        #     string += "\n"
 
-        string += _HTML2
+        # string += _HTML2
 
-        return string
+        # return string
+        with open("dist/index.html") as file:
+            return file.read()
 
 """ Use decorators to bind the wifi methods to the requests """
 webserver = Webserver()
