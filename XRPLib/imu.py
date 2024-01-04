@@ -1,16 +1,39 @@
-# LSM6DSO 3D accelerometer and 3D gyroscope seneor micropython drive
-# ver: 1.0
-# License: MIT
-# Author: shaoziyang (shaoziyang@micropython.org.cn)
-# v1.0 2019.7
-try:
-    from .imu_defs import *
-    from uctypes import struct, addressof
-except (TypeError, ModuleNotFoundError):
-    # Import wrapped in a try/except so that autodoc generation can process properly
-    pass
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
+import qwiic_i2c
+from qwiic_lsm6dso import QwiicLSM6DSO
+
+acc_fs = {
+    # Accelerometer full scale range values
+    '2g': QwiicLSM6DSO.FS_XL_2g,
+    '16g': QwiicLSM6DSO.FS_XL_16g,
+    '4g' : QwiicLSM6DSO.FS_XL_4g,
+    '8g' : QwiicLSM6DSO.FS_XL_8g 
+}
+
+gyro_fs = {
+    # Gyroscope full scale range values
+    '125' : QwiicLSM6DSO.FS_G_125dps,
+    '250' : QwiicLSM6DSO.FS_G_250dps,
+    '500' : QwiicLSM6DSO.FS_G_500dps,
+    '1000' : QwiicLSM6DSO.FS_G_1000dps,
+    '2000' : QwiicLSM6DSO.FS_G_2000dps
+}
+
+imu_odr = {
+    # Accelerometer and gyroscope output data rate values
+    '0Hz' : QwiicLSM6DSO.ODR_DISABLE,
+    '12.5Hz' : QwiicLSM6DSO.ODR_12_5Hz,
+    '26Hz' : QwiicLSM6DSO.ODR_26Hz,
+    '52Hz' : QwiicLSM6DSO.ODR_52Hz,
+    '104Hz' : QwiicLSM6DSO.ODR_104Hz,
+    '208Hz' : QwiicLSM6DSO.ODR_208Hz,
+    '416Hz' : QwiicLSM6DSO.ODR_416Hz,
+    '833Hz' : QwiicLSM6DSO.ODR_833Hz,
+    '1660Hz' : QwiicLSM6DSO.ODR_1660Hz,
+    '3330Hz' : QwiicLSM6DSO.ODR_3330Hz,
+    '6660Hz' : QwiicLSM6DSO.ODR_6660Hz
+}
 
 class IMU():
 
@@ -26,124 +49,72 @@ class IMU():
             cls._DEFAULT_IMU_INSTANCE = cls(
                 scl_pin=19,
                 sda_pin=18,
-                addr=LSM_ADDR_PRIMARY
             )  
             cls._DEFAULT_IMU_INSTANCE.calibrate()
         return cls._DEFAULT_IMU_INSTANCE
 
-    def __init__(self, scl_pin: int, sda_pin: int, addr):
-        # I2C values
-        self.i2c = I2C(id=1, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=400000)
-        self.addr = addr
+    def __init__(self, scl_pin: int, sda_pin: int):
 
-        # Initialize member variables
-        self._reset_member_variables()
+        self._i2c_driver = qwiic_i2c.getI2CDriver(sda = 18, scl = 19, freq = 400000)
+        self._imu = QwiicLSM6DSO(i2c_driver=self._i2c_driver)
 
-        # Transmit and recieve buffers
-        self.tb = bytearray(1)
-        self.rb = bytearray(1)
-
-        # Copies of registers. Bytes and structs share the same memory
-        # addresses, so changing one changes the other
-        self.reg_ctrl1_xl_byte   = bytearray(1)
-        self.reg_ctrl2_g_byte    = bytearray(1)
-        self.reg_ctrl3_c_byte    = bytearray(1)
-        self.reg_ctrl1_xl_bits   = struct(addressof(self.reg_ctrl1_xl_byte), LSM_REG_LAYOUT_CTRL1_XL)
-        self.reg_ctrl2_g_bits    = struct(addressof(self.reg_ctrl2_g_byte), LSM_REG_LAYOUT_CTRL2_G)
-        self.reg_ctrl3_c_bits    = struct(addressof(self.reg_ctrl3_c_byte), LSM_REG_LAYOUT_CTRL3_C)
-
-        # Create timer
         self.update_timer = Timer(-1)
 
-        # Check if the IMU is connected
-        if not self.is_connected():
-            # TODO - do somehting intelligent here
-            pass
-        
-        # Reset sensor to clear any previous configuration
-        self.reset()
-        
-        # Enable block data update
-        self._set_bdu()
-
-        # Set default scale for each sensor
-        self.acc_scale('16g')
-        self.gyro_scale('2000dps')
-
-        # Set default rate for each sensor
-        self.acc_rate('208Hz')
-        self.gyro_rate('208Hz')
-
-    """
-        The following are private helper methods to read and write registers, as well as to convert the read values to the correct unit.
-    """
-
-    def _reset_member_variables(self):
-        # Vector of IMU measurements
-        self.irq_v = [[0, 0, 0], [0, 0, 0]]
-
-        # Sensor offsets
-        self.gyro_offsets = [0,0,0]
-        self.acc_offsets = [0,0,0]
-
-        # Scale factors when ranges are changed
-        self._acc_scale_factor = 1
-        self._gyro_scale_factor = 1
-
-        # Angle integrators
-        self.running_pitch = 0
-        self.running_yaw = 0
-        self.running_roll = 0
-
-    def _int16(self, d):
-        return d if d < 0x8000 else d - 0x10000
-
-    def _setreg(self, reg, dat):
-        self.tb[0] = dat
-        self.i2c.writeto_mem(self.addr, reg, self.tb)
-
-    def _getreg(self, reg):
-        self.i2c.readfrom_mem_into(self.addr, reg, self.rb)
-        return self.rb[0]
-
-    def _getregs(self, reg, num_bytes):
-        rx_buf = bytearray(num_bytes)
-        self.i2c.readfrom_mem_into(self.addr, reg, rx_buf)
-        return rx_buf
-
-    def _get2reg(self, reg):
-        return self._getreg(reg) + self._getreg(reg+1) * 256
-
-    def _r_w_reg(self, reg, dat, mask):
-        self._getreg(reg)
-        self.rb[0] = (self.rb[0] & mask) | dat
-        self._setreg(reg, self.rb[0])
-
-    def _set_bdu(self, bdu = True):
-        """
-        Sets Block Data Update bit
-        """
-        self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
-        self.reg_ctrl3_c_bits.BDU = bdu
-        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
-
-    def _set_if_inc(self, if_inc = True):
-        """
-        Sets InterFace INCrement bit
-        """
-        self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
-        self.reg_ctrl3_c_bits.IF_INC = if_inc
-        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
-
-    def _raw_to_mg(self, raw):
-        return self._int16((raw[1] << 8) | raw[0]) * LSM_MG_PER_LSB_2G * self._acc_scale_factor
-
-    def _raw_to_mdps(self, raw):
-        return self._int16((raw[1] << 8) | raw[0]) * LSM_MDPS_PER_LSB_125DPS * self._gyro_scale_factor
-    
     """
         Public facing API Methods
     """
+
+    def acc_scale(self, value=None):
+        """
+        Set the accelerometer scale in g. The scale can be:
+        '2g', '4g', '8g', or '16g'
+        Pass in no parameters to retrieve the current value
+        """
+        if value is None:
+            return self._imu.get_accel_full_scale()
+        elif value not in gyro_fs:
+            raise False
+        return self._imu.set_gyro_range(gyro_fs[value])
+
+    def gyro_scale(self, value=None):
+        """
+        Set the gyroscope scale in dps. The scale can be:
+        '125', '250', '500', '1000', or '2000'
+        Pass in no parameters to retrieve the current value
+
+        :param value: The scale to set the gyroscope to
+        :type value: str
+        :return: The current gyroscope scale, or False if the value is invalid
+        """
+        if value is None:
+            return self._imu.get_gyro_range()
+        elif value not in gyro_fs:
+            raise False
+        return self._imu.set_gyro_range(gyro_fs[value])
+
+    def acc_rate(self, value=None):
+        """
+        Set the accelerometer rate in Hz. The rate can be:
+        '0Hz', '12.5Hz', '26Hz', '52Hz', '104Hz', '208Hz', '416Hz', '833Hz', '1660Hz', '3330Hz', '6660Hz'
+        Pass in no parameters to retrieve the current value
+        """
+        if value is None:
+            return self._imu.get_accel_data_rate()
+        elif value not in imu_odr:
+            raise False
+        return self._imu.set_accel_data_rate(imu_odr[value])
+
+    def gyro_rate(self, value=None):
+        """
+        Set the gyroscope rate in Hz. The rate can be:
+        '0Hz', '12.5Hz', '26Hz', '52Hz', '104Hz', '208Hz', '416Hz', '833Hz', '1660Hz', '3330Hz', '6660Hz'
+        Pass in no parameters to retrieve the current value
+        """
+        if value is None:
+            return self._imu.get_gyro_data_rate()
+        elif value not in imu_odr:
+            raise False
+        return self._imu.set_gyro_data_rate(imu_odr[value])
 
     def is_connected(self):
         """
@@ -152,157 +123,92 @@ class IMU():
         :return: True if WHO_AM_I value is correct, otherwise False
         :rtype: bool
         """
-        who_am_i = self._getreg(LSM_REG_WHO_AM_I)
-        return who_am_i == LSM_WHO_AM_I_VALUE
+        return self._imu.is_connected()
 
-    def reset(self, wait_for_reset = True, wait_timeout_ms = 100):
+    def reset(self):
         """
         Resets the IMU, and restores all registers to their default values
+        Requires recalibration after reset
 
-        :param wait_for_reset: Whether to wait for reset to complete
-        :type wait_for_reset: bool
-        :param wait_timeout_ms: Timeout in milliseconds when waiting for reset
-        :type wait_timeout_ms: int
-        :return: False if timeout occurred, otherwise True
+        :return: True if reset was successful, otherwise False
         :rtype: bool
+
         """
-        # Stop timer
+        # Stop the update timer
         self._stop_timer()
-
-        # Reset member variables
-        self._reset_member_variables()
-
-        # Set BOOT and SW_RESET bits
-        self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
-        self.reg_ctrl3_c_bits.BOOT = 1
-        self.reg_ctrl3_c_bits.SW_RESET = 1
-        self._setreg(LSM_REG_CTRL3_C, self.reg_ctrl3_c_byte[0])
-
-        # Wait for reset to complete, if requested
-        if wait_for_reset:
-            # Loop with timeout
-            t0 = time.ticks_ms()
-            while time.ticks_ms() < (t0 + wait_timeout_ms):
-                # Check if register has returned to default value (0x04)
-                self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
-                if self.reg_ctrl3_c_byte[0] == 0x04:
-                    return True
-            # Timeout occurred
-            return False
-        else:
-            return True
+        # Reset angle integrators
+        self.running_pitch = 0
+        self.running_yaw = 0
+        self.running_roll = 0
+        # Reset registers to default values
+        self._imu.begin()
+        # Change the accelerometer and gyroscope scales and data rates to the default values for the XRP
+        self.acc_scale('2g')
+        self.gyro_scale('125')
+        self.acc_rate('416Hz')
+        self.gyro_rate('416Hz')
+        return 
 
     def get_acc_x(self):
         """
-        :return: The current reading for the accelerometer's X-axis, in mg
+        :return: The current reading for the accelerometer's X-axis, in terms of g
         :rtype: int
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTX_L_A, 2)
-
-        # Convert raw data to mg's
-        return self._raw_to_mg(raw_bytes[0:2]) - self.acc_offsets[0]
+        return self._imu.read_float_accel_x() - self._offsets[0]
 
     def get_acc_y(self):
         """
-        :return: The current reading for the accelerometer's Y-axis, in mg
+        :return: The current reading for the accelerometer's Y-axis, in terms of g
         :rtype: int
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTY_L_A, 2)
-
-        # Convert raw data to mg's
-        return self._raw_to_mg(raw_bytes[0:2]) - self.acc_offsets[1]
+        return self._imu.read_float_accel_y() - self._offsets[1]
 
     def get_acc_z(self):
         """
-        :return: The current reading for the accelerometer's Z-axis, in mg
+        :return: The current reading for the accelerometer's Z-axis, in terms of g
         :rtype: int
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTZ_L_A, 2)
-
-        # Convert raw data to mg's
-        return self._raw_to_mg(raw_bytes[0:2]) - self.acc_offsets[2]
+        return self._imu.read_float_accel_z() - self._offsets[2]
     
     def get_acc_rates(self):
         """
-        :return: the list of readings from the Accelerometer, in mg. The order of the values is x, y, z.
-        :rtype: list<int>
+        :return: the list of readings from the Accelerometer, in terms of g. The order of the values is x, y, z.
+        :rtype: tuple[int]
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTX_L_A, 6)
-
-        # Convert raw data to mg's
-        self.irq_v[0][0] = self._raw_to_mg(raw_bytes[0:2]) - self.acc_offsets[0]
-        self.irq_v[0][1] = self._raw_to_mg(raw_bytes[2:4]) - self.acc_offsets[1]
-        self.irq_v[0][2] = self._raw_to_mg(raw_bytes[4:6]) - self.acc_offsets[2]
-
-        return self.irq_v[0]
+        return tuple(map(lambda a,b: a-b, self._imu.read_float_accel_all(), self._offsets[0:3]))
 
     def get_gyro_x_rate(self):
         """
-            Individual axis read for the Gyroscope's X-axis, in mdps
+            Individual axis read for the Gyroscope's X-axis, in dps
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 2)
-
-        # Convert raw data to mdps
-        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[0]
+        return self._imu.read_float_gyro_x() - self._offsets[3]
 
     def get_gyro_y_rate(self):
         """
-            Individual axis read for the Gyroscope's Y-axis, in mdps
+            Individual axis read for the Gyroscope's Y-axis, in dps
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTY_L_G, 2)
-
-        # Convert raw data to mdps
-        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[1]
+        return self._imu.read_float_gyro_y() - self._offsets[4]
 
     def get_gyro_z_rate(self):
         """
-            Individual axis read for the Gyroscope's Z-axis, in mdps
+            Individual axis read for the Gyroscope's Z-axis, in dps
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTZ_L_G, 2)
-
-        # Convert raw data to mdps
-        return self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[2]
+        return self._imu.read_float_gyro_z() - self.offsets[5]
 
     def get_gyro_rates(self):
         """
-            Retrieves the array of readings from the Gyroscope, in mdps
-            The order of the values is x, y, z.
+            :return: the list of readings from the Gyroscope, in dps. The order of the values is x, y, z.
+            :rtype: tuple[int]
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 6)
-
-        # Convert raw data to mdps
-        self.irq_v[1][0] = self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[0]
-        self.irq_v[1][1] = self._raw_to_mdps(raw_bytes[2:4]) - self.gyro_offsets[1]
-        self.irq_v[1][2] = self._raw_to_mdps(raw_bytes[4:6]) - self.gyro_offsets[2]
-
-        return self.irq_v[1]
+        return self._imu.read_float_gyro_all()
 
     def get_acc_gyro_rates(self):
         """
-            Get the accelerometer and gyroscope values in mg and mdps in the form of a 2D array.
-            The first row is the acceleration values, the second row is the gyro values.
-            The order of the values is x, y, z.
+            Get the accelerometer and gyroscope values in terms of g and dps in a single tuple.
+            Lists the acceleration values, then the gyro values.
+            The order of the values is accX, accY, accZ, gyroX, gyroY, gyroZ.
         """
-        # Burst read data registers
-        raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 12)
-
-        # Convert raw data to mg's and mdps
-        self.irq_v[0][0] = self._raw_to_mg(raw_bytes[6:8]) - self.acc_offsets[0]
-        self.irq_v[0][1] = self._raw_to_mg(raw_bytes[8:10]) - self.acc_offsets[1]
-        self.irq_v[0][2] = self._raw_to_mg(raw_bytes[10:12]) - self.acc_offsets[2]
-        self.irq_v[1][0] = self._raw_to_mdps(raw_bytes[0:2]) - self.gyro_offsets[0]
-        self.irq_v[1][1] = self._raw_to_mdps(raw_bytes[2:4]) - self.gyro_offsets[1]
-        self.irq_v[1][2] = self._raw_to_mdps(raw_bytes[4:6]) - self.gyro_offsets[2]
-
-        return self.irq_v
+        return tuple(map(lambda a,b: a-b, self._imu.read_float_accel_gyro_all(), self._offsets))
     
     def get_pitch(self):
         """
@@ -311,7 +217,7 @@ class IMU():
         :return: The pitch of the IMU in degrees
         :rtype: float
         """
-        return self.running_pitch
+        return self._imu.calc_gyro(self.running_pitch)
     
     def get_yaw(self):
         """
@@ -320,7 +226,7 @@ class IMU():
         :return: The yaw (heading) of the IMU in degrees
         :rtype: float
         """
-        return self.running_yaw
+        return self._imu.calc_gyro(self.running_yaw)
     
     def get_heading(self):
         """
@@ -329,7 +235,7 @@ class IMU():
         :return: The heading of the IMU in degrees, bound between [0, 360)
         :rtype: float
         """
-        return self.running_yaw % 360
+        return self._imu.calc_gyro(self.running_yaw) % 360
     
     def get_roll(self):
         """
@@ -338,7 +244,7 @@ class IMU():
         :return: The roll of the IMU in degrees
         :rtype: float
         """
-        return self.running_roll
+        return self._imu.calc_gyro(self.running_roll)
     
     def reset_pitch(self):
         """
@@ -365,7 +271,7 @@ class IMU():
         :param pitch: The pitch to set the IMU to
         :type pitch: float
         """
-        self.running_pitch = pitch
+        self.running_pitch = int(pitch / self._imu.gyro_raw_to_dps)
 
     def set_yaw(self, yaw):
         """
@@ -374,7 +280,7 @@ class IMU():
         :param yaw: The yaw (heading) to set the IMU to
         :type yaw: float
         """
-        self.running_yaw = yaw
+        self.running_yaw = int(yaw / self._imu.gyro_raw_to_dps)
 
     def set_roll(self, roll):
         """
@@ -383,7 +289,7 @@ class IMU():
         :param roll: The roll to set the IMU to
         :type roll: float
         """
-        self.running_roll = roll
+        self.running_roll = int(roll / self._imu.gyro_raw_to_dps)
 
     def temperature(self):
         """
@@ -392,99 +298,7 @@ class IMU():
         :return: The temperature of the LSM6DSO in degrees Celsius
         :rtype: float
         """
-        # The LSM6DSO's temperature can be read from the OUT_TEMP_L register
-        # We use OUT_TEMP_L+1 if OUT_TEMP_L cannot be read
-        try:
-            return self._int16(self._get2reg(LSM_REG_OUT_TEMP_L))/256 + 25
-        except MemoryError:
-            return self._temperature_irq()
-
-    def _temperature_irq(self):
-        # Helper function for temperature() to read the alternate temperature register
-        self._getreg(LSM_REG_OUT_TEMP_L+1)
-        if self.rb[0] & 0x80:
-            self.rb[0] -= 256
-        return self.rb[0] + 25
-
-    def acc_scale(self, value=None):
-        """
-        Set the accelerometer scale in g. The scale can be:
-        '2g', '4g', '8g', or '16g'
-        Pass in no parameters to retrieve the current value
-        """
-        # Get register value
-        self.reg_ctrl1_xl_byte[0] = self._getreg(LSM_REG_CTRL1_XL)
-        #  Check if the provided value is in the dictionary
-        if value not in LSM_ACCEL_FS:
-            # Return string representation of this value
-            index = list(LSM_ACCEL_FS.values()).index(self.reg_ctrl1_xl_bits.FS_XL)
-            return list(LSM_ACCEL_FS.keys())[index]
-        else:
-            # Set value as requested
-            self.reg_ctrl1_xl_bits.FS_XL = LSM_ACCEL_FS[value]
-            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte[0])
-            # Update scale factor for converting raw data
-            self._acc_scale_factor = int(value.rstrip('g')) // 2
-
-    def gyro_scale(self, value=None):
-        """
-        Set the gyroscope scale in dps. The scale can be:
-        '125', '250', '500', '1000', or '2000'
-        Pass in no parameters to retrieve the current value
-        """
-        # Get register value
-        self.reg_ctrl2_g_byte[0] = self._getreg(LSM_REG_CTRL2_G)
-        #  Check if the provided value is in the dictionary
-        if value not in LSM_GYRO_FS:
-            # Return string representation of this value
-            index = list(LSM_GYRO_FS.values()).index(self.reg_ctrl2_g_bits.FS_G)
-            return list(LSM_GYRO_FS.keys())[index]
-        else:
-            # Set value as requested
-            self.reg_ctrl2_g_bits.FS_G = LSM_GYRO_FS[value]
-            self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte[0])
-            # Update scale factor for converting raw data
-            self._gyro_scale_factor = int(value.rstrip('dps')) // 125
-
-    def acc_rate(self, value=None):
-        """
-        Set the accelerometer rate in Hz. The rate can be:
-        '0Hz', '12.5Hz', '26Hz', '52Hz', '104Hz', '208Hz', '416Hz', '833Hz', '1660Hz', '3330Hz', '6660Hz'
-        Pass in no parameters to retrieve the current value
-        """
-        # Get register value
-        self.reg_ctrl1_xl_byte[0] = self._getreg(LSM_REG_CTRL1_XL)
-        #  Check if the provided value is in the dictionary
-        if value not in LSM_ODR:
-            # Return string representation of this value
-            index = list(LSM_ODR.values()).index(self.reg_ctrl1_xl_bits.ODR_XL)
-            return list(LSM_ODR.keys())[index]
-        else:
-            # Set value as requested
-            self.reg_ctrl1_xl_bits.ODR_XL = LSM_ODR[value]
-            self._setreg(LSM_REG_CTRL1_XL, self.reg_ctrl1_xl_byte[0])
-
-    def gyro_rate(self, value=None):
-        """
-        Set the gyroscope rate in Hz. The rate can be:
-        '0Hz', '12.5Hz', '26Hz', '52Hz', '104Hz', '208Hz', '416Hz', '833Hz', '1660Hz', '3330Hz', '6660Hz'
-        Pass in no parameters to retrieve the current value
-        """
-        # Get register value
-        self.reg_ctrl2_g_byte[0] = self._getreg(LSM_REG_CTRL2_G)
-        #  Check if the provided value is in the dictionary
-        if value not in LSM_ODR:
-            # Return string representation of this value
-            index = list(LSM_ODR.values()).index(self.reg_ctrl1_xl_bits.ODR_G)
-            return list(LSM_ODR.keys())[index]
-        else:
-            # Set value as requested
-            self.reg_ctrl2_g_bits.ODR_G = LSM_ODR[value]
-            self._setreg(LSM_REG_CTRL2_G, self.reg_ctrl2_g_byte[0])
-
-            # Update timer frequency
-            self.timer_frequency = int(value.rstrip('Hz'))
-            self._start_timer()
+        return self._imu.read_temp_c()
 
     def calibrate(self, calibration_time:float=1, vertical_axis:int= 2):
         """
@@ -498,9 +312,8 @@ class IMU():
         :type vertical_axis: int
         """
         self._stop_timer()
-        self.acc_offsets = [0,0,0]
-        self.gyro_offsets = [0,0,0]
-        avg_vals = [[0,0,0],[0,0,0]]
+        self._offsets = 0,0,0,0,0,0
+        avg_vals = [0,0,0,0,0,0]
         num_vals = 0
         # Wait a bit for sensor to start measuring (data registers may default to something nonsensical)
         time.sleep(.1)
@@ -508,26 +321,27 @@ class IMU():
         while time.ticks_ms() < start_time + calibration_time*1000:
             cur_vals = self.get_acc_gyro_rates()
             # Accelerometer averages
-            avg_vals[0][0] += cur_vals[0][0]
-            avg_vals[0][1] += cur_vals[0][1]
-            avg_vals[0][2] += cur_vals[0][2]
+            avg_vals[0] += cur_vals[0]
+            avg_vals[1] += cur_vals[1]
+            avg_vals[2] += cur_vals[2]
             # Gyroscope averages
-            avg_vals[1][0] += cur_vals[1][0]
-            avg_vals[1][1] += cur_vals[1][1]
-            avg_vals[1][2] += cur_vals[1][2]
+            avg_vals[3] += cur_vals[3]
+            avg_vals[4] += cur_vals[4]
+            avg_vals[5] += cur_vals[5]
             # Increment counter and wait for next loop
             num_vals += 1
+            self.timer_frequency = 100
             time.sleep(1 / self.timer_frequency)
 
         # Compute averages
-        avg_vals[0][0] /= num_vals
-        avg_vals[0][1] /= num_vals
-        avg_vals[0][2] /= num_vals
-        avg_vals[1][0] /= num_vals
-        avg_vals[1][1] /= num_vals
-        avg_vals[1][2] /= num_vals
+        avg_vals[0] /= num_vals
+        avg_vals[1] /= num_vals
+        avg_vals[2] /= num_vals
+        avg_vals[3] /= num_vals
+        avg_vals[4] /= num_vals
+        avg_vals[5] /= num_vals
 
-        avg_vals[0][vertical_axis] -= 1000 #in mg
+        avg_vals[vertical_axis+3] -= 1000 #in mg
 
         self.acc_offsets = avg_vals[0]
         self.gyro_offsets = avg_vals[1]
@@ -541,13 +355,21 @@ class IMU():
 
     def _update_imu_readings(self):
         # Called every tick through a callback timer
-        self.get_gyro_rates()
-        delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
-        delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
-        delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
+        raw = self._imu.read_raw_gyro_all()
+
+        # Isolate the axis and convert to signed int
+        gyroX = raw[0] | (raw[1] << 8)
+        if gyroX >= 32768:
+            gyroX -= 65536
+        gyroY = raw[2] | (raw[3] << 8)
+        if gyroY >= 32768:
+            gyroY -= 65536
+        gyroZ = raw[4] | (raw[5] << 8)
+        if gyroZ >= 32768:
+            gyroZ -= 65536
 
         state = disable_irq()
-        self.running_pitch += delta_pitch
-        self.running_roll += delta_roll
-        self.running_yaw += delta_yaw
+        self.running_pitch += gyroX
+        self.running_roll += gyroY
+        self.running_yaw += gyroZ
         enable_irq(state)
