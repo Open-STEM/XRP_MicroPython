@@ -1,13 +1,13 @@
-from .board import Board
-from .differential_drive import DifferentialDrive
-from .motor import Motor
-from .encoder import Encoder
-from .encoded_motor import EncodedMotor
-from .rangefinder import Rangefinder
-from .imu import IMU
-from .reflectance import Reflectance
-from .servo import Servo
-from .webserver import Webserver
+from XRPLib.board import Board
+from XRPLib.differential_drive import DifferentialDrive
+from XRPLib.motor import Motor
+from XRPLib.encoder import Encoder
+from XRPLib.encoded_motor import EncodedMotor
+from XRPLib.rangefinder import Rangefinder
+from XRPLib.imu import IMU
+from XRPLib.reflectance import Reflectance
+from XRPLib.servo import Servo
+from XRPLib.webserver import Webserver
 
 """
 A simple file that constructs all of the default objects for the XRP robot
