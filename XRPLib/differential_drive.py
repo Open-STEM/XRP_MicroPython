@@ -207,8 +207,7 @@ class DifferentialDrive:
 
         return not time_out.is_done()
 
-
-    def turn(self, turn_degrees: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
+    def turn(self, turn_degrees: float, max_effort: float = 0.5, timeout: float = None, controller: Controller = None) -> bool:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
         effort is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
@@ -220,70 +219,49 @@ class DifferentialDrive:
         :type max_effort: float
         :param timeout: The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)
         :type timeout: float
-        :param main_controller: The main controller, for handling the angle turned
-        :type main_controller: Controller
-        :param secondary_controller: The secondary controller, for maintaining position during the turn by controlling the encoder count difference
-        :type secondary_controller: Controller
-        :param use_imu: A boolean flag that changes if the main controller bases its movement off of the imu (True) or the encoders (False)
-        :type use_imu: bool
+        :param controller: The main controller, for handling the angle turned
+        :type controller: Controller
         :return: if the distance was reached before the timeout
         :rtype: bool
         """
-
+        
+        turn_speed = max_effort * 90
+        
         if max_effort < 0:
-            max_effort = -max_effort
             turn_degrees = -turn_degrees
 
         time_out = Timeout(timeout)
-        starting_left = self.get_left_encoder_position()
-        starting_right = self.get_right_encoder_position()
 
-        if main_controller is None:
-            main_controller = PID(
-                kp = 0.02,
-                ki = 0.001,
-                kd = 0.00165,
-                min_output = 0.2,
-                max_output = max_effort,
-                max_integral = 75,
+        if controller is None:
+            controller = PID(
+                kp = 0.35 * abs(max_effort),
+                ki = 0.075 * abs(max_effort),
+                kd = 0.15 * abs(max_effort),
+                min_output = 0.0,
+                max_output = 10000,
+                max_integral = 75000,
                 tolerance = 1,
                 tolerance_count = 3
             )
-
-        # Secondary controller to keep encoder values in sync
-        if secondary_controller is None:
-            secondary_controller = PID(
-                kp = 0.5,
-            )
  
-        if use_imu and (self.imu is not None):
-            turn_degrees += self.imu.get_yaw()
+        # update turn_degrees using current heading 
+        turn_degrees += self.imu.get_yaw()
 
         while True:
-            
-            # calculate encoder correction to minimize drift
-            left_delta = self.get_left_encoder_position() - starting_left
-            right_delta = self.get_right_encoder_position() - starting_right
-            encoder_correction = secondary_controller.update(left_delta + right_delta)
 
-            if use_imu and (self.imu is not None):
-                # calculate turn error (in degrees) from the imu
-                turn_error = turn_degrees - self.imu.get_yaw()
-            else:
-                # calculate turn error (in degrees) from the encoder counts
-                turn_error = turn_degrees - ((right_delta-left_delta)/2)*360/(self.track_width*math.pi)
+            # calculate turn error (in degrees) from the imu
+            turn_error = turn_degrees - self.imu.get_yaw()
 
             # Pass the turn error to the main controller to get a turn speed
-            turn_speed = main_controller.update(turn_error)
+            turn_speed = controller.update(turn_error)
+            self.left_motor.set_speed(-turn_speed)
+            self.right_motor.set_speed(turn_speed)
             
             # exit if timeout or tolerance reached
-            if main_controller.is_done() or time_out.is_done():
+            if controller.is_done() or time_out.is_done():
                 break
-
-            self.set_effort(-turn_speed - encoder_correction, turn_speed - encoder_correction)
 
             time.sleep(0.01)
 
         self.stop()
-
         return not time_out.is_done()
