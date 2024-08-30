@@ -1,3 +1,6 @@
 from XRPLib.defaults import *
+import time
 
-print("hello worl")
+telemetry.start_telemetry()
+time.sleep(3)
+telemetry.stop_telemetry()

@@ -8,6 +8,7 @@ from .imu import IMU
 from .reflectance import Reflectance
 from .servo import Servo
 from .webserver import Webserver
+from .telemetry import Telemetry
 
 """
 A simple file that constructs all of the default objects for the XRP robot
@@ -24,5 +25,6 @@ servo_one = Servo.get_default_servo(index=1)
 servo_two = Servo.get_default_servo(index=2)
 webserver = Webserver.get_default_webserver()
 board = Board.get_default_board()
+telemetry = Telemetry.get_default_telemetry()
 
 print("init defaults")
