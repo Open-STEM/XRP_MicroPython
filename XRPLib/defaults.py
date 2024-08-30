@@ -24,3 +24,5 @@ servo_one = Servo.get_default_servo(index=1)
 servo_two = Servo.get_default_servo(index=2)
 webserver = Webserver.get_default_webserver()
 board = Board.get_default_board()
+
+print("init defaults")

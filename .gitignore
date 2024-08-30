@@ -3,4 +3,6 @@
 docs/_build/
 .micropico
 .picowgo
+.temp_xrplib
 secrets.json
+.DS_Store
