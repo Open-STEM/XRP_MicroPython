@@ -23,7 +23,6 @@ class Telemetry:
             cls._DEFAULT_TELEMETRY_INSTANCE = cls(
                 drive = DifferentialDrive.get_default_differential_drive(),
                 imu=IMU.get_default_imu(),
-                drivetrain=DifferentialDrive.get_default_differential_drive(),
                 rangefinder=Rangefinder.get_default_rangefinder(),
                 reflectance=Reflectance.get_default_reflectance(),
                 servo_one=Servo.get_default_servo(index=1),
@@ -34,7 +33,6 @@ class Telemetry:
     def __init__(self,
         drive = None,
         imu = None,
-        drivetrain = None,
         rangefinder = None,
         reflectance = None,
         servo_one = None,
@@ -49,10 +47,10 @@ class Telemetry:
         # Dictionary of telemetry channel rates to a dictionary of channel names to callback functions
         self.telemetry_channels = {}
 
-        self.init_telemetry_channels(drive, imu, drivetrain, rangefinder, reflectance, servo_one, servo_two)
+        self.init_telemetry_channels(drive, imu, rangefinder, reflectance, servo_one, servo_two)
 
         
-    def init_telemetry_channels(self, drive, imu, drivetrain, rangefinder, reflectance, servo_one, servo_two):
+    def init_telemetry_channels(self, drive, imu, rangefinder, reflectance, servo_one, servo_two):
         """
         Initialize the telemetry channels by registering the required channels with their
         respective callback functions.
