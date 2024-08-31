@@ -3,12 +3,11 @@ from .rangefinder import Rangefinder
 from .imu import IMU
 from .reflectance import Reflectance
 from .servo import Servo
+from .telemetry_sender import StdoutTelemetrySender
 
 from machine import Timer
-import time, os
+import time
 
-# Dictionary mapping channel names to (rate, callback) tuples
-DEFAULT_TELEMETRY_CHANNELS = {}
 
 class Telemetry:
 
@@ -31,6 +30,7 @@ class Telemetry:
         return cls._DEFAULT_TELEMETRY_INSTANCE
 
     def __init__(self,
+        telemetry_sender = StdoutTelemetrySender(),
         drive = None,
         imu = None,
         rangefinder = None,
@@ -38,26 +38,26 @@ class Telemetry:
         servo_one = None,
         servo_two = None,
     ):
-        # Store start time to calculate elapsed time for each telemetry packet
-        self.start_time = time.ticks_ms()
+        # Handles sending telemetry data
+        self._telemetry_sender = telemetry_sender
 
         # Telemetry timers for each telemetry rate, mapping rate (in Hz) to Timer object
-        self.telemetry_timers = {}
+        self._telemetry_timers = {}
 
         # Dictionary of telemetry channel rates to a dictionary of channel names to callback functions
-        self.telemetry_channels = {}
+        self._telemetry_channels = {}
 
-        self.init_telemetry_channels(drive, imu, rangefinder, reflectance, servo_one, servo_two)
+        self._init_telemetry_channels(drive, imu, rangefinder, reflectance, servo_one, servo_two)
 
         
-    def init_telemetry_channels(self, drive, imu, rangefinder, reflectance, servo_one, servo_two):
+    def _init_telemetry_channels(self, drive, imu, rangefinder, reflectance, servo_one, servo_two):
         """
         Initialize the telemetry channels by registering the required channels with their
         respective callback functions.
         """
         
         # Read the telemetry file to get a dictionary of required channels and rates
-        required_telemetry = self.read_telemetry_file()
+        required_telemetry = self._read_telemetry_file()
         
         # For each channel, check if the channel is required and the channel object exists, and if so,
         # register the channel with the appropriate callback function
@@ -83,7 +83,7 @@ class Telemetry:
             print(f"WARNING: telemetry channel(s) not found: {list(required_telemetry.keys())}")
 
 
-    def read_telemetry_file(self, file_path = "telemetry.txt"):
+    def _read_telemetry_file(self, file_path = "telemetry.txt"):
         """
         Read the telemetry file and return the contents as dictionary of channel names to rates.
         Each line in the file should contain a channel name and rate separated by whitespace, or a
@@ -125,43 +125,54 @@ class Telemetry:
         :param callback: The callback function to call to get the telemetry data for this channel
         :type callback: function
         """
-        if rate not in self.telemetry_channels:
-            self.telemetry_timers[rate] = Timer(-1)
-            self.telemetry_channels[rate] = {}
+        if rate not in self._telemetry_channels:
+            self._telemetry_timers[rate] = Timer(-1)
+            self._telemetry_channels[rate] = {}
 
-        self.telemetry_channels[rate][channel_name] = callback
+        self._telemetry_channels[rate][channel_name] = callback
 
 
     def start_telemetry(self):
         """
         For each telemetry rate, start a timer that will poll the telemetry channels at that rate.
         """
-        for rate, channels in self.telemetry_channels.items():
+        self._telemetry_sender.reset()
+
+        for rate, channels in self._telemetry_channels.items():
             # channels is a dictionary mapping channel names to callback functions
             print(f"Initializing telemetry flow at {rate} Hz for channels {list(channels.keys())}")
-            self.telemetry_timers[rate].init(
+            self._telemetry_timers[rate].init(
                 freq = rate,
-                callback = lambda t, channels=channels: self.poll_telemetry_for_channels(channels)
+                callback = lambda t, channels=channels: self._poll_telemetry_for_channels(channels)
             )
 
-    def poll_telemetry_for_channels(self, channels):
+    def _poll_telemetry_for_channels(self, channels):
         """
         Poll the telemetry channels for the given dictionary of channels.
         
         :param channels: A dictionary mapping channel names to callback functions
         :type channels: dict
         """
-        current_time = time.ticks_ms()
-        delta_time = time.ticks_diff(current_time, self.start_time)
-
         for channel_name, callback in channels.items():
             data = callback()
-            print(f"[{delta_time}] Telemetry channel {channel_name} at: {data}")
+            self._telemetry_sender.send_telemetry(channel_name, data)
 
     def stop_telemetry(self):
         """
         Stop all telemetry timers.
         """
         print("Stopping telemetry")
-        for timer in self.telemetry_timers.values():
+        for timer in self._telemetry_timers.values():
             timer.deinit()
+
+    def send_data(self, channel, data):
+        """
+        Send telemetry data for a custom channel. The data can only be a number. Channel
+        name must not be one of the standard sensor channels being sent.
+        
+        :param channel: The name of the telemetry channel
+        :type channel: str
+        :param data: The data to send
+        :type data: float
+        """
+        self._telemetry_sender.send_telemetry(channel, data)
