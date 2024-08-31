@@ -1,0 +1,5 @@
+# Ingested by Telemetry class to determine which channels should be telemetered. For each line,
+# must follow syntax <channel name> <telemetered rate in Hz>
+
+left_distance   5
+imu_heading     5

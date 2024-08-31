@@ -6,7 +6,10 @@ import serial, threading, time, subprocess
 import serial.tools.list_ports
 import filecmp
 
+
+# Folder to store the last synced XRPLib files
 TEMP_FOLDER = ".temp_xrplib"
+
 
 def ensure_directory_exists(files, directory):
     """Ensure that a directory exists on the Pico. If not, create it."""
@@ -32,6 +35,7 @@ def copy_file_to_pico(files, local_file_path, pico_destination_path):
         print(f"Failed to copy file {local_file_path}. Error: {str(e)}")
 
 def copy_directory_to_pico(files, local_directory, pico_destination_directory):
+    """Copy an entire directory to the Pico, including all subdirectories and files"""
     try:
         for root, dirs, files_list in os.walk(local_directory):
             relative_path = os.path.relpath(root, local_directory)
@@ -97,6 +101,7 @@ def run_pico_script(port, script_name):
         print(f"Failed to run script {script_name}. Error: {str(e)}")
 
 def list_files_on_pico(port):
+    """List all files and folders on the Pico."""
     try:
         pyb = Pyboard(port)
         files = Files(pyb)
@@ -109,7 +114,7 @@ def list_files_on_pico(port):
     except Exception as e:
         print(f"Failed to list files. Error: {str(e)}")
 
-def copy_all_files_to_pico(port, directory=True, main=True):
+def copy_all_files_to_pico(port, directory=True, main=True, telemetry=True):
     pyb = Pyboard(port)
     files = Files(pyb)
     
@@ -117,6 +122,8 @@ def copy_all_files_to_pico(port, directory=True, main=True):
         compare_and_copy(files, "XRPLib", "lib/XRPLib")
     if main:
         copy_file_to_pico(files, "main.py", "main.py")
+    if telemetry:
+        copy_file_to_pico(files, "telemetry.txt", "telemetry.txt")
 
 def detect_pico_port():
     """Auto-detect the Pico W's serial port."""
@@ -128,8 +135,12 @@ def detect_pico_port():
 
 if __name__ == "__main__":
 
-    pico_port = detect_pico_port()  # Auto-detect the Pico W port
+    # Auto-detect the Pico W port
+    pico_port = detect_pico_port()
     print(f"Pico W detected on port: {pico_port}")
 
-    copy_all_files_to_pico(pico_port, directory=True, main=True)
+    # Copy any changed files to the Pico
+    copy_all_files_to_pico(pico_port)
+
+    # Run the main.py script on the Pico
     run_pico_script(pico_port, "main.py")
