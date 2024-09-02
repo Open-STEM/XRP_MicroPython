@@ -2,7 +2,6 @@ from .differential_drive import DifferentialDrive
 from .rangefinder import Rangefinder
 from .imu import IMU
 from .reflectance import Reflectance
-from .servo import Servo
 from .telemetry_sender import StdoutTelemetrySender
 
 from machine import Timer
@@ -24,8 +23,6 @@ class Telemetry:
                 imu=IMU.get_default_imu(),
                 rangefinder=Rangefinder.get_default_rangefinder(),
                 reflectance=Reflectance.get_default_reflectance(),
-                servo_one=Servo.get_default_servo(index=1),
-                servo_two=Servo.get_default_servo(index=2),
             )
         return cls._DEFAULT_TELEMETRY_INSTANCE
 
@@ -35,8 +32,6 @@ class Telemetry:
         imu = None,
         rangefinder = None,
         reflectance = None,
-        servo_one = None,
-        servo_two = None,
     ):
         # Handles sending telemetry data
         self._telemetry_sender = telemetry_sender
@@ -47,10 +42,10 @@ class Telemetry:
         # Dictionary of telemetry channel rates to a dictionary of channel names to callback functions
         self._telemetry_channels = {}
 
-        self._init_telemetry_channels(drive, imu, rangefinder, reflectance, servo_one, servo_two)
+        self._init_telemetry_channels(drive, imu, rangefinder, reflectance)
 
         
-    def _init_telemetry_channels(self, drive, imu, rangefinder, reflectance, servo_one, servo_two):
+    def _init_telemetry_channels(self, drive, imu, rangefinder, reflectance):
         """
         Initialize the telemetry channels by registering the required channels with their
         respective callback functions.
@@ -77,6 +72,9 @@ class Telemetry:
         register(imu, "imu_pitch", lambda imu: imu.get_pitch())
         register(imu, "imu_roll", lambda imu: imu.get_roll())
         register(imu, "imu_yaw", lambda imu: imu.get_yaw())
+        register(rangefinder, "rangefinder_distance", lambda rangefinder: rangefinder.distance())
+        register(reflectance, "left_reflectance", lambda reflectance: reflectance.get_left())
+        register(reflectance, "right_reflectance", lambda reflectance: reflectance.get_right())
 
         # If there are remaining required telemetry channels, they are unknown
         if len(required_telemetry) > 0:
