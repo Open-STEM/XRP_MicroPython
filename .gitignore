@@ -4,3 +4,5 @@ docs/_build/
 .micropico
 .picowgo
 secrets.json
+venv
+.temp_xrplib

@@ -57,7 +57,7 @@ class PID(Controller):
             # otherwise, reset times in tolerance, because we need to be in tolerance for numTimesInTolerance consecutive times
             self.times = 0
 
-    def update(self, error: float) -> float:
+    def update(self, error: float, debug: bool = False) -> float:
         """
         Handle a new update of this PID loop given an error.
 
@@ -108,6 +108,9 @@ class PID(Controller):
 
         # cache output for next update
         self.prev_output = output
+
+        if debug:
+            print(f"{output}: ({self.kp * error}, {self.ki * integral}, {self.kd * derivative})")
 
         return output
     
