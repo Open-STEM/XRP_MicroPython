@@ -278,7 +278,7 @@ class DifferentialDrive:
                 turn_error = turn_degrees - ((right_delta-left_delta)/2)*360/(self.track_width*math.pi)
 
             # Pass the turn error to the main controller to get a turn speed
-            turn_speed = main_controller.update(turn_error, True)
+            turn_speed = main_controller.update(turn_error)
 
             # exit if timeout or tolerance reached
             if main_controller.is_done() or time_out.is_done():

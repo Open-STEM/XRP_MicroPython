@@ -61,7 +61,7 @@ class Rangefinder:
         """
         Get the distance in centimeters by measuring the echo pulse time
         """
-        if time.ticks_diff(time.ticks_us(), self.last_echo_time) < self.cache_time_us and not self.cms == 65535:
+        if time.ticks_diff(time.ticks_us(), self.last_echo_time) < self.cache_time_us and not (self.cms == 65535 or self.cms == 0):
             return self.cms
 
         try:
