@@ -18,9 +18,9 @@ jobs:
     - name: Prepare files for XRPCode
       run: |
         mkdir -p temp/lib
-        cp -R mylib temp/lib/XRPLib
-        cp -R examples temp/lib/Examples
-        cp foo.txt temp/lib/package.json
+        cp -R XRPLib temp/lib/XRPLib
+        cp -R Examples temp/lib/Examples
+        cp package.json temp/lib/package.json
         
     - name: Get tag name
       id: tag_name
