@@ -35,3 +35,4 @@ class Motor:
             self._dirPin.value(not direction)
         else:
             self._dirPin.value(direction)
+

@@ -6,7 +6,6 @@ import serial, threading, time, subprocess
 import serial.tools.list_ports
 import filecmp
 
-
 # Folder to store the last synced XRPLib files
 TEMP_FOLDER = ".temp_xrplib"
 
@@ -92,13 +91,51 @@ def read_serial_output(port, baudrate=115200, timeout=1):
     except Exception as e:
         print(f"Failed to read serial output. Error: {str(e)}")
 
-def run_pico_script(port, script_name):
-    """Run a MicroPython script on the Pico using ampy."""
+# def run_pico_script(port, script_name):
+#     """Run a MicroPython script on the Pico using ampy."""
+#     try:
+#         subprocess.run(['ampy', '-p', port, 'run', script_name], check=True)
+#         print(f"Successfully ran {script_name} on Pico.")
+#     except subprocess.CalledProcessError as e:
+#         print(f"Failed to run script {script_name}. Error: {str(e)}")
+
+def run_pico_script(port, script_name, output_handler):
+    """Run a MicroPython script on the Pico using ampy and handle output in real-time."""
     try:
-        subprocess.run(['ampy', '-p', port, 'run', script_name], check=True)
-        print(f"Successfully ran {script_name} on Pico.")
+        process = subprocess.Popen(
+            ['ampy', '-p', port, 'run', script_name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        if process.stdout is None:
+            print(f"Failed to run script {script_name}. No output.")
+            return
+        
+        # Read stdout in real-time, line by line
+        for stdout_line in process.stdout:
+            output_handler(stdout_line)
+        
+        # Wait for the process to finish and get the return code
+        process.wait()
+        
+        if process.returncode == 0:
+            print(f"Successfully ran {script_name} on Pico.")
+        else:
+            print(f"Failed to run script {script_name}. Error code: {process.returncode}")
+
+            # Get the error output if any
+            if process.stderr is not None:
+                for stderr_line in process.stderr:
+                    print(f"Error: {stderr_line}")
+
     except subprocess.CalledProcessError as e:
         print(f"Failed to run script {script_name}. Error: {str(e)}")
+
+def handle_output(output):
+    # Custom function to handle the output
+    print(f"Captured output: {output}")
 
 def list_files_on_pico(port):
     """List all files and folders on the Pico."""
@@ -121,7 +158,7 @@ def copy_all_files_to_pico(port, directory=True, main=True, telemetry=True):
     if directory:
         compare_and_copy(files, "XRPLib", "lib/XRPLib")
     if main:
-        copy_file_to_pico(files, "main.py", "main.py")
+        copy_file_to_pico(files, "main_program.py", "main_program.py")
     if telemetry:
         copy_file_to_pico(files, "telemetry.txt", "telemetry.txt")
 
@@ -142,5 +179,12 @@ if __name__ == "__main__":
     # Copy any changed files to the Pico
     copy_all_files_to_pico(pico_port)
 
+    from XRPLib.telemetry_receiver import TelemetryReceiver
+    receiver = TelemetryReceiver()
+
     # Run the main.py script on the Pico
-    run_pico_script(pico_port, "main.py")
+    def on_output(output):
+        print(f"Captured output: {output}")
+        for char in output:
+            receiver.receive_char(char)
+    run_pico_script(pico_port, "main_program.py", on_output)

@@ -2,7 +2,7 @@ from .differential_drive import DifferentialDrive
 from .rangefinder import Rangefinder
 from .imu import IMU
 from .reflectance import Reflectance
-from .telemetry_sender import StdoutTelemetrySender
+from .telemetry_sender import StdoutTelemetrySender, EncodedTelemetrySender
 
 from machine import Timer
 import time
@@ -13,12 +13,13 @@ class Telemetry:
     _DEFAULT_TELEMETRY_INSTANCE = None
 
     @classmethod
-    def get_default_telemetry(cls):
+    def get_default_telemetry(cls, telemetry_sender = EncodedTelemetrySender()):
         """
         Get the default telemetry instance. This is a singleton, so only one instance of the board will ever exist.
         """
         if cls._DEFAULT_TELEMETRY_INSTANCE is None:
             cls._DEFAULT_TELEMETRY_INSTANCE = cls(
+                telemetry_sender=telemetry_sender,
                 drive = DifferentialDrive.get_default_differential_drive(),
                 imu=IMU.get_default_imu(),
                 rangefinder=Rangefinder.get_default_rangefinder(),
@@ -27,7 +28,7 @@ class Telemetry:
         return cls._DEFAULT_TELEMETRY_INSTANCE
 
     def __init__(self,
-        telemetry_sender = StdoutTelemetrySender(),
+        telemetry_sender,
         drive = None,
         imu = None,
         rangefinder = None,
@@ -157,11 +158,12 @@ class Telemetry:
 
     def stop_telemetry(self):
         """
-        Stop all telemetry timers.
+        Stop all telemetry timers and send any remaining data.
         """
         print("Stopping telemetry")
         for timer in self._telemetry_timers.values():
             timer.deinit()
+        self._telemetry_sender.on_stop_telemetry()
 
     def send_data(self, channel, data):
         """
