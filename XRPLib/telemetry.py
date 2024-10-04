@@ -3,17 +3,29 @@ from .rangefinder import Rangefinder
 from .imu import IMU
 from .reflectance import Reflectance
 from .telemetry_sender import StdoutTelemetrySender, EncodedTelemetrySender
+from .telemetry_time import TelemetryTime
 
 from machine import Timer
 import time
 
+
+class MicropythonTime(TelemetryTime):
+    """
+    Get the current time in milliseconds using the micropython time module.
+    """
+    
+    def time_ms(self):
+        return time.ticks_ms()
+    
+    def time_diff(self, end_time, start_time):
+        return time.ticks_diff(end_time, start_time)
 
 class Telemetry:
 
     _DEFAULT_TELEMETRY_INSTANCE = None
 
     @classmethod
-    def get_default_telemetry(cls, telemetry_sender = EncodedTelemetrySender()):
+    def get_default_telemetry(cls, telemetry_sender = EncodedTelemetrySender(MicropythonTime())):
         """
         Get the default telemetry instance. This is a singleton, so only one instance of the board will ever exist.
         """

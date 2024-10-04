@@ -1,3 +1,4 @@
+from .telemetry_time import TelemetryTime
 import time, struct
 
 
@@ -6,13 +7,22 @@ class TelemetrySender:
     Abstract class for sending telemetry data to a telemetry receiver. Must implement the send_telemetry method.
     """
 
+    def __init__(self, telemetry_time):
+        """
+        Create a new TelemetrySender with the specified function to get the current time in milliseconds.
+        
+        :param time_ms_function: A function that returns the current time in milliseconds
+        :type time_ms_function: function
+        """
+        self.telemetry_time = telemetry_time
+
     def on_start_telemetry(self):
         """
         Called when telemetry is started. Can be used to initialize resources.
         """
         
         # Start time for telemetry run
-        self.start_time = time.ticks_ms()
+        self.start_time = self.telemetry_time.time_ms()
     
     def on_stop_telemetry(self):
         """
@@ -27,7 +37,7 @@ class TelemetrySender:
         :return: The current time in milliseconds
         :rtype: int
         """
-        return time.ticks_diff(time.ticks_ms(), self.start_time)
+        return self.telemetry_time.time_diff(self.telemetry_time.time_ms(), self.start_time)
     
     def send_telemetry(self, channel, data):
         """
@@ -35,8 +45,8 @@ class TelemetrySender:
         
         :param channel: The name of the channel to send data for
         :type channel: str
-        :param data: The numeric data to send
-        :type data: float
+        :param data: The data to send
+        :type data: float | int | string
         """
         raise NotImplementedError("send_telemetry method must be implemented by subclass")
 
@@ -52,8 +62,8 @@ class StdoutTelemetrySender(TelemetrySender):
         
         :param channel: The name of the channel to send data for
         :type channel: str
-        :param data: The numeric data to send
-        :type data: float
+        :param data: The data to send
+        :type data: float | int | string
         """
         current_time = self.get_current_time()
         print(f"[{current_time}] Telemetry channel {channel} at: {data}")
@@ -73,26 +83,30 @@ class EncodedTelemetrySender(TelemetrySender):
     Data is encoded with [1 byte qualifier] [data].
 
     Qualifier == 127 is the start packet and means that this is a new telemetry run. There is no data.
+    Data length is 0 bytes.
 
     Qualifier == 126 means this is a metadata packet. The data is a byte to indicate the channel index, then the channel name
     encoded as ASCII ending with null char(0).
+    Data length has variable length.
 
     Qualifier < 126 means this is a data packet. The data is first a byte to indicate the channel index, then a 4-byte-encoded
-    float value.
+    timestamp in ms, then stringified data ending with null char(0).
+    Data length has variable length.
 
     Data is buffered for a specified maximum number of bytes before sending batched data to the output.
     """
 
-    def __init__(self, max_buffer_size=256):
+    def __init__(self, telemetry_time, max_buffer_size=256, send_function=print):
         """
         Create a new EncodedTelemetrySender with the specified maximum buffer size.
         
         :param max_buffer_size: The maximum number of bytes to buffer before sending data
         :type max_buffer_size: int
         """
-        super().__init__()
+        super().__init__(telemetry_time)
         self.max_buffer_size = max_buffer_size
         self.buffer = bytearray()
+        self.send_function = send_function
 
         # An array of channel names, indexed by channel index. Maximum 255 channels, so max index is 254.
         self.registered_channels = []
@@ -163,7 +177,7 @@ class EncodedTelemetrySender(TelemetrySender):
         :return: A bytearray containing the metadata packet
         :rtype: bytearray
         """
-        packet = bytearray([127, channel_index])
+        packet = bytearray([126, channel_index])
         packet.extend(channel_name.encode('ascii'))
         packet.append(0)  # Null terminator
         return packet
@@ -180,7 +194,9 @@ class EncodedTelemetrySender(TelemetrySender):
         :rtype: bytearray
         """
         packet = bytearray([channel_index])
-        packet.extend(float_to_ascii(data))
+        packet.extend(uint_to_ascii(self.get_current_time()))
+        packet.extend(str(data).encode('ascii'))   
+        packet.append(0) # Null terminator
         return packet
     
     def create_start_packet(self):
@@ -209,34 +225,21 @@ class EncodedTelemetrySender(TelemetrySender):
         Send the contents of the buffer to serial output and clear the buffer.
         """
         if self.buffer:
+
+            # Get the size of the buffer as a 4-byte ASCII string
+            buffer_size = uint_to_ascii(len(self.buffer))
         
-            # Use chr(27) as start and end characters to indicate the start and end of the packet
-            encoded_data = chr(27) + self.buffer.decode('ascii') + chr(27)
+            # Encode as start delimeter chr(27), size of buffer, then buffer
+            send_buffer = bytearray([27])
+            send_buffer.extend(buffer_size)
+            send_buffer.extend(self.buffer)
 
             # Send the data over serial
-            print(encoded_data)
+            encoded_data = send_buffer.decode('ascii')
+            self.send_function(encoded_data)
 
             # Clear the buffer
             self.buffer = bytearray()
-
-# Encodes float to 4-char ASCII string
-def float_to_ascii(f):
-    # Step 1: Normalize the float (Assume f is between -1e9 and 1e9, adjust as needed)
-    normalized_f = int(((f + 1e9) / 2e9) * (2**48 - 1))  # Maps f to [0, 2^48-1]
-    
-    # Step 2: Pack it into 8 bytes (big-endian)
-    byte_array = bytearray((normalized_f >> (i * 7)) & 0x7F for i in range(8))
-    
-    return byte_array
-
-# Decodes 4-char ASCII string to float
-def ascii_to_float(byte_array):
-    # Reverse the encoding process
-    normalized_f = sum((b & 0x7F) << (i * 7) for i, b in enumerate(byte_array))
-    
-    # Step 4: Map back to float range [-1e9, 1e9]
-    f = ((normalized_f / (2**48 - 1)) * 2e9) - 1e9
-    return f
 
 # Encodes unsigned int to 4-char ASCII string
 def uint_to_ascii(i):

@@ -63,6 +63,9 @@ def compare_and_copy(files, local_directory, pico_destination_directory):
     create_temp_folder()
     for root, dirs, files_list in os.walk(local_directory):
         relative_path = os.path.relpath(root, local_directory)
+        if "__pycache__" in relative_path:
+            continue
+
         pico_dir_path = os.path.join(pico_destination_directory, relative_path).replace("\\", "/")
         temp_dir_path = os.path.join(TEMP_FOLDER, relative_path)
 
@@ -70,10 +73,6 @@ def compare_and_copy(files, local_directory, pico_destination_directory):
             os.makedirs(temp_dir_path)
         
         for file_name in files_list:
-
-            # Skip the __pycache__ folder
-            if file_name == "__pycache__":
-                continue
 
             local_file_path = os.path.join(root, file_name)
             temp_file_path = os.path.join(temp_dir_path, file_name)
