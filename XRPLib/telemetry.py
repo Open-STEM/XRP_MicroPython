@@ -135,7 +135,7 @@ class Telemetry:
         """
         For each telemetry rate, start a timer that will poll the telemetry channels at that rate.
         """
-        self._telemetry_sender.reset()
+        self._telemetry_sender.on_start_telemetry()
 
         for rate, channels in self._telemetry_channels.items():
             # channels is a dictionary mapping channel names to callback functions
@@ -152,6 +152,7 @@ class Telemetry:
         :param channels: A dictionary mapping channel names to callback functions
         :type channels: dict
         """
+        
         for channel_name, callback in channels.items():
             data = callback()
             self._telemetry_sender.send_telemetry(channel_name, data)

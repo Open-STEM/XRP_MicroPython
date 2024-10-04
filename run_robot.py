@@ -7,6 +7,7 @@ import serial.tools.list_ports
 import filecmp
 
 # Folder to store the last synced XRPLib files
+ENTRY_POINT = "main_program.py"
 TEMP_FOLDER = ".temp_xrplib"
 
 
@@ -27,6 +28,7 @@ def copy_file_to_pico(files, local_file_path, pico_destination_path):
             file_content = local_file.read()
         
         # Write or replace the file on the Pico
+        print(f"Copying {local_file_path} to {pico_destination_path} on Pico...")
         files.put(pico_destination_path, file_content)
         print(f"Successfully copied {local_file_path} to {pico_destination_path} on Pico.")
         
@@ -68,6 +70,11 @@ def compare_and_copy(files, local_directory, pico_destination_directory):
             os.makedirs(temp_dir_path)
         
         for file_name in files_list:
+
+            # Skip the __pycache__ folder
+            if file_name == "__pycache__":
+                continue
+
             local_file_path = os.path.join(root, file_name)
             temp_file_path = os.path.join(temp_dir_path, file_name)
             pico_file_path = os.path.join(pico_dir_path, file_name).replace("\\", "/")
@@ -158,7 +165,7 @@ def copy_all_files_to_pico(port, directory=True, main=True, telemetry=True):
     if directory:
         compare_and_copy(files, "XRPLib", "lib/XRPLib")
     if main:
-        copy_file_to_pico(files, "main_program.py", "main_program.py")
+        copy_file_to_pico(files, ENTRY_POINT, ENTRY_POINT)
     if telemetry:
         copy_file_to_pico(files, "telemetry.txt", "telemetry.txt")
 
@@ -179,12 +186,11 @@ if __name__ == "__main__":
     # Copy any changed files to the Pico
     copy_all_files_to_pico(pico_port)
 
-    from XRPLib.telemetry_receiver import TelemetryReceiver
-    receiver = TelemetryReceiver()
+    from websocket_manager import WebsocketManager
+    ws_manager = WebsocketManager()
 
     # Run the main.py script on the Pico
     def on_output(output):
         print(f"Captured output: {output}")
-        for char in output:
-            receiver.receive_char(char)
-    run_pico_script(pico_port, "main_program.py", on_output)
+        ws_manager.send_data(output)
+    run_pico_script(pico_port, ENTRY_POINT, on_output)

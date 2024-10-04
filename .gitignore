@@ -6,3 +6,5 @@ docs/_build/
 .temp_xrplib
 secrets.json
 .DS_Store
+__pycache__/
+XRPLib/__pycache__/
