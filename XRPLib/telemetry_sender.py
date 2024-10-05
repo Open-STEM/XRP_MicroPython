@@ -71,13 +71,13 @@ class StdoutTelemetrySender(TelemetrySender):
 
 class EncodedTelemetrySender(TelemetrySender):
 
-    MAX_CHANNELS = 126
+    MAX_CHANNELS = 125
 
     """
     Sends telemetry data compacted into encoded ASCII and delimited with char(27) start and end characters.
     Consumers like XRPCode can extract and decode this data.
 
-    Up to MAX_CHANNELS (126) channels are supported. When the first data point for a new channel is about to be sent, first send
+    Up to MAX_CHANNELS (125) channels are supported. When the first data point for a new channel is about to be sent, first send
     a metadata packet with the channel index and name. This is used to map the channel index to a name on the receiver.
 
     Data is encoded with [1 byte qualifier] [data].
@@ -89,7 +89,9 @@ class EncodedTelemetrySender(TelemetrySender):
     encoded as ASCII ending with null char(0).
     Data length has variable length.
 
-    Qualifier < 126 means this is a data packet. The data is first a byte to indicate the channel index, then a 4-byte-encoded
+    Qualifier == 125 means this is a stop packet. There is no data. This concludes the telemetry run.
+
+    Qualifier <= 124 means this is a data packet. The data is first a byte to indicate the channel index, then a 4-byte-encoded
     timestamp in ms, then stringified data ending with null char(0).
     Data length has variable length.
 
@@ -146,6 +148,10 @@ class EncodedTelemetrySender(TelemetrySender):
         """
         Send the remaining buffer to the output.
         """
+
+        # Create stop packet
+        self._add_to_buffer(self.create_stop_packet())
+
         self._send_buffer()
 
     def _get_or_register_channel(self, channel):
@@ -208,6 +214,16 @@ class EncodedTelemetrySender(TelemetrySender):
         :rtype: bytearray
         """
         return bytearray([127])
+    
+    def create_stop_packet(self):
+        """
+        Create a stop packet to indicate the end of a telemetry run. This is a single
+        byte with the value 125.
+
+        :return: A bytearray containing the stop packet
+        :rtype: bytearray
+        """
+        return bytearray([125])
 
     def _add_to_buffer(self, packet):
         """
