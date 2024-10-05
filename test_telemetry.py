@@ -12,14 +12,18 @@ class ComputerTime(TelemetryTime):
 
 ws_manager = WebsocketManager()
 sender = EncodedTelemetrySender(ComputerTime(), send_function=ws_manager.send_data)
+time.sleep(1)
 
 sender.on_start_telemetry()
 
 sender.send_telemetry("test", 1)
-time.sleep(0.02)
+sender.send_telemetry("test2", 2)
+time.sleep(2)
 sender.send_telemetry("test", 2)
-time.sleep(0.03)
 sender.send_telemetry("test", 3)
+sender.send_telemetry("hello", 2)
+sender.send_telemetry("asfdjfk", 3)
+sender.send_telemetry("test2", 4)
 
 sender.on_stop_telemetry()
 

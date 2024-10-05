@@ -139,9 +139,6 @@ def run_pico_script(port, script_name, output_handler):
     except subprocess.CalledProcessError as e:
         print(f"Failed to run script {script_name}. Error: {str(e)}")
 
-def handle_output(output):
-    # Custom function to handle the output
-    print(f"Captured output: {output}")
 
 def list_files_on_pico(port):
     """List all files and folders on the Pico."""
@@ -190,6 +187,6 @@ if __name__ == "__main__":
 
     # Run the main.py script on the Pico
     def on_output(output):
-        print(f"Captured output: {output}")
+        print(f"Captured output: {output} \n{[ord(c) for c in output]}")
         ws_manager.send_data(output)
     run_pico_script(pico_port, ENTRY_POINT, on_output)

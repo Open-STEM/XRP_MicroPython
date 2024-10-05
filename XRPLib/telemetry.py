@@ -55,6 +55,8 @@ class Telemetry:
         # Dictionary of telemetry channel rates to a dictionary of channel names to callback functions
         self._telemetry_channels = {}
 
+        self._telemetry_started = False
+
         self._init_telemetry_channels(drive, imu, rangefinder, reflectance)
 
         
@@ -157,6 +159,8 @@ class Telemetry:
                 callback = lambda t, channels=channels: self._poll_telemetry_for_channels(channels)
             )
 
+        self._telemetry_started = True
+
     def _poll_telemetry_for_channels(self, channels):
         """
         Poll the telemetry channels for the given dictionary of channels.
@@ -174,6 +178,7 @@ class Telemetry:
         Stop all telemetry timers and send any remaining data.
         """
         print("Stopping telemetry")
+        self._telemetry_started = False
         for timer in self._telemetry_timers.values():
             timer.deinit()
         self._telemetry_sender.on_stop_telemetry()
@@ -188,4 +193,7 @@ class Telemetry:
         :param data: The data to send
         :type data: float
         """
+        if not self._telemetry_started:
+            raise RuntimeError("Telemetry has not been started")
+
         self._telemetry_sender.send_telemetry(channel, data)

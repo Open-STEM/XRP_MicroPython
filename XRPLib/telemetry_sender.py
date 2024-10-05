@@ -71,7 +71,9 @@ class StdoutTelemetrySender(TelemetrySender):
 
 class EncodedTelemetrySender(TelemetrySender):
 
-    MAX_CHANNELS = 125
+    MIN_CHANNEL_INDEX = 32
+    MAX_CHANNEL_INDEX = 124
+    MAX_CHANNELS = MAX_CHANNEL_INDEX - MIN_CHANNEL_INDEX + 1
 
     """
     Sends telemetry data compacted into encoded ASCII and delimited with char(27) start and end characters.
@@ -91,8 +93,8 @@ class EncodedTelemetrySender(TelemetrySender):
 
     Qualifier == 125 means this is a stop packet. There is no data. This concludes the telemetry run.
 
-    Qualifier <= 124 means this is a data packet. The data is first a byte to indicate the channel index, then a 4-byte-encoded
-    timestamp in ms, then stringified data ending with null char(0).
+    Qualifier 32 <=> 124. The data is first a byte to indicate the channel index, then a stringified
+    timestamp in ms ending with null char (0), then stringified data ending with null char(0).
     Data length has variable length.
 
     Data is buffered for a specified maximum number of bytes before sending batched data to the output.
@@ -112,9 +114,6 @@ class EncodedTelemetrySender(TelemetrySender):
 
         # An array of channel names, indexed by channel index. Maximum 255 channels, so max index is 254.
         self.registered_channels = []
-
-        # Create start packet
-        self._add_to_buffer(self.create_start_packet())
 
     def send_telemetry(self, channel, data):
         """
@@ -137,19 +136,32 @@ class EncodedTelemetrySender(TelemetrySender):
         # Prepare metadata packet if this is a new channel
         if is_newly_registered:
             metadata_packet = self._create_metadata_packet(channel_index, channel)
+            print(f"Channel {channel} at {float_data} has metadata packet {list(metadata_packet)}")
             self._add_to_buffer(metadata_packet)
 
         # Prepare data packet
         data_packet = self._create_data_packet(channel_index, float_data)
-        print(f"Channel {channel} at {float_data} has packet {data_packet}")
+        print(f"Channel {channel} at {float_data} has packet {list(data_packet)}")
         self._add_to_buffer(data_packet)
+
+    def on_start_telemetry(self):
+        """
+        Send a start packet to indicate the start of a new telemetry run.
+        """
+        super().on_start_telemetry()
+
+        # Create start packet
+        print("Creating start packet")
+        self._add_to_buffer(self.create_start_packet())
 
     def on_stop_telemetry(self):
         """
         Send the remaining buffer to the output.
         """
+        super().on_stop_telemetry()
 
         # Create stop packet
+        print("Creating stop packet")
         self._add_to_buffer(self.create_stop_packet())
 
         self._send_buffer()
@@ -164,13 +176,22 @@ class EncodedTelemetrySender(TelemetrySender):
         :rtype: int, bool
         :raises ValueError: If the maximum number of channels (255) is reached
         """
-        if channel in self.registered_channels:
-            return self.registered_channels.index(channel), False
-        if len(self.registered_channels) >= EncodedTelemetrySender.MAX_CHANNELS:
-            print(f"Maximum number of channels ({EncodedTelemetrySender.MAX_CHANNELS}) reached")
-            raise ValueError(f"Maximum number of channels ({EncodedTelemetrySender.MAX_CHANNELS}) reached")
-        self.registered_channels.append(channel)
-        return len(self.registered_channels) - 1, True
+
+        newly_registered = channel not in self.registered_channels
+
+        if newly_registered:
+
+            # Check if the maximum number of channels has been reached
+            if len(self.registered_channels) >= EncodedTelemetrySender.MAX_CHANNELS:
+                print(f"Maximum number of channels ({EncodedTelemetrySender.MAX_CHANNELS}) reached")
+                raise ValueError(f"Maximum number of channels ({EncodedTelemetrySender.MAX_CHANNELS}) reached")\
+                
+            # Register the new channel
+            self.registered_channels.append(channel)
+
+        # Return the index of the channel
+        return self.registered_channels.index(channel) + EncodedTelemetrySender.MIN_CHANNEL_INDEX, newly_registered
+
 
     def _create_metadata_packet(self, channel_index, channel_name):
         """
@@ -184,8 +205,7 @@ class EncodedTelemetrySender(TelemetrySender):
         :rtype: bytearray
         """
         packet = bytearray([126, channel_index])
-        packet.extend(channel_name.encode('ascii'))
-        packet.append(0)  # Null terminator
+        packet.extend(self._encode_string(channel_name))
         return packet
 
     def _create_data_packet(self, channel_index, data):
@@ -200,10 +220,24 @@ class EncodedTelemetrySender(TelemetrySender):
         :rtype: bytearray
         """
         packet = bytearray([channel_index])
-        packet.extend(uint_to_ascii(self.get_current_time()))
-        packet.extend(str(data).encode('ascii'))   
-        packet.append(0) # Null terminator
+        time = self.get_current_time()
+
+        packet.extend(self._encode_string(time))
+        packet.extend(self._encode_string(data))
         return packet
+    
+    def _encode_string(self, string):
+        """
+        Encode a string as ASCII, appending a null terminator.
+
+        :param string: The string to encode
+        :type string: str
+        :return: A bytearray containing the encoded string
+        :rtype: bytearray
+        """
+        encoded = bytearray(str(string).encode('ascii'))
+        encoded.append(0)
+        return encoded
     
     def create_start_packet(self):
         """
@@ -232,6 +266,15 @@ class EncodedTelemetrySender(TelemetrySender):
         :param packet: The packet to add to the buffer
         :type packet: bytearray
         """
+
+        # if any of the bytes in the packet are greater than 127, throw an error
+        packet_bytes = list(packet)
+        for byte in packet_bytes:
+            if byte > 127:
+                print(f"Byte {byte} in packet {packet_bytes} is greater than 127")
+                raise ValueError(f"Byte {byte} in packet {packet_bytes} is greater than 127")
+        
+
         if len(self.buffer) + len(packet) > self.max_buffer_size:
             self._send_buffer()
         self.buffer.extend(packet)
@@ -242,12 +285,12 @@ class EncodedTelemetrySender(TelemetrySender):
         """
         if self.buffer:
 
-            # Get the size of the buffer as a 4-byte ASCII string
-            buffer_size = uint_to_ascii(len(self.buffer))
+            buffer_size = len(self.buffer)
+            print(f"Sending buffer of size {buffer_size}")
         
             # Encode as start delimeter chr(27), size of buffer, then buffer
             send_buffer = bytearray([27])
-            send_buffer.extend(buffer_size)
+            send_buffer.extend(self._encode_string(buffer_size))
             send_buffer.extend(self.buffer)
 
             # Send the data over serial
@@ -256,11 +299,3 @@ class EncodedTelemetrySender(TelemetrySender):
 
             # Clear the buffer
             self.buffer = bytearray()
-
-# Encodes unsigned int to 4-char ASCII string
-def uint_to_ascii(i):
-    return struct.pack(">I", i)
-
-# Decodes 4-char ASCII string to unsigned int
-def ascii_to_uint(byte_array):
-    return struct.unpack(">I", byte_array)[0]

@@ -5,7 +5,7 @@ import queue
 import time
 
 class WebsocketManager:
-    def __init__(self, host='localhost', port=6789):
+    def __init__(self, host='localhost', port=6780):
         self.host = host
         self.port = port
         self.data_queue = queue.Queue()
@@ -15,6 +15,7 @@ class WebsocketManager:
 
     def send_data(self, data: str):
         """Non-blocking function to send data to the WebSocket client."""
+        print(f"Sending data to WebSocket: {data}")
         self.data_queue.put(data)
 
     async def websocket_handler(self, websocket, path):
@@ -25,7 +26,7 @@ class WebsocketManager:
                 try:
                     data_to_send = self.data_queue.get_nowait()
                     await websocket.send(data_to_send)
-                    print(f"Sent to browser: {data_to_send}")
+                    #print(f"Sent to browser: {data_to_send}")
                 except queue.Empty:
                     pass
                 await asyncio.sleep(0.1)  # Prevent busy-waiting
