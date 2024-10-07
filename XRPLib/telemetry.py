@@ -81,8 +81,8 @@ class Telemetry:
                 required_telemetry.pop(channel_name)
 
         # Register all required telemetry channels, consuming the required_telemetry dictionary
-        register(drive, "left_distance", lambda drive: drive.get_left_encoder_position())
-        register(drive, "right_distance", lambda drive: drive.get_right_encoder_position())
+        register(drive, "left_distance", lambda drive: drive.get_left_encoder_position(raw=True))
+        register(drive, "right_distance", lambda drive: drive.get_right_encoder_position(raw=True))
         register(imu, "imu_heading", lambda imu: imu.get_heading())
         register(imu, "imu_pitch", lambda imu: imu.get_pitch())
         register(imu, "imu_roll", lambda imu: imu.get_roll())

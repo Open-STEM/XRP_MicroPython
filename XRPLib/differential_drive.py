@@ -109,19 +109,23 @@ class DifferentialDrive:
         self.left_motor.reset_encoder_position()
         self.right_motor.reset_encoder_position()
 
-    def get_left_encoder_position(self) -> float:
+    def get_left_encoder_position(self, raw = False) -> float:
         """
+        :param raw: If True, returns the raw position, otherwise returns the position relative to the last time reset was called.
+        :type raw: bool
         :return: the current position of the left motor's encoder in cm.
         :rtype: float
         """
-        return self.left_motor.get_position()*math.pi*self.wheel_diam
+        return self.left_motor.get_position(raw)*math.pi*self.wheel_diam
 
-    def get_right_encoder_position(self) -> float:
+    def get_right_encoder_position(self, raw = False) -> float:
         """
+        :param raw: If True, returns the raw position, otherwise returns the position relative to the last time reset was called.
+        :type raw: bool
         :return: the current position of the right motor's encoder in cm.
         :rtype: float
         """
-        return self.right_motor.get_position()*math.pi*self.wheel_diam
+        return self.right_motor.get_position(raw)*math.pi*self.wheel_diam
 
 
     def straight(self, distance: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:
