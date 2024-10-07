@@ -169,9 +169,12 @@ class Telemetry:
         :type channels: dict
         """
         
+        channels_values = {}
         for channel_name, callback in channels.items():
             data = callback()
-            self._telemetry_sender.send_telemetry(channel_name, data)
+            channels_values[channel_name] = data
+
+        self._telemetry_sender.send_telemetry(channels_values)
 
     def stop_telemetry(self):
         """
@@ -196,4 +199,4 @@ class Telemetry:
         if not self._telemetry_started:
             raise RuntimeError("Telemetry has not been started")
 
-        self._telemetry_sender.send_telemetry(channel, data)
+        self._telemetry_sender.send_telemetry({channel: data})

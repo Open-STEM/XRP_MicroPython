@@ -15,7 +15,7 @@ class WebsocketManager:
 
     def send_data(self, data: str):
         """Non-blocking function to send data to the WebSocket client."""
-        print(f"Sending data to WebSocket: {data}")
+        #print(f"Sending data to WebSocket: {data}")
         self.data_queue.put(data)
 
     async def websocket_handler(self, websocket, path):

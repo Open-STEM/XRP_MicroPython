@@ -187,6 +187,6 @@ if __name__ == "__main__":
 
     # Run the main.py script on the Pico
     def on_output(output):
-        print(f"Captured output: {output} \n{[ord(c) for c in output]}")
+        #print(f"Captured output: {output} \n{[ord(c) for c in output]}")
         ws_manager.send_data(output)
     run_pico_script(pico_port, ENTRY_POINT, on_output)

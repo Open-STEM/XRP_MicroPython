@@ -1,17 +1,16 @@
-#from XRPLib.defaults import *
-from XRPLib.telemetry import Telemetry
+from XRPLib.defaults import *
 import time
 
 
 print("start")
 
-telemetry = Telemetry.get_default_telemetry()
 telemetry.start_telemetry()
-
-# Every second, for 10 seconds, print the index of the loop
-for i in range(3):
-    telemetry.send_data("test", i)
-    time.sleep(0.5)
+telemetry.send_data("test", 1)
+telemetry.send_data("test2", 2)
+telemetry.send_data("test3", 3)
+telemetry.send_data("test4", 4)
+telemetry.send_data("test5", 5)
+time.sleep(2)
 
 telemetry.stop_telemetry()
 print("done")
