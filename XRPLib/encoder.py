@@ -25,21 +25,25 @@ class Encoder:
             raise Exception("Encoder pins must be successive!")
         basePin = machine.Pin(min(encAPin, encBPin))
         self.sm = rp2.StateMachine(index, self._encoder, in_base=basePin)
-        self.reset_encoder_position()
+        
+        # Set the initial position to 0
+        self.sm.exec("set(x, 0)")
+
         self.sm.active(1)
+
+        # The offset used to calculate the position relative to the last time reset was called
+        self._count_offset = 0
     
     def reset_encoder_position(self):
         """
         Resets the encoder position to 0
         """
-        # It's possible for this to cause issues if in the middle of inrementing
-        # or decrementing, but the result should only be off by 1. If that's a
-        # problem, an alternative solution is to stop the state machine, then
-        # reset both x and the program counter. But that's excessive.
-        self.sm.exec("set(x, 0)")
+        self._count_offset = self.get_position_counts()
     
-    def get_position_counts(self):
+    def get_position_counts(self, raw = False):
         """
+        :param raw: If True, returns the raw encoder count, otherwise returns the count relative to the last time reset was called.
+        :type raw: bool
         :return: The position of the encoded motor, in counts, relative to the last time reset was called.
         :rtype: int
         """
@@ -51,14 +55,21 @@ class Encoder:
         counts = self.sm.get()
         if(counts > 2**31):
             counts -= 2**32
+
+        # If not raw, factor in the offset
+        if not raw:
+            counts -= self._count_offset
+
         return counts
     
-    def get_position(self):
+    def get_position(self, raw = False):
         """
+        :param raw: If True, returns the raw encoder count, otherwise returns the count relative to the last time reset was called.
+        :type raw: bool
         :return: The position of the encoded motor, in revolutions, relative to the last time reset was called.
         :rtype: float
         """
-        return self.get_position_counts() / self.resolution
+        return self.get_position_counts(raw) / self.resolution
 
     @rp2.asm_pio(in_shiftdir=rp2.PIO.SHIFT_LEFT, out_shiftdir=rp2.PIO.SHIFT_RIGHT)
     def _encoder():

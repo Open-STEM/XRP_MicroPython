@@ -78,8 +78,10 @@ class EncodedMotor:
         """
         self._motor.set_effort(effort)
 
-    def get_position(self) -> float:
+    def get_position(self, raw = False) -> float:
         """
+        :param raw: If True, returns the raw position, otherwise returns the position relative to the last time reset was called.
+        :type raw: bool
         :return: The position of the encoded motor, in revolutions, relative to the last time reset was called.
         :rtype: float
         """
@@ -87,10 +89,12 @@ class EncodedMotor:
             invert = -1
         else:
             invert = 1
-        return self._encoder.get_position()*invert
+        return self._encoder.get_position(raw)*invert
     
-    def get_position_counts(self) -> int:
+    def get_position_counts(self, raw = False) -> int:
         """
+        :param raw: If True, returns the raw encoder count, otherwise returns the count relative to the last time reset was called.
+        :type raw: bool
         :return: The position of the encoded motor, in encoder counts, relative to the last time reset was called.
         :rtype: int
         """
@@ -98,7 +102,7 @@ class EncodedMotor:
             invert = -1
         else:
             invert = 1
-        return self._encoder.get_position_counts()*invert
+        return self._encoder.get_position_counts(raw)*invert
 
     def reset_encoder_position(self):
         """

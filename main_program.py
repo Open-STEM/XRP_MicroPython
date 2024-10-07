@@ -5,12 +5,26 @@ import time
 print("start")
 
 telemetry.start_telemetry()
-telemetry.send_data("test", 1)
-telemetry.send_data("test2", 2)
-telemetry.send_data("test3", 3)
-telemetry.send_data("test4", 4)
-telemetry.send_data("test5", 5)
-time.sleep(2)
+
+def log_encoder():
+    telemetry.send_data("left", left_motor.get_position())
+    telemetry.send_data("right", right_motor.get_position())
+    telemetry.send_data("left_raw", left_motor.get_position(raw=True))
+    telemetry.send_data("right_raw", right_motor.get_position(raw=True))
+
+drivetrain.straight(10, 0.7)
+log_encoder()
+drivetrain.straight(10, 0.7)
+log_encoder()
+
+drivetrain.reset_encoder_position()
+log_encoder()
+
+drivetrain.straight(10, 0.7)
+log_encoder()
+drivetrain.straight(10, 0.7)
+log_encoder()
+
 
 telemetry.stop_telemetry()
 print("done")
