@@ -6,12 +6,17 @@ print("start")
 
 telemetry.start_telemetry()
 
+
+telemetry.send_data("state", "Straight")
 drivetrain.straight(20, 1)
 
+telemetry.send_data("state", "Turning")
 drivetrain.turn(90, 1)
-time.sleep(1)
 
-drivetrain.straight(20, 1)
+telemetry.send_data("state", "Arc")
+drivetrain.set_effort(0.8, 1)
+time.sleep(2)
+drivetrain.stop()
 
 telemetry.stop_telemetry()
 print("done")

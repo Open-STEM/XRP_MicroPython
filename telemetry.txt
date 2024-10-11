@@ -4,7 +4,6 @@ imu_heading 20
 left_distance 20
 right_distance 20
 
-imu_pitch 10
-imu_yaw 10
+rangefinder_distance 5
 left_reflectance 5
 right_reflectance 5
