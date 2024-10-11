@@ -1,9 +1,10 @@
 # Ingested by Telemetry class to determine which channels should be telemetered. For each line,
 # must follow syntax <channel name> <telemetered rate in Hz>
-imu_heading 10
+imu_heading 20
+left_distance 20
+right_distance 20
+
 imu_pitch 10
 imu_yaw 10
 left_reflectance 5
 right_reflectance 5
-left_distance 5
-right_distance 5

@@ -6,8 +6,12 @@ print("start")
 
 telemetry.start_telemetry()
 
-drivetrain.straight(10, 0.7)
+drivetrain.straight(20, 1)
 
+drivetrain.turn(90, 1)
+time.sleep(1)
+
+drivetrain.straight(20, 1)
 
 telemetry.stop_telemetry()
 print("done")
