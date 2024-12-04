@@ -12,7 +12,7 @@ class Reflectance:
         Get the default XRP v2 reflectance sensor instance. This is a singleton, so only one instance of the reflectance sensor will ever exist.
         """
         if cls._DEFAULT_REFLECTANCE_INSTANCE is None:
-            cls._DEFAULT_REFLECTANCE_INSTANCE = cls(26, 27)
+            cls._DEFAULT_REFLECTANCE_INSTANCE = cls("LINE_L", "LINE_R")
         return cls._DEFAULT_REFLECTANCE_INSTANCE
 
     def __init__(self, leftPin:int, rightPin:int):

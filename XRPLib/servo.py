@@ -16,12 +16,20 @@ class Servo:
         """
         if index == 1:
             if cls._DEFAULT_SERVO_ONE_INSTANCE is None:
-                cls._DEFAULT_SERVO_ONE_INSTANCE = cls(16)
+                cls._DEFAULT_SERVO_ONE_INSTANCE = cls("SERVO_1")
             servo = cls._DEFAULT_SERVO_ONE_INSTANCE
         elif index == 2:
             if cls._DEFAULT_SERVO_TWO_INSTANCE is None:
-                cls._DEFAULT_SERVO_TWO_INSTANCE = cls(17)
+                cls._DEFAULT_SERVO_TWO_INSTANCE = cls("SERVO_2")
             servo = cls._DEFAULT_SERVO_TWO_INSTANCE
+        elif index == 3:
+            if cls._DEFAULT_SERVO_THREE_INSTANCE is None:
+                cls._DEFAULT_SERVO_THREE_INSTANCE = cls("SERVO_3")
+            servo = cls._DEFAULT_SERVO_THREE_INSTANCE
+        elif index == 4:
+            if cls._DEFAULT_SERVO_FOUR_INSTANCE is None:
+                cls._DEFAULT_SERVO_FOUR_INSTANCE = cls("SERVO_4")
+            servo = cls._DEFAULT_SERVO_FOUR_INSTANCE
         else:
             return Exception("Invalid servo index")
         return servo

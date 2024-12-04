@@ -21,9 +21,10 @@ class Encoder:
         :param encBPin: The pin the right reflectance sensor is connected to
         :type encBPin: int
         """
-        if(abs(encAPin - encBPin) != 1):
-            raise Exception("Encoder pins must be successive!")
-        basePin = machine.Pin(min(encAPin, encBPin))
+        # if(abs(encAPin - encBPin) != 1):
+        #     raise Exception("Encoder pins must be successive!")
+        basePin = machine.Pin(min(encAPin, encBPin), machine.Pin.IN)
+        nextPin = machine.Pin(max(encAPin, encBPin), machine.Pin.IN)
         self.sm = rp2.StateMachine(index, self._encoder, in_base=basePin)
         self.reset_encoder_position()
         self.sm.active(1)

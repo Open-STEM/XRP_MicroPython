@@ -19,8 +19,8 @@ class DifferentialDrive:
 
         if cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE is None:
             cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE = cls(
-            EncodedMotor.get_default_encoded_motor(index=1),
-            EncodedMotor.get_default_encoded_motor(index=2),
+            EncodedMotor.get_default_encoded_motor(index=3),
+            EncodedMotor.get_default_encoded_motor(index=4),
             IMU.get_default_imu()
         )
             

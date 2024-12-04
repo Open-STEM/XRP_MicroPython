@@ -11,7 +11,7 @@ class Rangefinder:
         Get the default XRP v2 rangefinder instance. This is a singleton, so only one instance of the rangefinder will ever exist.
         """
         if cls._DEFAULT_RANGEFINDER_INSTANCE is None:
-            cls._DEFAULT_RANGEFINDER_INSTANCE = cls(20, 21)
+            cls._DEFAULT_RANGEFINDER_INSTANCE = cls("DIST_TRIG", "DIST_ECHO")
         return cls._DEFAULT_RANGEFINDER_INSTANCE
 
     def __init__(self, trigger_pin:int, echo_pin:int, timeout_us:int=500*2*30):

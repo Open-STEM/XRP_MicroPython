@@ -24,8 +24,8 @@ class IMU():
 
         if cls._DEFAULT_IMU_INSTANCE is None:
             cls._DEFAULT_IMU_INSTANCE = cls(
-                scl_pin=19,
-                sda_pin=18,
+                scl_pin="SCL1",
+                sda_pin="SDA1",
                 addr=LSM_ADDR_PRIMARY
             )  
             cls._DEFAULT_IMU_INSTANCE.calibrate()
