@@ -21,7 +21,7 @@ class EncodedMotor:
         :param index: The index of the motor to get; 1 for left, 2 for right, 3 for motor 3, 4 for motor 4
         :type index: int
         """
-        if "2350" in sys.implementation._machine:
+        if "RP2350" in sys.implementation._machine:
             usePwm = True
         else:
             usePwm = False
