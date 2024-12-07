@@ -18,7 +18,7 @@ class WebsocketManager:
         #print(f"Sending data to WebSocket: {data}")
         self.data_queue.put(data)
 
-    async def websocket_handler(self, websocket, path):
+    async def websocket_handler(self, websocket):
         """Handle WebSocket connections and send data from the queue."""
         print("Client connected")
         try:
