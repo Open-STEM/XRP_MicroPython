@@ -159,7 +159,7 @@ def copy_all_files_to_pico(port, directory=True, main=True, telemetry=True):
     files = Files(pyb)
     
     if directory:
-        compare_and_copy(files, "XRPLib", "lib/XRPLib")
+        compare_and_copy(files, "XRPLib", "XRPLib")
     if main:
         copy_file_to_pico(files, ENTRY_POINT, ENTRY_POINT)
     if telemetry:
