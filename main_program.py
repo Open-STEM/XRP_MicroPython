@@ -1,16 +1,81 @@
 from XRPLib.defaults import *
-import time
+import time, math
 
-def test():
-    telemetry.send_data("state", "Straight")
-    drivetrain.straight(20, 1)
+def square():
+    
+    for i in range(4):
+        drivetrain.straight(15, 0.5)
+        drivetrain.turn(90, 0.5)
 
-    telemetry.send_data("state", "Turning")
-    drivetrain.turn(90, 1)
+def print_reflectance():
+    while True:
+        left = reflectance.get_left()
+        right = reflectance.get_right()
 
-    telemetry.send_data("state", "Arc")
-    drivetrain.set_effort(0.8, 1)
-    time.sleep(2)
+        print("Left: ", left)
+        print("Right: ", right)
+
+        time.sleep(0.1)
+
+def approach_wall():
+
+    # approach wall until the error is less than 1cm
+
+    KP = 0.05
+    DISTANCE = 10
+
+    while math.fabs(rangefinder.distance() - DISTANCE) > 1:
+
+        error = rangefinder.distance() - DISTANCE
+        
+        # Bound between -0.5 and 0.5
+        effort = max(min(KP * error, 0.5), -0.5)
+
+        # min effort is 0.2
+        if effort < 0.2 and effort > 0:
+            effort = 0.2
+        elif effort > -0.2 and effort < 0:
+            effort = -0.2
+
+        drivetrain.set_effort(effort, effort)
+
+        telemetry.send_data("error", error)
+        telemetry.send_data("effort", effort)
+
+        time.sleep(0.02)
+
+    
+    drivetrain.stop()
+
+
+def line_follow():
+
+    KP = 0.6
+    BASE_EFFORT = 0.4
+    DISTANCE = 10
+
+
+    while (rangefinder.distance() > DISTANCE):
+
+
+        left = reflectance.get_left()
+        right = reflectance.get_right()
+
+        error = left - right
+        effort = KP * error
+
+        left_effort = BASE_EFFORT - effort
+        right_effort = BASE_EFFORT + effort
+
+        drivetrain.set_effort(left_effort, right_effort)
+
+        telemetry.send_data("left", left)
+        telemetry.send_data("right", right)
+        telemetry.send_data("error", error)
+        telemetry.send_data("effort", effort)
+
+        time.sleep(0.02)
+
     drivetrain.stop()
 
 def proportional_control():
@@ -45,10 +110,10 @@ def proportional_control():
     drivetrain.stop()
 
 
+#print_reflectance()
 telemetry.start_telemetry()
 
-proportional_control()
-
+approach_wall()
 
 telemetry.stop_telemetry()
 

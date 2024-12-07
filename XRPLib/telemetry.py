@@ -180,6 +180,10 @@ class Telemetry:
         """
         Stop all telemetry timers and send any remaining data.
         """
+
+        # Collect a little more data before stopping
+        time.sleep(0.5)
+        
         print("Stopping telemetry")
         self._telemetry_started = False
         for timer in self._telemetry_timers.values():

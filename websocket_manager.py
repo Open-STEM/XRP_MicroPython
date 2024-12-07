@@ -5,7 +5,7 @@ import queue
 import time
 
 class WebsocketManager:
-    def __init__(self, host='localhost', port=6780):
+    def __init__(self, host='localhost', port=6789):
         self.host = host
         self.port = port
         self.data_queue = queue.Queue()
