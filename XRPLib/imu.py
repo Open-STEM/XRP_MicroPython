@@ -61,8 +61,10 @@ class IMU():
             pass
         
         # Reset sensor to clear any previous configuration
+        # reset() also sets the board to the default config
         self.reset()
         
+    def _default_config(self):
         # Enable block data update
         self._set_bdu()
 
@@ -186,10 +188,17 @@ class IMU():
                 # Check if register has returned to default value (0x04)
                 self.reg_ctrl3_c_byte[0] = self._getreg(LSM_REG_CTRL3_C)
                 if self.reg_ctrl3_c_byte[0] == 0x04:
+                    self._default_config()
+                    self._start_timer()
                     return True
             # Timeout occurred
+            # Attempt to set default config anyways
+            self._default_config()
+            self._start_timer()
             return False
         else:
+            self._default_config()
+            self._start_timer()
             return True
 
     def get_acc_x(self):

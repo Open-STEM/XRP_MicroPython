@@ -1,6 +1,7 @@
 from machine import Pin, ADC, Timer
 from neopixel import NeoPixel
 import time
+import sys
 
 class Board:
 
@@ -30,7 +31,9 @@ class Board:
         self.button = Pin(button_pin, Pin.IN, Pin.PULL_UP)
 
         self.led = Pin("LED", Pin.OUT)
-        self.rgb_led = NeoPixel(Pin("RGB_LED", Pin.OUT), 1)
+
+        if "RP2350" in sys.implementation._machine:
+            self.rgb_led = NeoPixel(Pin("RGB_LED", Pin.OUT), 1)
         # A timer ID of -1 is a virtual timer.
         # Leaves the hardware timers for more important uses
         self._virt_timer = Timer(-1)
@@ -106,5 +109,8 @@ class Board:
             self.is_led_blinking = False
 
     def set_rgb_led(self, r:int, g:int, b:int):
-        self.rgb_led[0] = (r, g, b)
-        self.rgb_led.write()
+        if "rgb_led" in self.__dict__:
+            self.rgb_led[0] = (r, g, b)
+            self.rgb_led.write()
+        else:
+            raise Exception("No RGB LED found for this board")
