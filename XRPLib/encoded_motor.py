@@ -1,4 +1,4 @@
-from .motor import Motor
+from .motor import Motor, SinglePWMMotor, DualPWMMotor
 from .encoder import Encoder
 from machine import Timer
 from .controller import Controller
@@ -21,35 +21,37 @@ class EncodedMotor:
         :param index: The index of the motor to get; 1 for left, 2 for right, 3 for motor 3, 4 for motor 4
         :type index: int
         """
+        
         if "RP2350" in sys.implementation._machine:
-            usePwm = True
+            MotorImplementation = DualPWMMotor
         else:
-            usePwm = False
+            MotorImplementation = SinglePWMMotor
+
         if index == 1:
             if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
-                    Motor("MOTOR_L_IN1", "MOTOR_L_IN2", flip_dir=True, pwmMode=usePwm),
+                    MotorImplementation("MOTOR_L_IN1", "MOTOR_L_IN2", flip_dir=True),
                     Encoder(0, "ENCODER_LA", "ENCODER_LB")
                 )
             motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
         elif index == 2:
             if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
-                    Motor("MOTOR_R_IN1", "MOTOR_R_IN2", pwmMode=usePwm),
+                    MotorImplementation("MOTOR_R_IN1", "MOTOR_R_IN2"),
                     Encoder(1, "ENCODER_RA", "ENCODER_RB")
                 )
             motor = cls._DEFAULT_RIGHT_MOTOR_INSTANCE
         elif index == 3:
             if cls._DEFAULT_MOTOR_THREE_INSTANCE is None:
                 cls._DEFAULT_MOTOR_THREE_INSTANCE = cls(
-                    Motor("MOTOR_3_IN1", "MOTOR_3_IN2", flip_dir=True, pwmMode=usePwm),
+                    MotorImplementation("MOTOR_3_IN1", "MOTOR_3_IN2", flip_dir=True),
                     Encoder(2, "ENCODER_3A", "ENCODER_3B")
                 )
             motor = cls._DEFAULT_MOTOR_THREE_INSTANCE
         elif index == 4:
             if cls._DEFAULT_MOTOR_FOUR_INSTANCE is None:
                 cls._DEFAULT_MOTOR_FOUR_INSTANCE = cls(
-                    Motor("MOTOR_4_IN1", "MOTOR_4_IN2", pwmMode=usePwm),
+                    MotorImplementation("MOTOR_4_IN1", "MOTOR_4_IN2"),
                     Encoder(3, "ENCODER_4A", "ENCODER_4B")
                 )
             motor = cls._DEFAULT_MOTOR_FOUR_INSTANCE

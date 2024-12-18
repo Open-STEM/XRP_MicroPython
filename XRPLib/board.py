@@ -113,4 +113,4 @@ class Board:
             self.rgb_led[0] = (r, g, b)
             self.rgb_led.write()
         else:
-            raise Exception("No RGB LED found for this board")
+            raise NotImplementedError("Board.set_rgb_led not implemented for the XRP RP2040")
