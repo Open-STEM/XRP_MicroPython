@@ -13,10 +13,11 @@ class Board:
         Get the default board instance. This is a singleton, so only one instance of the board will ever exist.
         """
         if cls._DEFAULT_BOARD_INSTANCE is None:
-            cls._DEFAULT_BOARD_INSTANCE = cls("VIN_MEAS","USER_BUTTON")
+            cls._DEFAULT_BOARD_INSTANCE = cls()
         return cls._DEFAULT_BOARD_INSTANCE
 
-    def __init__(self, vin_pin:int, button_pin:int):
+    def __init__(self, vin_pin="BOARD_VIN_MEASURE", button_pin="BOARD_USER_BUTTON", 
+                 rgb_led_pin = "BOARD_NEOPIXEL", led_pin = "BOARD_LED"):
         """
         Implements for extra features on the XRP v2 board. Handles the on/off switch, button, and LED.
 
@@ -30,10 +31,10 @@ class Board:
         
         self.button = Pin(button_pin, Pin.IN, Pin.PULL_UP)
 
-        self.led = Pin("LED", Pin.OUT)
+        self.led = Pin(led_pin, Pin.OUT)
 
         if "RP2350" in sys.implementation._machine:
-            self.rgb_led = NeoPixel(Pin("RGB_LED", Pin.OUT), 1)
+            self.rgb_led = NeoPixel(Pin(rgb_led_pin, Pin.OUT), 1)
         # A timer ID of -1 is a virtual timer.
         # Leaves the hardware timers for more important uses
         self._virt_timer = Timer(-1)

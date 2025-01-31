@@ -34,12 +34,12 @@ class Servo:
             return Exception("Invalid servo index")
         return servo
 
-    def __init__(self, signal_pin:int):
+    def __init__(self, signal_pin: int|str):
         """
         A simple class for interacting with a servo through PWM
         
         :param signal_pin: The pin the servo is connected to
-        :type signal_pin: int
+        :type signal_pin: int | str
         """
 
         self._servo = PWM(Pin(signal_pin, Pin.OUT))

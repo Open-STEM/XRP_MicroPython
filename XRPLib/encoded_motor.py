@@ -7,6 +7,9 @@ import sys
 
 class EncodedMotor:
 
+    ZERO_EFFORT_BREAK = True
+    ZERO_EFFORT_COAST = False
+
     _DEFAULT_LEFT_MOTOR_INSTANCE = None
     _DEFAULT_RIGHT_MOTOR_INSTANCE = None
     _DEFAULT_MOTOR_THREE_INSTANCE = None
@@ -30,29 +33,29 @@ class EncodedMotor:
         if index == 1:
             if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
-                    MotorImplementation("MOTOR_L_IN1", "MOTOR_L_IN2", flip_dir=True),
-                    Encoder(0, "ENCODER_LA", "ENCODER_LB")
+                    MotorImplementation("MOTOR_L_IN_1", "MOTOR_L_IN_2", flip_dir=True),
+                    Encoder(0, "MOTOR_L_ENCODER_A", "MOTOR_L_ENCODER_B")
                 )
             motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
         elif index == 2:
             if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
-                    MotorImplementation("MOTOR_R_IN1", "MOTOR_R_IN2"),
-                    Encoder(1, "ENCODER_RA", "ENCODER_RB")
+                    MotorImplementation("MOTOR_R_IN_1", "MOTOR_R_IN_2"),
+                    Encoder(1, "MOTOR_R_ENCODER_A", "MOTOR_R_ENCODER_A")
                 )
             motor = cls._DEFAULT_RIGHT_MOTOR_INSTANCE
         elif index == 3:
             if cls._DEFAULT_MOTOR_THREE_INSTANCE is None:
                 cls._DEFAULT_MOTOR_THREE_INSTANCE = cls(
-                    MotorImplementation("MOTOR_3_IN1", "MOTOR_3_IN2", flip_dir=True),
-                    Encoder(2, "ENCODER_3A", "ENCODER_3B")
+                    MotorImplementation("MOTOR_3_IN_1", "MOTOR_3_IN_2", flip_dir=True),
+                    Encoder(2, "MOTOR_3_ENCODER_A", "MOTOR_3_ENCODER_A")
                 )
             motor = cls._DEFAULT_MOTOR_THREE_INSTANCE
         elif index == 4:
             if cls._DEFAULT_MOTOR_FOUR_INSTANCE is None:
                 cls._DEFAULT_MOTOR_FOUR_INSTANCE = cls(
-                    MotorImplementation("MOTOR_4_IN1", "MOTOR_4_IN2"),
-                    Encoder(3, "ENCODER_4A", "ENCODER_4B")
+                    MotorImplementation("MOTOR_4_IN_1", "MOTOR_4_IN_2"),
+                    Encoder(3, "MOTOR_4_ENCODER_A", "MOTOR_4_ENCODER_A")
                 )
             motor = cls._DEFAULT_MOTOR_FOUR_INSTANCE
         else:
@@ -63,6 +66,8 @@ class EncodedMotor:
         
         self._motor = motor
         self._encoder = encoder
+
+        self.brake_at_zero = False
 
         self.target_speed = None
         self.DEFAULT_SPEED_CONTROLLER = PID(
@@ -78,12 +83,38 @@ class EncodedMotor:
         # If the update timer is not running, start it at 50 Hz (20ms updates)
         self.updateTimer.init(period=20, callback=lambda t:self._update())
 
+
     def set_effort(self, effort: float):
         """
         :param effort: The effort to set this motor to, from -1 to 1
         :type effort: float
         """
-        self._motor.set_effort(effort)
+        if self.brake_at_zero and effort == 0:
+            self.brake()
+        else:
+            self._motor.set_effort(effort)
+    
+    # EncodedMotor.set_zero_effort_behavior(EncodedMotor.ZERO_POWER_BRAKE)
+    def set_zero_effort_behavior(self, brake_at_zero_effort):
+        """
+        Sets the behavior of the motor at 0 effort to either brake (hold position) or coast (free spin)
+        :param brake_at_zero_effort: Whether or not to brake at 0 effort. Can use EncodedMotor.ZERO_EFFORT_BREAK or EncodedMotor.ZERO_EFFORT_COAST for clarity.
+        :type brake_at_zero_effort: bool
+        """
+        self.brake_at_zero = brake_at_zero_effort
+
+    def brake(self):
+        """
+        Causes the motor to resist rotation.
+        """
+        # Exact impl of brake depends on which board is being used. 
+        self._motor.brake()
+
+    def coast(self):
+        """
+        Allows the motor to spin freely.
+        """
+        self._motor.coast()
 
     def get_position(self) -> float:
         """

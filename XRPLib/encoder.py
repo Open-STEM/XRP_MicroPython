@@ -9,7 +9,7 @@ class Encoder:
     _counts_per_motor_shaft_revolution = 12
     resolution = _counts_per_motor_shaft_revolution * _gear_ratio # 585
     
-    def __init__(self, index, encAPin, encBPin):
+    def __init__(self, index, encAPin: int|str, encBPin: int|str):
         """
         Uses the on board PIO State Machine to keep track of encoder positions. 
         Only 4 encoders can be instantiated this way.

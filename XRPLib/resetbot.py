@@ -16,6 +16,11 @@ def reset_led():
     from XRPLib.board import Board
     # Turn off the on-board LED
     Board.get_default_board().led_off()
+    try:
+        # Turn off the RGB LED for boards that have it
+        Board.get_default_board().set_rgb_led(0, 0, 0)
+    except:
+        pass
 
 def reset_servos():
     from XRPLib.servo import Servo

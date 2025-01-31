@@ -8,7 +8,7 @@ class SinglePWMMotor:
     This version is used for the beta version of the XRP, which uses the rp2040 processor
     """
 
-    def __init__(self, in1_direction_pin: int, in2_speed_pin: int, flip_dir:bool=False):
+    def __init__(self, in1_direction_pin: int|str, in2_speed_pin: int|str, flip_dir:bool=False):
         self.flip_dir = flip_dir
         self._MAX_PWM = 65534 # Motor holds when actually at full power
 
@@ -45,7 +45,7 @@ class SinglePWMMotor:
         self._in2SpeedPin.duty_u16(self._MAX_PWM+1)
 
     def coast(self):
-        raise NotImplementedError("Motor.coast is not implemented for not implemented for the XRP RP2040")
+        self.set_effort(0)
 
 class DualPWMMotor:
     """
@@ -54,7 +54,7 @@ class DualPWMMotor:
     This version of the Motor class is used 
     """
 
-    def __init__(self, in1_pwm_forward: int, in2_pwm_backward: int, flip_dir:bool=False):
+    def __init__(self, in1_pwm_forward: int|str, in2_pwm_backward: int|str, flip_dir:bool=False):
         self.flip_dir = flip_dir
         self._MAX_PWM = 65535 # Motor holds when actually at full power
 
