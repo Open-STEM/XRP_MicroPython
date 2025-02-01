@@ -1,4 +1,4 @@
-from .motor import Motor, SinglePWMMotor, DualPWMMotor
+from .motor import SinglePWMMotor, DualPWMMotor
 from .encoder import Encoder
 from machine import Timer
 from .controller import Controller
