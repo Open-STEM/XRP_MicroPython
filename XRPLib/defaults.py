@@ -1,6 +1,6 @@
 from .board import Board
 from .differential_drive import DifferentialDrive
-from .motor import Motor
+from .motor import SinglePWMMotor, DualPWMMotor
 from .encoder import Encoder
 from .encoded_motor import EncodedMotor
 from .rangefinder import Rangefinder
