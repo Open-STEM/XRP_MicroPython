@@ -41,28 +41,28 @@ class EncodedMotor:
             if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
                     MotorImplementation("MOTOR_R_IN_1", "MOTOR_R_IN_2"),
-                    Encoder(1, "MOTOR_R_ENCODER_A", "MOTOR_R_ENCODER_A")
+                    Encoder(1, "MOTOR_R_ENCODER_A", "MOTOR_R_ENCODER_B")
                 )
             motor = cls._DEFAULT_RIGHT_MOTOR_INSTANCE
         elif index == 3:
             if cls._DEFAULT_MOTOR_THREE_INSTANCE is None:
                 cls._DEFAULT_MOTOR_THREE_INSTANCE = cls(
                     MotorImplementation("MOTOR_3_IN_1", "MOTOR_3_IN_2", flip_dir=True),
-                    Encoder(2, "MOTOR_3_ENCODER_A", "MOTOR_3_ENCODER_A")
+                    Encoder(2, "MOTOR_3_ENCODER_A", "MOTOR_3_ENCODER_B")
                 )
             motor = cls._DEFAULT_MOTOR_THREE_INSTANCE
         elif index == 4:
             if cls._DEFAULT_MOTOR_FOUR_INSTANCE is None:
                 cls._DEFAULT_MOTOR_FOUR_INSTANCE = cls(
                     MotorImplementation("MOTOR_4_IN_1", "MOTOR_4_IN_2"),
-                    Encoder(3, "MOTOR_4_ENCODER_A", "MOTOR_4_ENCODER_A")
+                    Encoder(3, "MOTOR_4_ENCODER_A", "MOTOR_4_ENCODER_B")
                 )
             motor = cls._DEFAULT_MOTOR_FOUR_INSTANCE
         else:
             return Exception("Invalid motor index")
         return motor
     
-    def __init__(self, motor: Motor, encoder: Encoder):
+    def __init__(self, motor, encoder: Encoder):
         
         self._motor = motor
         self._encoder = encoder
