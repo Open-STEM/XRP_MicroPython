@@ -8,30 +8,38 @@ class Servo:
     @classmethod
     def get_default_servo(cls, index:int):
         """
-        Gets one of the default XRP v2 servo instances. These are singletons, so only one instance of each servo will ever exist.
+        Gets one of the default XRP servo instances. These are singletons, so only one instance of each servo will ever exist.
         Raises an exception if an invalid index is requested.
 
-        :param index: The index of the servo to get (1 or 2)
+        :param index: The index of the servo to get (1-4; Beta only has 1 and 2)
         :type index: int
         """
         if index == 1:
             if cls._DEFAULT_SERVO_ONE_INSTANCE is None:
-                cls._DEFAULT_SERVO_ONE_INSTANCE = cls(16)
+                cls._DEFAULT_SERVO_ONE_INSTANCE = cls("SERVO_1")
             servo = cls._DEFAULT_SERVO_ONE_INSTANCE
         elif index == 2:
             if cls._DEFAULT_SERVO_TWO_INSTANCE is None:
-                cls._DEFAULT_SERVO_TWO_INSTANCE = cls(17)
+                cls._DEFAULT_SERVO_TWO_INSTANCE = cls("SERVO_2")
             servo = cls._DEFAULT_SERVO_TWO_INSTANCE
+        elif index == 3:
+            if cls._DEFAULT_SERVO_THREE_INSTANCE is None:
+                cls._DEFAULT_SERVO_THREE_INSTANCE = cls("SERVO_3")
+            servo = cls._DEFAULT_SERVO_THREE_INSTANCE
+        elif index == 4:
+            if cls._DEFAULT_SERVO_FOUR_INSTANCE is None:
+                cls._DEFAULT_SERVO_FOUR_INSTANCE = cls("SERVO_4")
+            servo = cls._DEFAULT_SERVO_FOUR_INSTANCE
         else:
             return Exception("Invalid servo index")
         return servo
 
-    def __init__(self, signal_pin:int):
+    def __init__(self, signal_pin: int|str):
         """
         A simple class for interacting with a servo through PWM
         
         :param signal_pin: The pin the servo is connected to
-        :type signal_pin: int
+        :type signal_pin: int | str
         """
 
         self._servo = PWM(Pin(signal_pin, Pin.OUT))

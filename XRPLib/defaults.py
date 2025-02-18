@@ -1,6 +1,6 @@
 from .board import Board
 from .differential_drive import DifferentialDrive
-from .motor import Motor
+from .motor import SinglePWMMotor, DualPWMMotor
 from .encoder import Encoder
 from .encoded_motor import EncodedMotor
 from .rangefinder import Rangefinder
@@ -14,8 +14,8 @@ A simple file that constructs all of the default objects for the XRP robot
 Run "from XRPLib.defaults import *" to use
 """
 
-left_motor = EncodedMotor.get_default_encoded_motor(index=1)
-right_motor = EncodedMotor.get_default_encoded_motor(index=2)
+left_motor = EncodedMotor.get_default_encoded_motor(index=3)
+right_motor = EncodedMotor.get_default_encoded_motor(index=4)
 imu = IMU.get_default_imu()
 drivetrain = DifferentialDrive.get_default_differential_drive()
 rangefinder = Rangefinder.get_default_rangefinder()

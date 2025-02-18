@@ -14,7 +14,7 @@ class DifferentialDrive:
     def get_default_differential_drive(cls):
 
         """
-        Get the default XRP v2 differential drive instance. This is a singleton, so only one instance of the drivetrain will ever exist.
+        Get the default XRP differential drive instance. This is a singleton, so only one instance of the drivetrain will ever exist.
         """
 
         if cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE is None:
@@ -46,6 +46,7 @@ class DifferentialDrive:
         self.right_motor = right_motor
         self.imu = imu
 
+        self.brake_at_zero_power = False
         self.wheel_diam = wheel_diam
         self.track_width = wheel_track
 
@@ -76,9 +77,19 @@ class DifferentialDrive:
         self.left_motor.set_speed(left_speed*cmpsToRPM)
         self.right_motor.set_speed(right_speed*cmpsToRPM)
 
+    def set_zero_effort_behavior(self, brake_at_zero_effort):
+
+        """
+        Sets the behavior of both motor at 0 effort to either brake (hold position) or coast (free spin)
+        :param brake_at_zero_effort: Whether or not to brake at 0 effort. Can use EncodedMotor.ZERO_EFFORT_BREAK or EncodedMotor.ZERO_EFFORT_COAST for clarity.
+        :type brake_at_zero_effort: bool
+        """
+        self.left_motor.set_zero_effort_behavior(brake_at_zero_effort)
+        self.right_motor.set_zero_effort_behavior(brake_at_zero_effort)
+
     def stop(self) -> None:
         """
-        Stops both drivetrain motors
+        Stops both drivetrain motors by setting power to zero.
         """
         self.left_motor.set_speed()
         self.right_motor.set_speed()

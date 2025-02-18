@@ -9,7 +9,7 @@ class Encoder:
     _counts_per_motor_shaft_revolution = 12
     resolution = _counts_per_motor_shaft_revolution * _gear_ratio # 585
     
-    def __init__(self, index, encAPin, encBPin):
+    def __init__(self, index, encAPin: int|str, encBPin: int|str):
         """
         Uses the on board PIO State Machine to keep track of encoder positions. 
         Only 4 encoders can be instantiated this way.
@@ -21,9 +21,10 @@ class Encoder:
         :param encBPin: The pin the right reflectance sensor is connected to
         :type encBPin: int
         """
-        if(abs(encAPin - encBPin) != 1):
-            raise Exception("Encoder pins must be successive!")
-        basePin = machine.Pin(min(encAPin, encBPin))
+        # if(abs(encAPin - encBPin) != 1):
+        #     raise Exception("Encoder pins must be successive!")
+        basePin = machine.Pin(min(encAPin, encBPin), machine.Pin.IN)
+        nextPin = machine.Pin(max(encAPin, encBPin), machine.Pin.IN)
         self.sm = rp2.StateMachine(index, self._encoder, in_base=basePin)
         self.reset_encoder_position()
         self.sm.active(1)

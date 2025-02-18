@@ -8,13 +8,13 @@ class Rangefinder:
     @classmethod
     def get_default_rangefinder(cls):
         """
-        Get the default XRP v2 rangefinder instance. This is a singleton, so only one instance of the rangefinder will ever exist.
+        Get the default XRP rangefinder instance. This is a singleton, so only one instance of the rangefinder will ever exist.
         """
         if cls._DEFAULT_RANGEFINDER_INSTANCE is None:
-            cls._DEFAULT_RANGEFINDER_INSTANCE = cls(20, 21)
+            cls._DEFAULT_RANGEFINDER_INSTANCE = cls()
         return cls._DEFAULT_RANGEFINDER_INSTANCE
 
-    def __init__(self, trigger_pin:int, echo_pin:int, timeout_us:int=500*2*30):
+    def __init__(self, trigger_pin: int|str = "RANGE_TRIGGER", echo_pin: int|str = "RANGE_ECHO", timeout_us:int=500*2*30):
         """
         A basic class for using the HC-SR04 Ultrasonic Rangefinder.
         The sensor range is between 2cm and 4m.

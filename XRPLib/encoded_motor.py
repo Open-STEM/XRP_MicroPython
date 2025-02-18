@@ -1,10 +1,14 @@
-from .motor import Motor
+from .motor import SinglePWMMotor, DualPWMMotor
 from .encoder import Encoder
 from machine import Timer
 from .controller import Controller
 from .pid import PID
+import sys
 
 class EncodedMotor:
+
+    ZERO_EFFORT_BREAK = True
+    ZERO_EFFORT_COAST = False
 
     _DEFAULT_LEFT_MOTOR_INSTANCE = None
     _DEFAULT_RIGHT_MOTOR_INSTANCE = None
@@ -14,48 +18,56 @@ class EncodedMotor:
     @classmethod
     def get_default_encoded_motor(cls, index:int = 1):
         """
-        Get one of the default XRP v2 motor instances. These are singletons, so only one instance of each of these will ever exist.
+        Get one of the default XRP motor instances. These are singletons, so only one instance of each of these will ever exist.
         Raises an exception if an invalid index is requested.
 
         :param index: The index of the motor to get; 1 for left, 2 for right, 3 for motor 3, 4 for motor 4
         :type index: int
         """
+        
+        if "RP2350" in sys.implementation._machine:
+            MotorImplementation = DualPWMMotor
+        else:
+            MotorImplementation = SinglePWMMotor
+
         if index == 1:
             if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
-                    Motor(6, 7, flip_dir=True),
-                    Encoder(0, 4, 5)
+                    MotorImplementation("MOTOR_L_IN_1", "MOTOR_L_IN_2", flip_dir=True),
+                    Encoder(0, "MOTOR_L_ENCODER_A", "MOTOR_L_ENCODER_B")
                 )
             motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
         elif index == 2:
             if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
-                    Motor(14, 15),
-                    Encoder(1, 12, 13)
+                    MotorImplementation("MOTOR_R_IN_1", "MOTOR_R_IN_2"),
+                    Encoder(1, "MOTOR_R_ENCODER_A", "MOTOR_R_ENCODER_B")
                 )
             motor = cls._DEFAULT_RIGHT_MOTOR_INSTANCE
         elif index == 3:
             if cls._DEFAULT_MOTOR_THREE_INSTANCE is None:
                 cls._DEFAULT_MOTOR_THREE_INSTANCE = cls(
-                    Motor(2, 3),
-                    Encoder(2, 0, 1)
+                    MotorImplementation("MOTOR_3_IN_1", "MOTOR_3_IN_2", flip_dir=True),
+                    Encoder(2, "MOTOR_3_ENCODER_A", "MOTOR_3_ENCODER_B")
                 )
             motor = cls._DEFAULT_MOTOR_THREE_INSTANCE
         elif index == 4:
             if cls._DEFAULT_MOTOR_FOUR_INSTANCE is None:
                 cls._DEFAULT_MOTOR_FOUR_INSTANCE = cls(
-                    Motor(10, 11, flip_dir=True),
-                    Encoder(3, 8, 9)
+                    MotorImplementation("MOTOR_4_IN_1", "MOTOR_4_IN_2"),
+                    Encoder(3, "MOTOR_4_ENCODER_A", "MOTOR_4_ENCODER_B")
                 )
             motor = cls._DEFAULT_MOTOR_FOUR_INSTANCE
         else:
             return Exception("Invalid motor index")
         return motor
     
-    def __init__(self, motor: Motor, encoder: Encoder):
+    def __init__(self, motor, encoder: Encoder):
         
         self._motor = motor
         self._encoder = encoder
+
+        self.brake_at_zero = False
 
         self.target_speed = None
         self.DEFAULT_SPEED_CONTROLLER = PID(
@@ -71,12 +83,38 @@ class EncodedMotor:
         # If the update timer is not running, start it at 50 Hz (20ms updates)
         self.updateTimer.init(period=20, callback=lambda t:self._update())
 
+
     def set_effort(self, effort: float):
         """
         :param effort: The effort to set this motor to, from -1 to 1
         :type effort: float
         """
-        self._motor.set_effort(effort)
+        if self.brake_at_zero and effort == 0:
+            self.brake()
+        else:
+            self._motor.set_effort(effort)
+    
+    # EncodedMotor.set_zero_effort_behavior(EncodedMotor.ZERO_POWER_BRAKE)
+    def set_zero_effort_behavior(self, brake_at_zero_effort):
+        """
+        Sets the behavior of the motor at 0 effort to either brake (hold position) or coast (free spin)
+        :param brake_at_zero_effort: Whether or not to brake at 0 effort. Can use EncodedMotor.ZERO_EFFORT_BREAK or EncodedMotor.ZERO_EFFORT_COAST for clarity.
+        :type brake_at_zero_effort: bool
+        """
+        self.brake_at_zero = brake_at_zero_effort
+
+    def brake(self):
+        """
+        Causes the motor to resist rotation.
+        """
+        # Exact impl of brake depends on which board is being used. 
+        self._motor.brake()
+
+    def coast(self):
+        """
+        Allows the motor to spin freely.
+        """
+        self._motor.coast()
 
     def get_position(self) -> float:
         """
