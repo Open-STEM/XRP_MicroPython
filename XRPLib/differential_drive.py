@@ -14,7 +14,7 @@ class DifferentialDrive:
     def get_default_differential_drive(cls):
 
         """
-        Get the default XRP v2 differential drive instance. This is a singleton, so only one instance of the drivetrain will ever exist.
+        Get the default XRP differential drive instance. This is a singleton, so only one instance of the drivetrain will ever exist.
         """
 
         if cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE is None:

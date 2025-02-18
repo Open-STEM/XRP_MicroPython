@@ -8,7 +8,7 @@ class Rangefinder:
     @classmethod
     def get_default_rangefinder(cls):
         """
-        Get the default XRP v2 rangefinder instance. This is a singleton, so only one instance of the rangefinder will ever exist.
+        Get the default XRP rangefinder instance. This is a singleton, so only one instance of the rangefinder will ever exist.
         """
         if cls._DEFAULT_RANGEFINDER_INSTANCE is None:
             cls._DEFAULT_RANGEFINDER_INSTANCE = cls()

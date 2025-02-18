@@ -3,9 +3,9 @@ from machine import Pin, PWM
 class SinglePWMMotor:
 
     """
-    A wrapper class handling direction and power sets for DC motors on the XRP robots
+    A simple class handling direction and power sets for DC motors on the XRP robots
 
-    This version is used for the beta version of the XRP, which uses the rp2040 processor
+    This version is used for the XRP Beta, which uses the rp2040 processor
     """
 
     def __init__(self, in1_direction_pin: int|str, in2_speed_pin: int|str, flip_dir:bool=False):
@@ -49,9 +49,9 @@ class SinglePWMMotor:
 
 class DualPWMMotor:
     """
-    A wrapper class handling direction and power sets for DC motors on the XRP robots
+    A simple class handling effort setting for DC motors on the XRP robots
 
-    This version of the Motor class is used 
+    This version of the Motor class is used for the official release of the XRP
     """
 
     def __init__(self, in1_pwm_forward: int|str, in2_pwm_backward: int|str, flip_dir:bool=False):

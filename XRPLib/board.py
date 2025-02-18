@@ -19,7 +19,7 @@ class Board:
     def __init__(self, vin_pin="BOARD_VIN_MEASURE", button_pin="BOARD_USER_BUTTON", 
                  rgb_led_pin = "BOARD_NEOPIXEL", led_pin = "LED"):
         """
-        Implements for extra features on the XRP v2 board. Handles the on/off switch, button, and LED.
+        Implements for extra features on the XRP board. Handles the on/off switch, button, and LED.
 
         :param vin_pin: The pin the on/off switch is connected to
         :type vin_pin: int
@@ -114,4 +114,4 @@ class Board:
             self.rgb_led[0] = (r, g, b)
             self.rgb_led.write()
         else:
-            raise NotImplementedError("Board.set_rgb_led not implemented for the XRP RP2040")
+            raise NotImplementedError("Board.set_rgb_led not implemented for the XRP Beta")

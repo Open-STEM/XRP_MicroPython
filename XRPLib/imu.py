@@ -19,7 +19,7 @@ class IMU():
     @classmethod
     def get_default_imu(cls):
         """
-        Get the default XRP v2 IMU instance. This is a singleton, so only one instance of the drivetrain will ever exist.
+        Get the default XRP IMU instance. This is a singleton, so only one instance of the drivetrain will ever exist.
         """
 
         if cls._DEFAULT_IMU_INSTANCE is None:

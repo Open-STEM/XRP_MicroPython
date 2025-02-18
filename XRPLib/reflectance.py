@@ -9,7 +9,7 @@ class Reflectance:
     @classmethod
     def get_default_reflectance(cls):
         """
-        Get the default XRP v2 reflectance sensor instance. This is a singleton, so only one instance of the reflectance sensor will ever exist.
+        Get the default XRP reflectance sensor instance. This is a singleton, so only one instance of the reflectance sensor will ever exist.
         """
         if cls._DEFAULT_REFLECTANCE_INSTANCE is None:
             cls._DEFAULT_REFLECTANCE_INSTANCE = cls()

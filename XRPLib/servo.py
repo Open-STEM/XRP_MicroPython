@@ -8,10 +8,10 @@ class Servo:
     @classmethod
     def get_default_servo(cls, index:int):
         """
-        Gets one of the default XRP v2 servo instances. These are singletons, so only one instance of each servo will ever exist.
+        Gets one of the default XRP servo instances. These are singletons, so only one instance of each servo will ever exist.
         Raises an exception if an invalid index is requested.
 
-        :param index: The index of the servo to get (1 or 2)
+        :param index: The index of the servo to get (1-4; Beta only has 1 and 2)
         :type index: int
         """
         if index == 1:
