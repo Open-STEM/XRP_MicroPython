@@ -4,6 +4,8 @@ class Servo:
 
     _DEFAULT_SERVO_ONE_INSTANCE = None
     _DEFAULT_SERVO_TWO_INSTANCE = None
+    _DEFAULT_SERVO_THREE_INSTANCE = None
+    _DEFAULT_SERVO_FOUR_INSTANCE = None
 
     @classmethod
     def get_default_servo(cls, index:int):
