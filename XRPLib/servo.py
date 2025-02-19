@@ -23,12 +23,11 @@ class Servo:
             if cls._DEFAULT_SERVO_TWO_INSTANCE is None:
                 cls._DEFAULT_SERVO_TWO_INSTANCE = cls("SERVO_2")
             servo = cls._DEFAULT_SERVO_TWO_INSTANCE
-            return Exception("Invalid servo index")
-        elif index == 3 and "RP2350" in sys.implementation._machine:
+        elif index == 3 and hasattr(Pin.board, "SERVO_3"):
             if cls._DEFAULT_SERVO_THREE_INSTANCE is None:
                 cls._DEFAULT_SERVO_THREE_INSTANCE = cls("SERVO_3")
             servo = cls._DEFAULT_SERVO_THREE_INSTANCE
-        elif index == 4 and "RP2350" in sys.implementation._machine:
+        elif index == 4 and hasattr(Pin.board, "SERVO_4"):
             if cls._DEFAULT_SERVO_FOUR_INSTANCE is None:
                 cls._DEFAULT_SERVO_FOUR_INSTANCE = cls("SERVO_4")
             servo = cls._DEFAULT_SERVO_FOUR_INSTANCE

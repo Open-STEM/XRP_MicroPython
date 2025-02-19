@@ -25,7 +25,7 @@ class Webserver:
         gc.threshold(50000) # garbage collection
         self.logged_data = {}
         self.buttons = {"forwardButton":    lambda: logging.debug("Button not initialized"),
-                        "backButton":   lambda: logging.debug("Button not initialized"),
+                        "backButton":       lambda: logging.debug("Button not initialized"),
                         "leftButton":       lambda: logging.debug("Button not initialized"),
                         "rightButton":      lambda: logging.debug("Button not initialized"),
                         "stopButton":       lambda: logging.debug("Button not initialized")}

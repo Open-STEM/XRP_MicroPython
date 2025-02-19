@@ -3,18 +3,18 @@ Example Code
 
 Feel free to read through, import, and use any of the below sample code:
 
-.. literalinclude:: ../Examples/drive_examples.py
-    :caption: Examples/drive_examples.py
+.. literalinclude:: ../XRPExamples/drive_examples.py
+    :caption: XRPExamples/drive_examples.py
     :linenos:
 
-.. literalinclude:: ../Examples/sensor_examples.py
-    :caption: Examples/sensor_examples.py
+.. literalinclude:: ../XRPExamples/sensor_examples.py
+    :caption: XRPExamples/sensor_examples.py
     :linenos:
 
-.. literalinclude:: ../Examples/misc_examples.py
-    :caption: Examples/misc_examples.py
+.. literalinclude:: ../XRPExamples/led_example.py
+    :caption: XRPExamples/led_example.py
     :linenos:
 
-.. literalinclude:: ../Examples/webserver_example.py
-    :caption: Examples/webserver_example.py
+.. literalinclude:: ../XRPExamples/webserver_example.py
+    :caption: XRPExamples/webserver_example.py
     :linenos:

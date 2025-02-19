@@ -33,7 +33,7 @@ class Board:
 
         self.led = Pin(led_pin, Pin.OUT)
 
-        if "RP2350" in sys.implementation._machine:
+        if hasattr(Pin.board, rgb_led_pin):
             self.rgb_led = NeoPixel(Pin(rgb_led_pin, Pin.OUT), 1)
         # A timer ID of -1 is a virtual timer.
         # Leaves the hardware timers for more important uses
