@@ -33,7 +33,7 @@ class Board:
 
         self.led = Pin(led_pin, Pin.OUT)
 
-        if "RP2350" in sys.implementation._machine:
+        if hasattr(Pin.board, rgb_led_pin):
             self.rgb_led = NeoPixel(Pin(rgb_led_pin, Pin.OUT), 1)
         # A timer ID of -1 is a virtual timer.
         # Leaves the hardware timers for more important uses
@@ -110,6 +110,16 @@ class Board:
             self.is_led_blinking = False
 
     def set_rgb_led(self, r:int, g:int, b:int):
+        """
+        Sets the Neopixel RGB LED to a specified color. Throws a NotImplementedError on the XRP Beta
+
+        :param r: The amount of red in the desired color
+        :type r: int
+        :param g: The amount of green in the desired color
+        :type g: int
+        :param b: The amount of blue in the desired color
+        :type b: int
+        """
         if "rgb_led" in self.__dict__:
             self.rgb_led[0] = (r, g, b)
             self.rgb_led.write()
