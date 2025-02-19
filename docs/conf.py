@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# SPDX-FileCopyrightText: 2017 Scott Shawcroft, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Kevin Siegall, written for Open-STEM and the XRP Consortium
 #
 # SPDX-License-Identifier: MIT
 
@@ -26,7 +26,6 @@ extensions = [
     "sphinx.ext.todo",
 ]
 
-# TODO: Please Read!
 # Uncomment the below if you use native CircuitPython modules such as
 # digitalio, micropython and busio. List the modules you use. Without it, the
 # autodoc module docs will fail to generate with a warning.

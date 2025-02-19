@@ -26,9 +26,7 @@
       ["XRPExamples/webserver_example.py", "github:Open-STEM/XRP_Micropython/Examples/webserver_example.py"]
     ],
     "deps": [
-      ["github:pimoroni/phew", "latest"],
-      ["collections-defaultdict", "latest"],
-      ["os-path", "latest"]
+      ["github:pimoroni/phew", "latest"]
     ],
     "version": "2.0.0"
   }

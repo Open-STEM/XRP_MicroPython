@@ -13,7 +13,16 @@ API Reference
 
 Hardware
 --------
-.. autoclass:: XRPLib.motor.Motor
+
+.. autoclass:: XRPLib.board.Board
+    :members:
+    :undoc-members:
+    
+.. autoclass:: XRPLib.motor.SinglePWMMotor
+    :members:
+    :undoc-members:
+
+.. autoclass:: XRPLib.motor.DualPWMMotor
     :members:
     :undoc-members:
 
@@ -54,10 +63,6 @@ Sensors
 
 Miscellaneous
 -------------
-
-.. autoclass:: XRPLib.board.Board
-    :members:
-    :undoc-members:
 
 .. autoclass:: XRPLib.controller.Controller
     :members:
