@@ -1,0 +1,423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example Code &mdash; XRPLib - MicroPython 2.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="_static/xrplogo.ico"/>
+      <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Installation Verification" href="installation_check.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            XRPLib - MicroPython
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">XRPLib - Table of Contents</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="defaults.html">XRPLib.defaults</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation_check.html">Installation Verification</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Curriculum</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://introtoroboticsv2.readthedocs.io">XRP Curriculum</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html">XRP User Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Open-STEM/XRP_MicroPython/releases/latest">XRPLib on GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://xrp.discourse.group">XRP Support Forum</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://micropython.org/download/">Download MicroPython</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs.micropython.org/en/latest/">MicroPython Reference Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/orgs/micropython/discussions">MicroPython Support Forum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">XRPLib - MicroPython</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Example Code</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="example-code">
+<h1>Example Code<a class="headerlink" href="#example-code" title="Link to this heading">¶</a></h1>
+<p>Feel free to read through, import, and use any of the below sample code:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">XRPExamples/drive_examples.py</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">XRPLib.defaults</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 5</span><span class="sd">    By the end of this file students will learn how to control the drivetrain,</span>
+<span class="linenos"> 6</span><span class="sd">    both by setting effort values directly to the motors and by using go_straight and go_turn</span>
+<span class="linenos"> 7</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="c1"># drive straight for a set time period (defualt 1 second)</span>
+<span class="linenos">10</span><span class="k">def</span><span class="w"> </span><span class="nf">drive_straight</span><span class="p">(</span><span class="n">drive_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="linenos">11</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">12</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">drive_time</span><span class="p">)</span>
+<span class="linenos">13</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="c1"># drive at a slight counter clockwise arc for a set time period (default 1 second)</span>
+<span class="linenos">16</span><span class="k">def</span><span class="w"> </span><span class="nf">arc_turn</span><span class="p">(</span><span class="n">turn_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="linenos">17</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">18</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">turn_time</span><span class="p">)</span>
+<span class="linenos">19</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="c1"># turn CCW at a point for a set time period (default 1 second)</span>
+<span class="linenos">22</span><span class="k">def</span><span class="w"> </span><span class="nf">point_turn</span><span class="p">(</span><span class="n">turn_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="linenos">23</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">24</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">turn_time</span><span class="p">)</span>
+<span class="linenos">25</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="c1"># pivot turn around the left wheel for a set time period (default 1 second)</span>
+<span class="linenos">28</span><span class="k">def</span><span class="w"> </span><span class="nf">swing_turn</span><span class="p">(</span><span class="n">turn_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="linenos">29</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">30</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">turn_time</span><span class="p">)</span>
+<span class="linenos">31</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="c1"># Driving in a circle by setting a difference in motor efforts</span>
+<span class="linenos">34</span><span class="k">def</span><span class="w"> </span><span class="nf">circle</span><span class="p">():</span>
+<span class="linenos">35</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">36</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos">37</span>
+<span class="linenos">38</span><span class="c1"># Follow the perimeter of a square with variable sidelength</span>
+<span class="linenos">39</span><span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="n">sidelength</span><span class="p">):</span>
+<span class="linenos">40</span>    <span class="k">for</span> <span class="n">sides</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+<span class="linenos">41</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">straight</span><span class="p">(</span><span class="n">sidelength</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">42</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">turn</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="linenos">43</span>    <span class="c1"># Alternatively:</span>
+<span class="linenos">44</span>    <span class="c1"># polygon(sidelength, 4)</span>
+<span class="linenos">45</span>
+<span class="linenos">46</span><span class="c1"># Follow the perimeter of an arbitrary polygon with variable side length and number of sides</span>
+<span class="linenos">47</span><span class="c1"># Side length in centimeters</span>
+<span class="linenos">48</span><span class="k">def</span><span class="w"> </span><span class="nf">polygon</span><span class="p">(</span><span class="n">side_length</span><span class="p">,</span> <span class="n">number_of_sides</span><span class="p">):</span>
+<span class="linenos">49</span>    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_sides</span><span class="p">):</span>
+<span class="linenos">50</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">straight</span><span class="p">(</span><span class="n">side_length</span><span class="p">)</span>
+<span class="linenos">51</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">turn</span><span class="p">(</span><span class="mi">360</span><span class="o">/</span><span class="n">number_of_sides</span><span class="p">)</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span><span class="c1"># A slightly longer example program showing how a robot may follow a simple path</span>
+<span class="linenos">54</span><span class="k">def</span><span class="w"> </span><span class="nf">test_drive</span><span class="p">():</span>
+<span class="linenos">55</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Driving forward 25cm&quot;</span><span class="p">)</span>
+<span class="linenos">56</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">straight</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">57</span>
+<span class="linenos">58</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">59</span>
+<span class="linenos">60</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;turn 90 degrees right&quot;</span><span class="p">)</span>
+<span class="linenos">61</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">turn</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">62</span>
+<span class="linenos">63</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">64</span>
+<span class="linenos">65</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;turn 90 degrees left by setting speed negative&quot;</span><span class="p">)</span>
+<span class="linenos">66</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">turn</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">67</span>
+<span class="linenos">68</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">69</span>
+<span class="linenos">70</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;drive backwards 25 cm by setting distance negative&quot;</span><span class="p">)</span>
+<span class="linenos">71</span>    <span class="c1"># There is no difference between setting speed or distance negative, both work</span>
+<span class="linenos">72</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">straight</span><span class="p">(</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span><span class="mf">0.8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">XRPExamples/sensor_examples.py</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">XRPLib.defaults</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 5</span><span class="sd">    By the end of this file students will learn how to read and use data from</span>
+<span class="linenos"> 6</span><span class="sd">    both the ultrasonic sensors and the line followers.</span>
+<span class="linenos"> 7</span><span class="sd">    They will also have a chance to learn the basics of proportional control.</span>
+<span class="linenos"> 8</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="c1"># Polling data from the ultrasonic sensor</span>
+<span class="linenos">11</span><span class="k">def</span><span class="w"> </span><span class="nf">ultrasonic_test</span><span class="p">():</span>
+<span class="linenos">12</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">13</span>        <span class="nb">print</span><span class="p">(</span><span class="n">rangefinder</span><span class="o">.</span><span class="n">distance</span><span class="p">())</span>
+<span class="linenos">14</span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="c1"># Approaches a wall at a set speed and then stops</span>
+<span class="linenos">17</span><span class="k">def</span><span class="w"> </span><span class="nf">drive_till_close</span><span class="p">(</span><span class="n">target_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">):</span>
+<span class="linenos">18</span>    <span class="n">speed</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="linenos">19</span>    <span class="k">while</span> <span class="n">rangefinder</span><span class="o">.</span><span class="n">distance</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">target_distance</span><span class="p">:</span>
+<span class="linenos">20</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="n">speed</span><span class="p">)</span>
+<span class="linenos">21</span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">22</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span><span class="c1"># Maintains a certain distance from the wall using proportional control</span>
+<span class="linenos">25</span><span class="k">def</span><span class="w"> </span><span class="nf">standoff</span><span class="p">(</span><span class="n">target_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">):</span>
+<span class="linenos">26</span>    <span class="n">KP</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="linenos">27</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">28</span>        <span class="n">distance</span> <span class="o">=</span> <span class="n">rangefinder</span><span class="o">.</span><span class="n">distance</span><span class="p">()</span>
+<span class="linenos">29</span>        <span class="n">error</span> <span class="o">=</span> <span class="n">distance</span> <span class="o">-</span> <span class="n">target_distance</span>
+<span class="linenos">30</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="n">error</span> <span class="o">*</span> <span class="n">KP</span><span class="p">,</span> <span class="n">error</span><span class="o">*</span><span class="n">KP</span><span class="p">)</span>
+<span class="linenos">31</span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="c1"># Maintains a certain distance from the wall while driving</span>
+<span class="linenos">34</span><span class="c1">#     using proportional control (sensor on right side of robot this time)</span>
+<span class="linenos">35</span><span class="k">def</span><span class="w"> </span><span class="nf">wall_follow</span><span class="p">(</span><span class="n">target_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">):</span>
+<span class="linenos">36</span>    <span class="n">KP</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="linenos">37</span>    <span class="n">base_speed</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="linenos">38</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">39</span>        <span class="n">distance</span> <span class="o">=</span> <span class="n">rangefinder</span><span class="o">.</span><span class="n">distance</span><span class="p">()</span>
+<span class="linenos">40</span>        <span class="n">error</span> <span class="o">=</span> <span class="n">distance</span> <span class="o">-</span> <span class="n">target_distance</span>
+<span class="linenos">41</span>        <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+<span class="linenos">42</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="n">base_speed</span> <span class="o">+</span> <span class="n">error</span> <span class="o">*</span> <span class="n">KP</span><span class="p">,</span> <span class="n">base_speed</span> <span class="o">-</span> <span class="n">error</span><span class="o">*</span><span class="n">KP</span><span class="p">)</span>
+<span class="linenos">43</span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">44</span>
+<span class="linenos">45</span><span class="c1"># Follows a line using the line followers</span>
+<span class="linenos">46</span><span class="k">def</span><span class="w"> </span><span class="nf">line_track</span><span class="p">():</span>
+<span class="linenos">47</span>    <span class="n">base_effort</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="linenos">48</span>    <span class="n">KP</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="linenos">49</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">50</span>        <span class="c1"># You always want to take the difference of the sensors because the raw value isn&#39;t always consistent.</span>
+<span class="linenos">51</span>        <span class="n">error</span> <span class="o">=</span> <span class="n">reflectance</span><span class="o">.</span><span class="n">get_left</span><span class="p">()</span> <span class="o">-</span> <span class="n">reflectance</span><span class="o">.</span><span class="n">get_right</span><span class="p">()</span>
+<span class="linenos">52</span>        <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+<span class="linenos">53</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="n">base_effort</span> <span class="o">-</span> <span class="n">error</span> <span class="o">*</span> <span class="n">KP</span><span class="p">,</span> <span class="n">base_effort</span> <span class="o">+</span> <span class="n">error</span> <span class="o">*</span> <span class="n">KP</span><span class="p">)</span>
+<span class="linenos">54</span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">55</span>
+<span class="linenos">56</span><span class="c1"># Polling data from the IMU</span>
+<span class="linenos">57</span><span class="k">def</span><span class="w"> </span><span class="nf">imu_test</span><span class="p">():</span>
+<span class="linenos">58</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">59</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pitch: </span><span class="si">{</span><span class="n">imu</span><span class="o">.</span><span class="n">get_pitch</span><span class="p">()</span><span class="si">}</span><span class="s2">, Heading: </span><span class="si">{</span><span class="n">imu</span><span class="o">.</span><span class="n">get_heading</span><span class="p">()</span><span class="si">}</span><span class="s2">, Roll: </span><span class="si">{</span><span class="n">imu</span><span class="o">.</span><span class="n">get_yaw</span><span class="p">()</span><span class="si">}</span><span class="s2">, Accelerometer output: </span><span class="si">{</span><span class="n">imu</span><span class="o">.</span><span class="n">get_acc_rates</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">60</span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="linenos">61</span>
+<span class="linenos">62</span><span class="k">def</span><span class="w"> </span><span class="nf">climb_ramp</span><span class="p">(</span><span class="n">ramp_angle</span><span class="p">,</span> <span class="n">angle_tolerance</span><span class="o">=</span><span class="mf">3.5</span><span class="p">):</span>
+<span class="linenos">63</span>    <span class="n">speed</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="linenos">64</span>    <span class="c1"># Find ramp by driving forward</span>
+<span class="linenos">65</span>    <span class="k">while</span> <span class="n">imu</span><span class="o">.</span><span class="n">get_pitch</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">ramp_angle</span><span class="o">-</span><span class="n">angle_tolerance</span><span class="p">:</span>
+<span class="linenos">66</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="n">speed</span><span class="p">)</span>
+<span class="linenos">67</span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="linenos">68</span>    <span class="c1"># Drive up ramp until angle levels out again</span>
+<span class="linenos">69</span>    <span class="k">while</span> <span class="n">imu</span><span class="o">.</span><span class="n">get_pitch</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">ramp_angle</span><span class="o">-</span><span class="n">angle_tolerance</span><span class="p">:</span>
+<span class="linenos">70</span>        <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="n">speed</span><span class="p">)</span>
+<span class="linenos">71</span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="linenos">72</span>    <span class="c1"># Then stop</span>
+<span class="linenos">73</span>    <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="linenos">74</span>
+<span class="linenos">75</span><span class="n">ultrasonic_test</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">XRPExamples/led_example.py</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">XRPLib.board</span><span class="w"> </span><span class="kn">import</span> <span class="n">Board</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">machine</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timer</span><span class="p">,</span> <span class="n">Pin</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1"># Get a reference to the board</span>
+<span class="linenos"> 6</span><span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="o">.</span><span class="n">get_default_board</span><span class="p">()</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="c1"># Create a timer for the RGB LED, assuming it&#39;s present on this board</span>
+<span class="linenos"> 9</span><span class="n">rgb_led_timer</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="c1"># Conversion from hue to RGB</span>
+<span class="linenos">12</span><span class="k">def</span><span class="w"> </span><span class="nf">hue_to_rgb</span><span class="p">(</span><span class="n">hue</span><span class="p">):</span>
+<span class="linenos">13</span>    <span class="c1"># Initialize RGB values</span>
+<span class="linenos">14</span>    <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">15</span>    <span class="n">g</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">16</span>    <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">17</span>    
+<span class="linenos">18</span>    <span class="c1"># Ensure hue is in range of [0,360)</span>
+<span class="linenos">19</span>    <span class="n">hue</span> <span class="o">%=</span> <span class="mi">360</span>
+<span class="linenos">20</span>    
+<span class="linenos">21</span>    <span class="k">if</span><span class="p">(</span><span class="n">hue</span> <span class="o">&lt;</span> <span class="mi">120</span><span class="p">):</span>
+<span class="linenos">22</span>        <span class="c1"># Red to green region</span>
+<span class="linenos">23</span>        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="mi">120</span> <span class="o">-</span> <span class="n">hue</span><span class="p">)</span> <span class="o">/</span> <span class="mi">120</span> <span class="o">*</span> <span class="mi">255</span>
+<span class="linenos">24</span>        <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">hue</span> <span class="o">-</span>   <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">120</span> <span class="o">*</span> <span class="mi">255</span>
+<span class="linenos">25</span>        <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">26</span>    <span class="k">elif</span><span class="p">(</span><span class="n">hue</span> <span class="o">&lt;</span> <span class="mi">240</span><span class="p">):</span>
+<span class="linenos">27</span>        <span class="c1"># Green to blue region</span>
+<span class="linenos">28</span>        <span class="n">hue</span> <span class="o">-=</span> <span class="mi">120</span>
+<span class="linenos">29</span>        <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">30</span>        <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="mi">120</span> <span class="o">-</span> <span class="n">hue</span><span class="p">)</span> <span class="o">/</span> <span class="mi">120</span> <span class="o">*</span> <span class="mi">255</span>
+<span class="linenos">31</span>        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">hue</span> <span class="o">-</span>   <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">120</span> <span class="o">*</span> <span class="mi">255</span>
+<span class="linenos">32</span>    <span class="k">else</span><span class="p">:</span>
+<span class="linenos">33</span>        <span class="c1"># Blue to red region</span>
+<span class="linenos">34</span>        <span class="n">hue</span> <span class="o">-=</span> <span class="mi">240</span>
+<span class="linenos">35</span>        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">hue</span> <span class="o">-</span>   <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">120</span> <span class="o">*</span> <span class="mi">255</span>
+<span class="linenos">36</span>        <span class="n">g</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">37</span>        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mi">120</span> <span class="o">-</span> <span class="n">hue</span><span class="p">)</span> <span class="o">/</span> <span class="mi">120</span> <span class="o">*</span> <span class="mi">255</span>
+<span class="linenos">38</span>    
+<span class="linenos">39</span>    <span class="c1"># Return RGB as tuple of integers in range of [0,255]</span>
+<span class="linenos">40</span>    <span class="k">return</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span><span class="k">def</span><span class="w"> </span><span class="nf">update_rgb_led_rainbow</span><span class="p">(</span><span class="n">timer</span><span class="p">):</span>
+<span class="linenos">43</span>    <span class="c1"># Set hue based on current time. Hue is an angle up to 360 degrees,</span>
+<span class="linenos">44</span>    <span class="c1"># so using the milliseconds divided by 10 creates a rainbow that</span>
+<span class="linenos">45</span>    <span class="c1"># repeats every 3.6 seconds</span>
+<span class="linenos">46</span>    <span class="n">hue</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">ticks_ms</span><span class="p">()</span> <span class="o">/</span> <span class="mi">10</span>
+<span class="linenos">47</span>    
+<span class="linenos">48</span>    <span class="c1"># Compute RGB values</span>
+<span class="linenos">49</span>    <span class="n">rgb</span> <span class="o">=</span> <span class="n">hue_to_rgb</span><span class="p">(</span><span class="n">hue</span><span class="p">)</span>
+<span class="linenos">50</span>    
+<span class="linenos">51</span>    <span class="c1"># Max brightness is blinding, so recompute RGB values with 10% brightness</span>
+<span class="linenos">52</span>    <span class="n">brightness</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="linenos">53</span>    <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rgb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">brightness</span><span class="p">)</span>
+<span class="linenos">54</span>    <span class="n">g</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rgb</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">brightness</span><span class="p">)</span>
+<span class="linenos">55</span>    <span class="n">b</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rgb</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">brightness</span><span class="p">)</span>
+<span class="linenos">56</span>    
+<span class="linenos">57</span>    <span class="c1"># Set the RGB LED color</span>
+<span class="linenos">58</span>    <span class="n">board</span><span class="o">.</span><span class="n">set_rgb_led</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="linenos">59</span>
+<span class="linenos">60</span><span class="k">def</span><span class="w"> </span><span class="nf">start_led_demo</span><span class="p">():</span>
+<span class="linenos">61</span>    <span class="c1"># Make the monochrome LED start blinking</span>
+<span class="linenos">62</span>    <span class="n">board</span><span class="o">.</span><span class="n">led_blink</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">63</span>    
+<span class="linenos">64</span>    <span class="c1"># If this board has an RGB LED, make it start changing colors</span>
+<span class="linenos">65</span>    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Pin</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="s2">&quot;BOARD_NEOPIXEL&quot;</span><span class="p">):</span>
+<span class="linenos">66</span>        <span class="c1"># Set up timer to update the RGB LED at 100Hz for smooth color changes</span>
+<span class="linenos">67</span>        <span class="n">rgb_led_timer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">freq</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">update_rgb_led_rainbow</span><span class="p">)</span>
+<span class="linenos">68</span>
+<span class="linenos">69</span><span class="k">def</span><span class="w"> </span><span class="nf">stop_led_demo</span><span class="p">():</span>
+<span class="linenos">70</span>    <span class="c1"># Make the monochrome LED stop blinking and turn off the LED</span>
+<span class="linenos">71</span>    <span class="n">board</span><span class="o">.</span><span class="n">led_blink</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos">72</span>    <span class="n">board</span><span class="o">.</span><span class="n">led_off</span><span class="p">()</span>
+<span class="linenos">73</span>    
+<span class="linenos">74</span>    <span class="c1"># If this board has an RGB LED, stop the timer and turn off the LED</span>
+<span class="linenos">75</span>    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Pin</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="s2">&quot;BOARD_NEOPIXEL&quot;</span><span class="p">):</span>
+<span class="linenos">76</span>        <span class="n">rgb_led_timer</span><span class="o">.</span><span class="n">deinit</span><span class="p">()</span>
+<span class="linenos">77</span>        <span class="n">board</span><span class="o">.</span><span class="n">set_rgb_led</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="linenos">78</span>
+<span class="linenos">79</span><span class="n">start_led_demo</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">XRPExamples/webserver_example.py</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">XRPLib.defaults</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">machine</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timer</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1"># Binding functions to the arrow buttons</span>
+<span class="linenos"> 6</span><span class="n">webserver</span><span class="o">.</span><span class="n">registerForwardButton</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="linenos"> 7</span><span class="n">webserver</span><span class="o">.</span><span class="n">registerLeftButton</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="linenos"> 8</span><span class="n">webserver</span><span class="o">.</span><span class="n">registerRightButton</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="linenos"> 9</span><span class="n">webserver</span><span class="o">.</span><span class="n">registerBackwardButton</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="linenos">10</span><span class="n">webserver</span><span class="o">.</span><span class="n">registerStopButton</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">set_effort</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="c1"># Binding functions to custom buttons</span>
+<span class="linenos">13</span><span class="n">webserver</span><span class="o">.</span><span class="n">add_button</span><span class="p">(</span><span class="s2">&quot;Close Server&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">webserver</span><span class="o">.</span><span class="n">stop_server</span><span class="p">())</span>
+<span class="linenos">14</span><span class="n">webserver</span><span class="o">.</span><span class="n">add_button</span><span class="p">(</span><span class="s2">&quot;Blink&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">board</span><span class="o">.</span><span class="n">led_blink</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="linenos">15</span><span class="n">webserver</span><span class="o">.</span><span class="n">add_button</span><span class="p">(</span><span class="s2">&quot;LED Off&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">board</span><span class="o">.</span><span class="n">led_off</span><span class="p">())</span>
+<span class="linenos">16</span><span class="n">webserver</span><span class="o">.</span><span class="n">add_button</span><span class="p">(</span><span class="s2">&quot;Servo Up&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">servo_one</span><span class="o">.</span><span class="n">set_angle</span><span class="p">(</span><span class="mi">90</span><span class="p">))</span>
+<span class="linenos">17</span><span class="n">webserver</span><span class="o">.</span><span class="n">add_button</span><span class="p">(</span><span class="s2">&quot;Servo Down&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">servo_one</span><span class="o">.</span><span class="n">set_angle</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="c1"># Logging static data to the webserver</span>
+<span class="linenos">20</span><span class="c1"># webserver.log_data(&quot;test&quot;, &quot;test&quot;)</span>
+<span class="linenos">21</span><span class="c1"># webserver.log_data(&quot;List&quot;, [1,2,3])</span>
+<span class="linenos">22</span><span class="c1"># webserver.log_data(&quot;Dict&quot;, {&quot;a&quot;:1,&quot;b&quot;:2,&quot;c&quot;:3})</span>
+<span class="linenos">23</span><span class="c1"># webserver.log_data(&quot;Tuple&quot;, (1,2,3))</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="k">def</span><span class="w"> </span><span class="nf">log_time_and_range</span><span class="p">():</span>
+<span class="linenos">26</span>    <span class="c1"># This function is called every second to update the data on the webserver</span>
+<span class="linenos">27</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">log_data</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+<span class="linenos">28</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">log_data</span><span class="p">(</span><span class="s2">&quot;Range&quot;</span><span class="p">,</span> <span class="n">rangefinder</span><span class="o">.</span><span class="n">distance</span><span class="p">())</span>
+<span class="linenos">29</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">log_data</span><span class="p">(</span><span class="s2">&quot;Left Motor&quot;</span><span class="p">,</span> <span class="n">left_motor</span><span class="o">.</span><span class="n">get_position</span><span class="p">())</span>
+<span class="linenos">30</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">log_data</span><span class="p">(</span><span class="s2">&quot;Right Motor&quot;</span><span class="p">,</span> <span class="n">right_motor</span><span class="o">.</span><span class="n">get_position</span><span class="p">())</span>
+<span class="linenos">31</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">log_data</span><span class="p">(</span><span class="s2">&quot;Button State&quot;</span><span class="p">,</span> <span class="n">board</span><span class="o">.</span><span class="n">is_button_pressed</span><span class="p">())</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="n">timer</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">34</span><span class="n">timer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">Timer</span><span class="o">.</span><span class="n">PERIODIC</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">log_time_and_range</span><span class="p">())</span>
+<span class="linenos">35</span>
+<span class="linenos">36</span><span class="k">def</span><span class="w"> </span><span class="nf">connect_and_start_webserver</span><span class="p">():</span>
+<span class="linenos">37</span>    <span class="c1"># Connect to the network and start the webserver in bridge mode</span>
+<span class="linenos">38</span>    <span class="c1"># Network ssid and password are stored in root/secrets.json</span>
+<span class="linenos">39</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">connect_to_network</span><span class="p">()</span>
+<span class="linenos">40</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">start_server</span><span class="p">()</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span><span class="k">def</span><span class="w"> </span><span class="nf">start_network_and_webserver</span><span class="p">():</span>
+<span class="linenos">43</span>    <span class="c1"># Start the webserver in access point mode</span>
+<span class="linenos">44</span>    <span class="c1"># Network ssid and password are stored in root/secrets.json</span>
+<span class="linenos">45</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">start_network</span><span class="p">()</span>
+<span class="linenos">46</span>    <span class="n">webserver</span><span class="o">.</span><span class="n">start_server</span><span class="p">()</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span><span class="n">start_network_and_webserver</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation_check.html" class="btn btn-neutral float-left" title="Installation Verification" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Open STEM Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
