@@ -18,15 +18,15 @@
       ["XRPLib/servo.py", "github:Open-STEM/XRP_Micropython/XRPLib/servo.py"],
       ["XRPLib/timeout.py", "github:Open-STEM/XRP_Micropython/XRPLib/timeout.py"],
       ["XRPLib/webserver.py", "github:Open-STEM/XRP_Micropython/XRPLib/webserver.py"],
-      ["XRPExamples/__init__.py", "github:Open-STEM/XRP_Micropython/Examples/__init__.py"],
-      ["XRPExamples/drive_examples.py", "github:Open-STEM/XRP_Micropython/Examples/drive_examples.py"],
-      ["XRPExamples/installation_verification.py", "github:Open-STEM/XRP_Micropython/Examples/installation_verification.py"],
-      ["XRPExamples/misc_examples.py", "github:Open-STEM/XRP_Micropython/Examples/misc_examples.py"],
-      ["XRPExamples/sensor_examples.py", "github:Open-STEM/XRP_Micropython/Examples/sensor_examples.py"],
-      ["XRPExamples/webserver_example.py", "github:Open-STEM/XRP_Micropython/Examples/webserver_example.py"]
+      ["XRPExamples/__init__.py", "github:Open-STEM/XRP_Micropython/XRPExamples/__init__.py"],
+      ["XRPExamples/drive_examples.py", "github:Open-STEM/XRP_Micropython/XRPExamples/drive_examples.py"],
+      ["XRPExamples/installation_verification.py", "github:Open-STEM/XRP_Micropython/XRPExamples/installation_verification.py"],
+      ["XRPExamples/led_example.py", "github:Open-STEM/XRP_Micropython/XRPExamples/misc_examples.py"],
+      ["XRPExamples/sensor_examples.py", "github:Open-STEM/XRP_Micropython/XRPExamples/sensor_examples.py"],
+      ["XRPExamples/webserver_example.py", "github:Open-STEM/XRP_Micropython/XRPExamples/webserver_example.py"]
     ],
     "deps": [
       ["github:pimoroni/phew", "latest"]
     ],
-    "version": "2.0.0"
+    "version": "2.0.1"
   }

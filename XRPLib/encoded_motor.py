@@ -74,6 +74,7 @@ class EncodedMotor:
             kp=0.035,
             ki=0.03,
             kd=0,
+            max_integral=50
         )
         self.speedController = self.DEFAULT_SPEED_CONTROLLER
         self.prev_position = 0
@@ -166,8 +167,6 @@ class EncodedMotor:
             return
         # Convert from rev per min to counts per 20ms (60 sec/min, 50 Hz)
         self.target_speed = speed_rpm*self._encoder.resolution/(60*50)
-        self.speedController.clear_history()
-        self.prev_position = self.get_position_counts()
 
     def set_speed_controller(self, new_controller: Controller):
         """
