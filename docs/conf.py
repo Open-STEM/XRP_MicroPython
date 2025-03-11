@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 with open("../package.json", "r") as read_file:
     __version__ = json.load(read_file)["version"]
-
+    from unittest.mock import MagicMock
 # -- General configuration ------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -26,6 +26,11 @@ extensions = [
     "sphinx.ext.todo",
 ]
 
+import sys
+
+sys.implementation._machine = "XRP mocked-machine"
+
+    
 # Uncomment the below if you use native CircuitPython modules such as
 # digitalio, micropython and busio. List the modules you use. Without it, the
 # autodoc module docs will fail to generate with a warning.
@@ -35,6 +40,7 @@ autodoc_mock_imports = [
     'machine',
     'board',
     'network',
+    'neopixel',
     'esp',
     'uos',
     'btree',

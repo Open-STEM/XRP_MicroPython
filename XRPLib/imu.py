@@ -7,6 +7,7 @@ try:
     from .imu_defs import *
     from uctypes import struct, addressof
 except (TypeError, ModuleNotFoundError):
+    LSM_ADDR_PRIMARY = 0x6A
     # Import wrapped in a try/except so that autodoc generation can process properly
     pass
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
