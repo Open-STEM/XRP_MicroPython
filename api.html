@@ -1,0 +1,1562 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; XRPLib - MicroPython 2.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="_static/xrplogo.ico"/>
+      <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="XRPLib.defaults" href="defaults.html" />
+    <link rel="prev" title="XRPLib - Table of Contents" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            XRPLib - MicroPython
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">XRPLib - Table of Contents</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hardware">Hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.board.Board"><code class="docutils literal notranslate"><span class="pre">Board</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.board.Board.are_motors_powered"><code class="docutils literal notranslate"><span class="pre">Board.are_motors_powered()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.board.Board.get_default_board"><code class="docutils literal notranslate"><span class="pre">Board.get_default_board()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.board.Board.is_button_pressed"><code class="docutils literal notranslate"><span class="pre">Board.is_button_pressed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.board.Board.led_blink"><code class="docutils literal notranslate"><span class="pre">Board.led_blink()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.board.Board.led_off"><code class="docutils literal notranslate"><span class="pre">Board.led_off()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.board.Board.led_on"><code class="docutils literal notranslate"><span class="pre">Board.led_on()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.board.Board.set_rgb_led"><code class="docutils literal notranslate"><span class="pre">Board.set_rgb_led()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.board.Board.wait_for_button"><code class="docutils literal notranslate"><span class="pre">Board.wait_for_button()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.motor.SinglePWMMotor"><code class="docutils literal notranslate"><span class="pre">SinglePWMMotor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor.SinglePWMMotor.brake"><code class="docutils literal notranslate"><span class="pre">SinglePWMMotor.brake()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor.SinglePWMMotor.coast"><code class="docutils literal notranslate"><span class="pre">SinglePWMMotor.coast()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor.SinglePWMMotor.set_effort"><code class="docutils literal notranslate"><span class="pre">SinglePWMMotor.set_effort()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.motor.DualPWMMotor"><code class="docutils literal notranslate"><span class="pre">DualPWMMotor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor.DualPWMMotor.brake"><code class="docutils literal notranslate"><span class="pre">DualPWMMotor.brake()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor.DualPWMMotor.coast"><code class="docutils literal notranslate"><span class="pre">DualPWMMotor.coast()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor.DualPWMMotor.set_effort"><code class="docutils literal notranslate"><span class="pre">DualPWMMotor.set_effort()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor"><code class="docutils literal notranslate"><span class="pre">EncodedMotor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.ZERO_EFFORT_BREAK"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.ZERO_EFFORT_BREAK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.ZERO_EFFORT_COAST"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.ZERO_EFFORT_COAST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.brake"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.brake()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.coast"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.coast()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.get_default_encoded_motor"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.get_default_encoded_motor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.get_position"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.get_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.get_position_counts"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.get_position_counts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.get_speed"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.get_speed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.reset_encoder_position"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.reset_encoder_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.set_effort"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.set_effort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.set_speed"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.set_speed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.set_speed_controller"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.set_speed_controller()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor.set_zero_effort_behavior"><code class="docutils literal notranslate"><span class="pre">EncodedMotor.set_zero_effort_behavior()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup"><code class="docutils literal notranslate"><span class="pre">MotorGroup</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.add_motor"><code class="docutils literal notranslate"><span class="pre">MotorGroup.add_motor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.get_position"><code class="docutils literal notranslate"><span class="pre">MotorGroup.get_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.get_position_counts"><code class="docutils literal notranslate"><span class="pre">MotorGroup.get_position_counts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.get_speed"><code class="docutils literal notranslate"><span class="pre">MotorGroup.get_speed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.remove_motor"><code class="docutils literal notranslate"><span class="pre">MotorGroup.remove_motor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.reset_encoder_position"><code class="docutils literal notranslate"><span class="pre">MotorGroup.reset_encoder_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.set_effort"><code class="docutils literal notranslate"><span class="pre">MotorGroup.set_effort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.set_speed"><code class="docutils literal notranslate"><span class="pre">MotorGroup.set_speed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.motor_group.MotorGroup.set_speed_controller"><code class="docutils literal notranslate"><span class="pre">MotorGroup.set_speed_controller()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.arcade"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.arcade()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.get_default_differential_drive"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.get_default_differential_drive()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.get_left_encoder_position"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.get_left_encoder_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.get_right_encoder_position"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.get_right_encoder_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.reset_encoder_position"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.reset_encoder_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.set_effort"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.set_effort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.set_speed"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.set_speed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.set_zero_effort_behavior"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.set_zero_effort_behavior()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.stop"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.stop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.straight"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.straight()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.differential_drive.DifferentialDrive.turn"><code class="docutils literal notranslate"><span class="pre">DifferentialDrive.turn()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.servo.Servo"><code class="docutils literal notranslate"><span class="pre">Servo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.servo.Servo.free"><code class="docutils literal notranslate"><span class="pre">Servo.free()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.servo.Servo.get_default_servo"><code class="docutils literal notranslate"><span class="pre">Servo.get_default_servo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.servo.Servo.set_angle"><code class="docutils literal notranslate"><span class="pre">Servo.set_angle()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sensors">Sensors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.encoder.Encoder"><code class="docutils literal notranslate"><span class="pre">Encoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoder.Encoder.get_position"><code class="docutils literal notranslate"><span class="pre">Encoder.get_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoder.Encoder.get_position_counts"><code class="docutils literal notranslate"><span class="pre">Encoder.get_position_counts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoder.Encoder.reset_encoder_position"><code class="docutils literal notranslate"><span class="pre">Encoder.reset_encoder_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.encoder.Encoder.resolution"><code class="docutils literal notranslate"><span class="pre">Encoder.resolution</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.imu.IMU"><code class="docutils literal notranslate"><span class="pre">IMU</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.acc_rate"><code class="docutils literal notranslate"><span class="pre">IMU.acc_rate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.acc_scale"><code class="docutils literal notranslate"><span class="pre">IMU.acc_scale()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.calibrate"><code class="docutils literal notranslate"><span class="pre">IMU.calibrate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_acc_gyro_rates"><code class="docutils literal notranslate"><span class="pre">IMU.get_acc_gyro_rates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_acc_rates"><code class="docutils literal notranslate"><span class="pre">IMU.get_acc_rates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_acc_x"><code class="docutils literal notranslate"><span class="pre">IMU.get_acc_x()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_acc_y"><code class="docutils literal notranslate"><span class="pre">IMU.get_acc_y()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_acc_z"><code class="docutils literal notranslate"><span class="pre">IMU.get_acc_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_default_imu"><code class="docutils literal notranslate"><span class="pre">IMU.get_default_imu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_gyro_rates"><code class="docutils literal notranslate"><span class="pre">IMU.get_gyro_rates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_gyro_x_rate"><code class="docutils literal notranslate"><span class="pre">IMU.get_gyro_x_rate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_gyro_y_rate"><code class="docutils literal notranslate"><span class="pre">IMU.get_gyro_y_rate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_gyro_z_rate"><code class="docutils literal notranslate"><span class="pre">IMU.get_gyro_z_rate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_heading"><code class="docutils literal notranslate"><span class="pre">IMU.get_heading()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_pitch"><code class="docutils literal notranslate"><span class="pre">IMU.get_pitch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_roll"><code class="docutils literal notranslate"><span class="pre">IMU.get_roll()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.get_yaw"><code class="docutils literal notranslate"><span class="pre">IMU.get_yaw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.gyro_rate"><code class="docutils literal notranslate"><span class="pre">IMU.gyro_rate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.gyro_scale"><code class="docutils literal notranslate"><span class="pre">IMU.gyro_scale()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.is_connected"><code class="docutils literal notranslate"><span class="pre">IMU.is_connected()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.reset"><code class="docutils literal notranslate"><span class="pre">IMU.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.reset_pitch"><code class="docutils literal notranslate"><span class="pre">IMU.reset_pitch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.reset_roll"><code class="docutils literal notranslate"><span class="pre">IMU.reset_roll()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.reset_yaw"><code class="docutils literal notranslate"><span class="pre">IMU.reset_yaw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.set_pitch"><code class="docutils literal notranslate"><span class="pre">IMU.set_pitch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.set_roll"><code class="docutils literal notranslate"><span class="pre">IMU.set_roll()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.set_yaw"><code class="docutils literal notranslate"><span class="pre">IMU.set_yaw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.imu.IMU.temperature"><code class="docutils literal notranslate"><span class="pre">IMU.temperature()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.rangefinder.Rangefinder"><code class="docutils literal notranslate"><span class="pre">Rangefinder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.rangefinder.Rangefinder.distance"><code class="docutils literal notranslate"><span class="pre">Rangefinder.distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.rangefinder.Rangefinder.get_default_rangefinder"><code class="docutils literal notranslate"><span class="pre">Rangefinder.get_default_rangefinder()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.reflectance.Reflectance"><code class="docutils literal notranslate"><span class="pre">Reflectance</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.reflectance.Reflectance.get_default_reflectance"><code class="docutils literal notranslate"><span class="pre">Reflectance.get_default_reflectance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.reflectance.Reflectance.get_left"><code class="docutils literal notranslate"><span class="pre">Reflectance.get_left()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.reflectance.Reflectance.get_right"><code class="docutils literal notranslate"><span class="pre">Reflectance.get_right()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#miscellaneous">Miscellaneous</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.controller.Controller"><code class="docutils literal notranslate"><span class="pre">Controller</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.controller.Controller.clear_history"><code class="docutils literal notranslate"><span class="pre">Controller.clear_history()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.controller.Controller.is_done"><code class="docutils literal notranslate"><span class="pre">Controller.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.controller.Controller.update"><code class="docutils literal notranslate"><span class="pre">Controller.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.pid.PID"><code class="docutils literal notranslate"><span class="pre">PID</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.pid.PID.clear_history"><code class="docutils literal notranslate"><span class="pre">PID.clear_history()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.pid.PID.is_done"><code class="docutils literal notranslate"><span class="pre">PID.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.pid.PID.update"><code class="docutils literal notranslate"><span class="pre">PID.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.timeout.Timeout"><code class="docutils literal notranslate"><span class="pre">Timeout</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.timeout.Timeout.is_done"><code class="docutils literal notranslate"><span class="pre">Timeout.is_done()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#XRPLib.webserver.Webserver"><code class="docutils literal notranslate"><span class="pre">Webserver</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.add_button"><code class="docutils literal notranslate"><span class="pre">Webserver.add_button()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.connect_to_network"><code class="docutils literal notranslate"><span class="pre">Webserver.connect_to_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.get_default_webserver"><code class="docutils literal notranslate"><span class="pre">Webserver.get_default_webserver()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.log_data"><code class="docutils literal notranslate"><span class="pre">Webserver.log_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.registerBackwardButton"><code class="docutils literal notranslate"><span class="pre">Webserver.registerBackwardButton()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.registerForwardButton"><code class="docutils literal notranslate"><span class="pre">Webserver.registerForwardButton()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.registerLeftButton"><code class="docutils literal notranslate"><span class="pre">Webserver.registerLeftButton()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.registerRightButton"><code class="docutils literal notranslate"><span class="pre">Webserver.registerRightButton()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.registerStopButton"><code class="docutils literal notranslate"><span class="pre">Webserver.registerStopButton()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.start_network"><code class="docutils literal notranslate"><span class="pre">Webserver.start_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.start_server"><code class="docutils literal notranslate"><span class="pre">Webserver.start_server()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#XRPLib.webserver.Webserver.stop_server"><code class="docutils literal notranslate"><span class="pre">Webserver.stop_server()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="defaults.html">XRPLib.defaults</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation_check.html">Installation Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Curriculum</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://introtoroboticsv2.readthedocs.io">XRP Curriculum</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html">XRP User Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Open-STEM/XRP_MicroPython/releases/latest">XRPLib on GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://xrp.discourse.group">XRP Support Forum</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://micropython.org/download/">Download MicroPython</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs.micropython.org/en/latest/">MicroPython Reference Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/orgs/micropython/discussions">MicroPython Support Forum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">XRPLib - MicroPython</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-XRPLib">
+<span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-XRPLib" title="Link to this heading">¶</a></h1>
+<p>THIS LIBRARY WAS MADE FOR THE SPARKFUN XRP CONTROL BOARD.
+PLEASE USE THE ASSOCIATED MICROPYTHON UF2 FILE.</p>
+<section id="hardware">
+<h2>Hardware<a class="headerlink" href="#hardware" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.board.Board">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.board.</span></span><span class="sig-name descname"><span class="pre">Board</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vin_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BOARD_VIN_MEASURE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">button_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BOARD_USER_BUTTON'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rgb_led_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BOARD_NEOPIXEL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">led_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LED'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.board.Board" title="Link to this definition">¶</a></dt>
+<dd><p>Implements for extra features on the XRP board. Handles the on/off switch, button, and LED.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vin_pin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The pin the on/off switch is connected to</p></li>
+<li><p><strong>button_pin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The pin the button is connected to</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.board.Board.are_motors_powered">
+<span class="sig-name descname"><span class="pre">are_motors_powered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#XRPLib.board.Board.are_motors_powered" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns true if the batteries are connected and powering the motors, false otherwise</p>
+</dd>
+<dt class="field-even">Rytpe<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.board.Board.get_default_board">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.board.Board.get_default_board" title="Link to this definition">¶</a></dt>
+<dd><p>Get the default board instance. This is a singleton, so only one instance of the board will ever exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.board.Board.is_button_pressed">
+<span class="sig-name descname"><span class="pre">is_button_pressed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#XRPLib.board.Board.is_button_pressed" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the state of the button</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the button is pressed, False otherwise</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.board.Board.led_blink">
+<span class="sig-name descname"><span class="pre">led_blink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.board.Board.led_blink" title="Link to this definition">¶</a></dt>
+<dd><p>Blinks the LED at a given frequency. If the frequency is 0, the LED will stop blinking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frequency</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The frequency to blink the LED at (in Hz)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.board.Board.led_off">
+<span class="sig-name descname"><span class="pre">led_off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.board.Board.led_off" title="Link to this definition">¶</a></dt>
+<dd><p>Turns the LED off
+Stops the blinking timer if it is running</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.board.Board.led_on">
+<span class="sig-name descname"><span class="pre">led_on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.board.Board.led_on" title="Link to this definition">¶</a></dt>
+<dd><p>Turns the LED on
+Stops the blinking timer if it is running</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.board.Board.set_rgb_led">
+<span class="sig-name descname"><span class="pre">set_rgb_led</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.board.Board.set_rgb_led" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the Neopixel RGB LED to a specified color. Throws a NotImplementedError on the XRP Beta</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The amount of red in the desired color</p></li>
+<li><p><strong>g</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The amount of green in the desired color</p></li>
+<li><p><strong>b</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The amount of blue in the desired color</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.board.Board.wait_for_button">
+<span class="sig-name descname"><span class="pre">wait_for_button</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.board.Board.wait_for_button" title="Link to this definition">¶</a></dt>
+<dd><p>Halts the program until the button is pressed</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.motor.SinglePWMMotor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.motor.</span></span><span class="sig-name descname"><span class="pre">SinglePWMMotor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in1_direction_pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">in2_speed_pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor.SinglePWMMotor" title="Link to this definition">¶</a></dt>
+<dd><p>A simple class handling direction and power sets for DC motors on the XRP robots</p>
+<p>This version is used for the XRP Beta, which uses the rp2040 processor</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor.SinglePWMMotor.brake">
+<span class="sig-name descname"><span class="pre">brake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor.SinglePWMMotor.brake" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor.SinglePWMMotor.coast">
+<span class="sig-name descname"><span class="pre">coast</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor.SinglePWMMotor.coast" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor.SinglePWMMotor.set_effort">
+<span class="sig-name descname"><span class="pre">set_effort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor.SinglePWMMotor.set_effort" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the effort value of the motor (corresponds to power)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>effort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The effort to set the motor to, between -1 and 1</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.motor.DualPWMMotor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.motor.</span></span><span class="sig-name descname"><span class="pre">DualPWMMotor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in1_pwm_forward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">in2_pwm_backward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor.DualPWMMotor" title="Link to this definition">¶</a></dt>
+<dd><p>A simple class handling effort setting for DC motors on the XRP robots</p>
+<p>This version of the Motor class is used for the official release of the XRP</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor.DualPWMMotor.brake">
+<span class="sig-name descname"><span class="pre">brake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor.DualPWMMotor.brake" title="Link to this definition">¶</a></dt>
+<dd><p>Powers the motor in both directions at the same time, enabling it to hold position</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor.DualPWMMotor.coast">
+<span class="sig-name descname"><span class="pre">coast</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor.DualPWMMotor.coast" title="Link to this definition">¶</a></dt>
+<dd><p>Disables the motor in both directions at the same time, enabling it to spin freely</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor.DualPWMMotor.set_effort">
+<span class="sig-name descname"><span class="pre">set_effort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor.DualPWMMotor.set_effort" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the effort value of the motor (corresponds to power)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>effort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The effort to set the motor to, between -1 and 1</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.encoded_motor.</span></span><span class="sig-name descname"><span class="pre">EncodedMotor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.encoder.Encoder" title="XRPLib.encoder.Encoder"><span class="pre">Encoder</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.ZERO_EFFORT_BREAK">
+<span class="sig-name descname"><span class="pre">ZERO_EFFORT_BREAK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.ZERO_EFFORT_BREAK" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.ZERO_EFFORT_COAST">
+<span class="sig-name descname"><span class="pre">ZERO_EFFORT_COAST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.ZERO_EFFORT_COAST" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.brake">
+<span class="sig-name descname"><span class="pre">brake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.brake" title="Link to this definition">¶</a></dt>
+<dd><p>Causes the motor to resist rotation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.coast">
+<span class="sig-name descname"><span class="pre">coast</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.coast" title="Link to this definition">¶</a></dt>
+<dd><p>Allows the motor to spin freely.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.get_default_encoded_motor">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_encoded_motor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.get_default_encoded_motor" title="Link to this definition">¶</a></dt>
+<dd><p>Get one of the default XRP motor instances. These are singletons, so only one instance of each of these will ever exist.
+Raises an exception if an invalid index is requested.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The index of the motor to get; 1 for left, 2 for right, 3 for motor 3, 4 for motor 4</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.get_position">
+<span class="sig-name descname"><span class="pre">get_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.get_position" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The position of the encoded motor, in revolutions, relative to the last time reset was called.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.get_position_counts">
+<span class="sig-name descname"><span class="pre">get_position_counts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.get_position_counts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The position of the encoded motor, in encoder counts, relative to the last time reset was called.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.get_speed">
+<span class="sig-name descname"><span class="pre">get_speed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.get_speed" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The speed of the motor, in rpm</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.reset_encoder_position">
+<span class="sig-name descname"><span class="pre">reset_encoder_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.reset_encoder_position" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the encoder position back to zero.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.set_effort">
+<span class="sig-name descname"><span class="pre">set_effort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.set_effort" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>effort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The effort to set this motor to, from -1 to 1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.set_speed">
+<span class="sig-name descname"><span class="pre">set_speed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">speed_rpm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.set_speed" title="Link to this definition">¶</a></dt>
+<dd><p>Sets target speed (in rpm) to be maintained passively
+Call with no parameters or 0 to turn off speed control</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_speed_rpm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, or </em><em>None</em>) – The target speed for the motor in rpm, or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.set_speed_controller">
+<span class="sig-name descname"><span class="pre">set_speed_controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><span class="pre">Controller</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.set_speed_controller" title="Link to this definition">¶</a></dt>
+<dd><p>Sets a new controller for speed control</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_controller</strong> (<a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><em>Controller</em></a>) – The new Controller for speed control</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoded_motor.EncodedMotor.set_zero_effort_behavior">
+<span class="sig-name descname"><span class="pre">set_zero_effort_behavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">brake_at_zero_effort</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoded_motor.EncodedMotor.set_zero_effort_behavior" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the behavior of the motor at 0 effort to either brake (hold position) or coast (free spin)
+:param brake_at_zero_effort: Whether or not to brake at 0 effort. Can use EncodedMotor.ZERO_EFFORT_BREAK or EncodedMotor.ZERO_EFFORT_COAST for clarity.
+:type brake_at_zero_effort: bool</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.motor_group.</span></span><span class="sig-name descname"><span class="pre">MotorGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">motors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><span class="pre">EncodedMotor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper class for multiple motors, allowing them to be treated as one motor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>motors</strong> (<em>tuple&lt;EncodedMotor&gt;</em>) – The motors to add to this group</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.add_motor">
+<span class="sig-name descname"><span class="pre">add_motor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><span class="pre">EncodedMotor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.add_motor" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>motor</strong> (<a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><em>EncodedMotor</em></a>) – The motor to add to this group</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.get_position">
+<span class="sig-name descname"><span class="pre">get_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.get_position" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The average position of all motors in this group, in revolutions, relative to the last time reset was called.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.get_position_counts">
+<span class="sig-name descname"><span class="pre">get_position_counts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.get_position_counts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The average position of all motors in this group, in encoder counts, relative to the last time reset was called.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.get_speed">
+<span class="sig-name descname"><span class="pre">get_speed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.get_speed" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The average speed of the motors, in rpm</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.remove_motor">
+<span class="sig-name descname"><span class="pre">remove_motor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><span class="pre">EncodedMotor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.remove_motor" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>motor</strong> (<a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><em>EncodedMotor</em></a>) – The motor to remove from this group</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.reset_encoder_position">
+<span class="sig-name descname"><span class="pre">reset_encoder_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.reset_encoder_position" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the encoder position of all motors in this group back to zero.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.set_effort">
+<span class="sig-name descname"><span class="pre">set_effort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.set_effort" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>effort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The effort to set all motors in this group to, from -1 to 1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.set_speed">
+<span class="sig-name descname"><span class="pre">set_speed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_speed_rpm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.set_speed" title="Link to this definition">¶</a></dt>
+<dd><p>Sets target speed (in rpm) to be maintained passively by all motors in this group
+Call with no parameters to turn off speed control</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_speed_rpm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, or </em><em>None</em>) – The target speed for these motors in rpm, or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.motor_group.MotorGroup.set_speed_controller">
+<span class="sig-name descname"><span class="pre">set_speed_controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_controller</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.motor_group.MotorGroup.set_speed_controller" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_controller</strong> (<a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><em>Controller</em></a>) – The new Controller for speed control</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.differential_drive.</span></span><span class="sig-name descname"><span class="pre">DifferentialDrive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left_motor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><span class="pre">EncodedMotor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_motor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><span class="pre">EncodedMotor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">imu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.imu.IMU" title="XRPLib.imu.IMU"><span class="pre">IMU</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wheel_diam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wheel_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive" title="Link to this definition">¶</a></dt>
+<dd><p>A Differential Drive class designed for the XRP two-wheeled drive robot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leftMotor</strong> (<a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><em>EncodedMotor</em></a>) – The left motor of the drivetrain</p></li>
+<li><p><strong>rightMotor</strong> (<a class="reference internal" href="#XRPLib.encoded_motor.EncodedMotor" title="XRPLib.encoded_motor.EncodedMotor"><em>EncodedMotor</em></a>) – The right motor of the drivetrain</p></li>
+<li><p><strong>imu</strong> (<a class="reference internal" href="#XRPLib.imu.IMU" title="XRPLib.imu.IMU"><em>IMU</em></a>) – The IMU of the robot. If None, the robot will not use the IMU for turning or maintaining heading.</p></li>
+<li><p><strong>wheelDiam</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The diameter of the wheels in inches. Defaults to 6 cm.</p></li>
+<li><p><strong>wheelTrack</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The distance between the wheels in inches. Defaults to 15.5 cm.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.arcade">
+<span class="sig-name descname"><span class="pre">arcade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">straight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.arcade" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the raw effort of both motors based on the arcade drive scheme</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>straight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The base effort (Bounded from -1 to 1) used to drive forwards or backwards.</p></li>
+<li><p><strong>turn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The modifier effort (Bounded from -1 to 1) used to skew robot left (positive) or right (negative).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.get_default_differential_drive">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_differential_drive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.get_default_differential_drive" title="Link to this definition">¶</a></dt>
+<dd><p>Get the default XRP differential drive instance. This is a singleton, so only one instance of the drivetrain will ever exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.get_left_encoder_position">
+<span class="sig-name descname"><span class="pre">get_left_encoder_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.get_left_encoder_position" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the current position of the left motor’s encoder in cm.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.get_right_encoder_position">
+<span class="sig-name descname"><span class="pre">get_right_encoder_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.get_right_encoder_position" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the current position of the right motor’s encoder in cm.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.reset_encoder_position">
+<span class="sig-name descname"><span class="pre">reset_encoder_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.reset_encoder_position" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the position of both motors’ encoders to 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.set_effort">
+<span class="sig-name descname"><span class="pre">set_effort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left_effort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_effort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.set_effort" title="Link to this definition">¶</a></dt>
+<dd><p>Set the raw effort of both motors individually</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leftEffort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The power (Bounded from -1 to 1) to set the left motor to.</p></li>
+<li><p><strong>rightEffort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The power (Bounded from -1 to 1) to set the right motor to.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.set_speed">
+<span class="sig-name descname"><span class="pre">set_speed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.set_speed" title="Link to this definition">¶</a></dt>
+<dd><p>Set the speed of both motors individually</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leftSpeed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The speed (In Centimeters per Second) to set the left motor to.</p></li>
+<li><p><strong>rightSpeed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The speed (In Centimeters per Second) to set the right motor to.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.set_zero_effort_behavior">
+<span class="sig-name descname"><span class="pre">set_zero_effort_behavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">brake_at_zero_effort</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.set_zero_effort_behavior" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the behavior of both motor at 0 effort to either brake (hold position) or coast (free spin)
+:param brake_at_zero_effort: Whether or not to brake at 0 effort. Can use EncodedMotor.ZERO_EFFORT_BREAK or EncodedMotor.ZERO_EFFORT_COAST for clarity.
+:type brake_at_zero_effort: bool</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Stops both drivetrain motors by setting power to zero.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.straight">
+<span class="sig-name descname"><span class="pre">straight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_effort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><span class="pre">Controller</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><span class="pre">Controller</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.straight" title="Link to this definition">¶</a></dt>
+<dd><p>Go forward the specified distance in centimeters, and exit function when distance has been reached.
+Max_effort is bounded from -1 (reverse at full speed) to 1 (forward at full speed)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The distance for the robot to travel (In Centimeters)</p></li>
+<li><p><strong>max_effort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The max effort for which the robot to travel (Bounded from -1 to 1). Default is half effort forward</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The amount of time before the robot stops trying to move forward and continues to the next step (In Seconds)</p></li>
+<li><p><strong>main_controller</strong> (<a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><em>Controller</em></a>) – The main controller, for handling the distance driven forwards</p></li>
+<li><p><strong>secondary_controller</strong> (<a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><em>Controller</em></a>) – The secondary controller, for correcting heading error that may result during the drive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>if the distance was reached before the timeout</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.differential_drive.DifferentialDrive.turn">
+<span class="sig-name descname"><span class="pre">turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turn_degrees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_effort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><span class="pre">Controller</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><span class="pre">Controller</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_imu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#XRPLib.differential_drive.DifferentialDrive.turn" title="Link to this definition">¶</a></dt>
+<dd><p>Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
+effort is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
+Uses the IMU to determine the heading of the robot and P control for the motor controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>turnDegrees</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The number of angle for the robot to turn (In Degrees)</p></li>
+<li><p><strong>max_effort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The max speed for which the robot to travel (Bounded from -1 to 1)</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The amount of time before the robot stops trying to turn and continues to the next step (In Seconds)</p></li>
+<li><p><strong>main_controller</strong> (<a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><em>Controller</em></a>) – The main controller, for handling the angle turned</p></li>
+<li><p><strong>secondary_controller</strong> (<a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><em>Controller</em></a>) – The secondary controller, for maintaining position during the turn by controlling the encoder count difference</p></li>
+<li><p><strong>use_imu</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – A boolean flag that changes if the main controller bases its movement off of the imu (True) or the encoders (False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>if the distance was reached before the timeout</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.servo.Servo">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.servo.</span></span><span class="sig-name descname"><span class="pre">Servo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.servo.Servo" title="Link to this definition">¶</a></dt>
+<dd><p>A simple class for interacting with a servo through PWM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signal_pin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The pin the servo is connected to</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.servo.Servo.free">
+<span class="sig-name descname"><span class="pre">free</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.servo.Servo.free" title="Link to this definition">¶</a></dt>
+<dd><p>Allows the servo to spin freely without holding position</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.servo.Servo.get_default_servo">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_servo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.servo.Servo.get_default_servo" title="Link to this definition">¶</a></dt>
+<dd><p>Gets one of the default XRP servo instances. These are singletons, so only one instance of each servo will ever exist.
+Raises an exception if an invalid index is requested.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The index of the servo to get (1-4; Beta only has 1 and 2)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.servo.Servo.set_angle">
+<span class="sig-name descname"><span class="pre">set_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">degrees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.servo.Servo.set_angle" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the angle of the servo
+:param degrees: The angle to set the servo to [0,200]
+:ptype degrees: float</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="sensors">
+<h2>Sensors<a class="headerlink" href="#sensors" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.encoder.Encoder">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.encoder.</span></span><span class="sig-name descname"><span class="pre">Encoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encAPin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">encBPin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoder.Encoder" title="Link to this definition">¶</a></dt>
+<dd><p>Uses the on board PIO State Machine to keep track of encoder positions.
+Only 4 encoders can be instantiated this way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The index of the state machine to be used, indexed 0-3.</p></li>
+<li><p><strong>encAPin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The pin the left reflectance sensor is connected to</p></li>
+<li><p><strong>encBPin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The pin the right reflectance sensor is connected to</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoder.Encoder.get_position">
+<span class="sig-name descname"><span class="pre">get_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoder.Encoder.get_position" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The position of the encoded motor, in revolutions, relative to the last time reset was called.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoder.Encoder.get_position_counts">
+<span class="sig-name descname"><span class="pre">get_position_counts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoder.Encoder.get_position_counts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The position of the encoded motor, in counts, relative to the last time reset was called.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.encoder.Encoder.reset_encoder_position">
+<span class="sig-name descname"><span class="pre">reset_encoder_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.encoder.Encoder.reset_encoder_position" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the encoder position to 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="XRPLib.encoder.Encoder.resolution">
+<span class="sig-name descname"><span class="pre">resolution</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">585.0</span></em><a class="headerlink" href="#XRPLib.encoder.Encoder.resolution" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.imu.</span></span><span class="sig-name descname"><span class="pre">IMU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scl_pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'I2C_SCL_1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sda_pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'I2C_SDA_1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LSM_ADDR_PRIMARY</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.acc_rate">
+<span class="sig-name descname"><span class="pre">acc_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.acc_rate" title="Link to this definition">¶</a></dt>
+<dd><p>Set the accelerometer rate in Hz. The rate can be:
+‘0Hz’, ‘12.5Hz’, ‘26Hz’, ‘52Hz’, ‘104Hz’, ‘208Hz’, ‘416Hz’, ‘833Hz’, ‘1660Hz’, ‘3330Hz’, ‘6660Hz’
+Pass in no parameters to retrieve the current value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.acc_scale">
+<span class="sig-name descname"><span class="pre">acc_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.acc_scale" title="Link to this definition">¶</a></dt>
+<dd><p>Set the accelerometer scale in g. The scale can be:
+‘2g’, ‘4g’, ‘8g’, or ‘16g’
+Pass in no parameters to retrieve the current value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.calibrate">
+<span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calibration_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.calibrate" title="Link to this definition">¶</a></dt>
+<dd><p>Collect readings for [calibration_time] seconds and calibrate the IMU based on those readings
+Do not move the robot during this time
+Assumes the board to be parallel to the ground. Please use the vertical_axis parameter if that is not correct</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>calibration_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The time in seconds to collect readings for</p></li>
+<li><p><strong>vertical_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The axis that is vertical. 0 for X, 1 for Y, 2 for Z</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_acc_gyro_rates">
+<span class="sig-name descname"><span class="pre">get_acc_gyro_rates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_acc_gyro_rates" title="Link to this definition">¶</a></dt>
+<dd><p>Get the accelerometer and gyroscope values in mg and mdps in the form of a 2D array.
+The first row is the acceleration values, the second row is the gyro values.
+The order of the values is x, y, z.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_acc_rates">
+<span class="sig-name descname"><span class="pre">get_acc_rates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_acc_rates" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the list of readings from the Accelerometer, in mg. The order of the values is x, y, z.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list&lt;int&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_acc_x">
+<span class="sig-name descname"><span class="pre">get_acc_x</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_acc_x" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current reading for the accelerometer’s X-axis, in mg</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_acc_y">
+<span class="sig-name descname"><span class="pre">get_acc_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_acc_y" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current reading for the accelerometer’s Y-axis, in mg</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_acc_z">
+<span class="sig-name descname"><span class="pre">get_acc_z</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_acc_z" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current reading for the accelerometer’s Z-axis, in mg</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_default_imu">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_imu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_default_imu" title="Link to this definition">¶</a></dt>
+<dd><p>Get the default XRP IMU instance. This is a singleton, so only one instance of the drivetrain will ever exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_gyro_rates">
+<span class="sig-name descname"><span class="pre">get_gyro_rates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_gyro_rates" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the array of readings from the Gyroscope, in mdps
+The order of the values is x, y, z.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_gyro_x_rate">
+<span class="sig-name descname"><span class="pre">get_gyro_x_rate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_gyro_x_rate" title="Link to this definition">¶</a></dt>
+<dd><p>Individual axis read for the Gyroscope’s X-axis, in mdps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_gyro_y_rate">
+<span class="sig-name descname"><span class="pre">get_gyro_y_rate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_gyro_y_rate" title="Link to this definition">¶</a></dt>
+<dd><p>Individual axis read for the Gyroscope’s Y-axis, in mdps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_gyro_z_rate">
+<span class="sig-name descname"><span class="pre">get_gyro_z_rate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_gyro_z_rate" title="Link to this definition">¶</a></dt>
+<dd><p>Individual axis read for the Gyroscope’s Z-axis, in mdps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_heading">
+<span class="sig-name descname"><span class="pre">get_heading</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_heading" title="Link to this definition">¶</a></dt>
+<dd><p>Get’s the heading of the IMU, but bounded between [0, 360)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The heading of the IMU in degrees, bound between [0, 360)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_pitch">
+<span class="sig-name descname"><span class="pre">get_pitch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_pitch" title="Link to this definition">¶</a></dt>
+<dd><p>Get the pitch of the IMU in degrees. Unbounded in range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The pitch of the IMU in degrees</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_roll">
+<span class="sig-name descname"><span class="pre">get_roll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_roll" title="Link to this definition">¶</a></dt>
+<dd><p>Get the roll of the IMU in degrees. Unbounded in range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The roll of the IMU in degrees</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.get_yaw">
+<span class="sig-name descname"><span class="pre">get_yaw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.get_yaw" title="Link to this definition">¶</a></dt>
+<dd><p>Get the yaw (heading) of the IMU in degrees. Unbounded in range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The yaw (heading) of the IMU in degrees</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.gyro_rate">
+<span class="sig-name descname"><span class="pre">gyro_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.gyro_rate" title="Link to this definition">¶</a></dt>
+<dd><p>Set the gyroscope rate in Hz. The rate can be:
+‘0Hz’, ‘12.5Hz’, ‘26Hz’, ‘52Hz’, ‘104Hz’, ‘208Hz’, ‘416Hz’, ‘833Hz’, ‘1660Hz’, ‘3330Hz’, ‘6660Hz’
+Pass in no parameters to retrieve the current value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.gyro_scale">
+<span class="sig-name descname"><span class="pre">gyro_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.gyro_scale" title="Link to this definition">¶</a></dt>
+<dd><p>Set the gyroscope scale in dps. The scale can be:
+‘125’, ‘250’, ‘500’, ‘1000’, or ‘2000’
+Pass in no parameters to retrieve the current value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.is_connected">
+<span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.is_connected" title="Link to this definition">¶</a></dt>
+<dd><p>Checks whether the IMU is connected</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if WHO_AM_I value is correct, otherwise False</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_for_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_timeout_ms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the IMU, and restores all registers to their default values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wait_for_reset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to wait for reset to complete</p></li>
+<li><p><strong>wait_timeout_ms</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Timeout in milliseconds when waiting for reset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>False if timeout occurred, otherwise True</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.reset_pitch">
+<span class="sig-name descname"><span class="pre">reset_pitch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.reset_pitch" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the pitch to 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.reset_roll">
+<span class="sig-name descname"><span class="pre">reset_roll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.reset_roll" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the roll to 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.reset_yaw">
+<span class="sig-name descname"><span class="pre">reset_yaw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.reset_yaw" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the yaw (heading) to 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.set_pitch">
+<span class="sig-name descname"><span class="pre">set_pitch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pitch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.set_pitch" title="Link to this definition">¶</a></dt>
+<dd><p>Set the pitch to a specific angle in degrees</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pitch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The pitch to set the IMU to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.set_roll">
+<span class="sig-name descname"><span class="pre">set_roll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roll</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.set_roll" title="Link to this definition">¶</a></dt>
+<dd><p>Set the roll to a specific angle in degrees</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>roll</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The roll to set the IMU to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.set_yaw">
+<span class="sig-name descname"><span class="pre">set_yaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.set_yaw" title="Link to this definition">¶</a></dt>
+<dd><p>Set the yaw (heading) to a specific angle in degrees</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>yaw</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The yaw (heading) to set the IMU to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.imu.IMU.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.imu.IMU.temperature" title="Link to this definition">¶</a></dt>
+<dd><p>Read the temperature of the LSM6DSO in degrees Celsius</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The temperature of the LSM6DSO in degrees Celsius</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.rangefinder.Rangefinder">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.rangefinder.</span></span><span class="sig-name descname"><span class="pre">Rangefinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trigger_pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'RANGE_TRIGGER'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo_pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'RANGE_ECHO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_us</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span> <span class="pre">*</span> <span class="pre">2</span> <span class="pre">*</span> <span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.rangefinder.Rangefinder" title="Link to this definition">¶</a></dt>
+<dd><p>A basic class for using the HC-SR04 Ultrasonic Rangefinder.
+The sensor range is between 2cm and 4m.
+Timeouts will return a MAX_VALUE (65535) instead of raising an exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trigger_pin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The number of the pin on the microcontroller that’s connected to the <code class="docutils literal notranslate"><span class="pre">Trig</span></code> pin on the HC-SR04.</p></li>
+<li><p><strong>echo_pin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The number of the pin on the microcontroller that’s connected to the <code class="docutils literal notranslate"><span class="pre">Echo</span></code> pin on the HC-SR04.</p></li>
+<li><p><strong>timeout_us</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Max microseconds seconds to wait for a response from the sensor before assuming it isn’t going to answer. By default set to 30,000 us (0.03 s)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.rangefinder.Rangefinder.distance">
+<span class="sig-name descname"><span class="pre">distance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.rangefinder.Rangefinder.distance" title="Link to this definition">¶</a></dt>
+<dd><p>Get the distance in centimeters by measuring the echo pulse time</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.rangefinder.Rangefinder.get_default_rangefinder">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_rangefinder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.rangefinder.Rangefinder.get_default_rangefinder" title="Link to this definition">¶</a></dt>
+<dd><p>Get the default XRP rangefinder instance. This is a singleton, so only one instance of the rangefinder will ever exist.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.reflectance.Reflectance">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.reflectance.</span></span><span class="sig-name descname"><span class="pre">Reflectance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leftPin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LINE_L'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rightPin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LINE_R'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.reflectance.Reflectance" title="Link to this definition">¶</a></dt>
+<dd><p>Implements for a reflectance sensor using the built in 12-bit ADC.
+Reads from analog in and converts to a float from 0 (white) to 1 (black)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leftPin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The pin the left reflectance sensor is connected to</p></li>
+<li><p><strong>rightPin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The pin the right reflectance sensor is connected to</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.reflectance.Reflectance.get_default_reflectance">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_reflectance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.reflectance.Reflectance.get_default_reflectance" title="Link to this definition">¶</a></dt>
+<dd><p>Get the default XRP reflectance sensor instance. This is a singleton, so only one instance of the reflectance sensor will ever exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.reflectance.Reflectance.get_left">
+<span class="sig-name descname"><span class="pre">get_left</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.reflectance.Reflectance.get_left" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the the reflectance of the left reflectance sensor
+: return: The reflectance ranging from 0 (white) to 1 (black)
+: rtype: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.reflectance.Reflectance.get_right">
+<span class="sig-name descname"><span class="pre">get_right</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.reflectance.Reflectance.get_right" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the the reflectance of the right reflectance sensor
+: return: The reflectance ranging from 0 (white) to 1 (black)
+: rtype: float</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.controller.Controller">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.controller.</span></span><span class="sig-name descname"><span class="pre">Controller</span></span><a class="headerlink" href="#XRPLib.controller.Controller" title="Link to this definition">¶</a></dt>
+<dd><p>An abstract class to be entended to demonstrate different types of control. A PID subclass has also been provided</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.controller.Controller.clear_history">
+<span class="sig-name descname"><span class="pre">clear_history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.controller.Controller.clear_history" title="Link to this definition">¶</a></dt>
+<dd><p>Clears all past data, such as integral sums or any other previous data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.controller.Controller.is_done">
+<span class="sig-name descname"><span class="pre">is_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#XRPLib.controller.Controller.is_done" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>If the controller has reached or  settled at its desired value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.controller.Controller.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.controller.Controller.update" title="Link to this definition">¶</a></dt>
+<dd><p>Handle a new update of this control loop given an effected input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The input to this controller for a given update. Usually an error or some other correctable value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The system output from the controller, to be used as an effort value or for any other purpose</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.pid.PID">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.pid.</span></span><span class="sig-name descname"><span class="pre">PID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ki</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_derivative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_integral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.pid.PID" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#XRPLib.controller.Controller" title="XRPLib.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controller</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kp</strong> – proportional gain</p></li>
+<li><p><strong>ki</strong> – integral gain</p></li>
+<li><p><strong>kd</strong> – derivative gain</p></li>
+<li><p><strong>min_output</strong> – minimum output</p></li>
+<li><p><strong>max_output</strong> – maximum output</p></li>
+<li><p><strong>max_derivative</strong> – maximum derivative (change per second)</p></li>
+<li><p><strong>max_integral</strong> – maximum integral windup allowed (will cap integral at this value)</p></li>
+<li><p><strong>tolerance</strong> – tolerance for exit condition</p></li>
+<li><p><strong>tolerance_count</strong> – number of times the error needs to be within tolerance for is_done to return True</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.pid.PID.clear_history">
+<span class="sig-name descname"><span class="pre">clear_history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.pid.PID.clear_history" title="Link to this definition">¶</a></dt>
+<dd><p>Clears all past data, such as integral sums or any other previous data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.pid.PID.is_done">
+<span class="sig-name descname"><span class="pre">is_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#XRPLib.pid.PID.is_done" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>if error is within tolerance for numTimesInTolerance consecutive times, or timed out</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.pid.PID.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#XRPLib.pid.PID.update" title="Link to this definition">¶</a></dt>
+<dd><p>Handle a new update of this PID loop given an error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The error of the system being controlled by this PID controller</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The system output from the controller, to be used as an effort value or for any other purpose</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.timeout.Timeout">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.timeout.</span></span><span class="sig-name descname"><span class="pre">Timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.timeout.Timeout" title="Link to this definition">¶</a></dt>
+<dd><p>Starts a timer that will expire after the given timeout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The timeout, in seconds</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.timeout.Timeout.is_done">
+<span class="sig-name descname"><span class="pre">is_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.timeout.Timeout.is_done" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the timeout has expired, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">XRPLib.webserver.</span></span><span class="sig-name descname"><span class="pre">Webserver</span></span><a class="headerlink" href="#XRPLib.webserver.Webserver" title="Link to this definition">¶</a></dt>
+<dd><p>Host a webserver for the XRP v2 Robot; Register your own callbacks and log your own data to the webserver using the methods below.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.add_button">
+<span class="sig-name descname"><span class="pre">add_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.add_button" title="Link to this definition">¶</a></dt>
+<dd><p>Register a custom button to be displayed on the webserver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>button_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The label for the button as it will be displayed, must be unique</p></li>
+<li><p><strong>function</strong> (<em>function</em>) – The function to be called when the button is pressed</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.connect_to_network">
+<span class="sig-name descname"><span class="pre">connect_to_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.connect_to_network" title="Link to this definition">¶</a></dt>
+<dd><p>Connect to a wifi network with the given ssid and password.
+If the connection fails, the board will disconnect from the network and return.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ssid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The ssid of the network, defaults to value from secrets.json</p></li>
+<li><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The password of the network, defaults to value from secrets.json</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – The amount of time to wait for the connection to succeed, defaults to 10</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.get_default_webserver">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_webserver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.get_default_webserver" title="Link to this definition">¶</a></dt>
+<dd><p>Get the default webserver instance. This is a singleton, so only one instance of the webserver will ever exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.log_data">
+<span class="sig-name descname"><span class="pre">log_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.log_data" title="Link to this definition">¶</a></dt>
+<dd><p>Register a custom label to be displayed on the webserver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The label as it will be displayed, must be unique</p></li>
+<li><p><strong>data</strong> (<em>Any</em><em> (</em><em>converted to string</em><em>)</em>) – The data to be displayed</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.registerBackwardButton">
+<span class="sig-name descname"><span class="pre">registerBackwardButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.registerBackwardButton" title="Link to this definition">¶</a></dt>
+<dd><p>Assign a function to the backward button</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>function</strong> (<em>function</em>) – The function to be called when the button is pressed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.registerForwardButton">
+<span class="sig-name descname"><span class="pre">registerForwardButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.registerForwardButton" title="Link to this definition">¶</a></dt>
+<dd><p>Assign a function to the forward button</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>function</strong> (<em>function</em>) – The function to be called when the button is pressed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.registerLeftButton">
+<span class="sig-name descname"><span class="pre">registerLeftButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.registerLeftButton" title="Link to this definition">¶</a></dt>
+<dd><p>Assign a function to the left button</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>function</strong> (<em>function</em>) – The function to be called when the button is pressed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.registerRightButton">
+<span class="sig-name descname"><span class="pre">registerRightButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.registerRightButton" title="Link to this definition">¶</a></dt>
+<dd><p>Assign a function to the right button</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>function</strong> (<em>function</em>) – The function to be called when the button is pressed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.registerStopButton">
+<span class="sig-name descname"><span class="pre">registerStopButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.registerStopButton" title="Link to this definition">¶</a></dt>
+<dd><p>Assign a function to the stop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>function</strong> (<em>function</em>) – The function to be called when the button is pressed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.start_network">
+<span class="sig-name descname"><span class="pre">start_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robot_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.start_network" title="Link to this definition">¶</a></dt>
+<dd><p>Open an access point from the XRP board to be used as a captive host. The default network information can be set in secrets.json</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ssid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The ssid of the access point, defaults to value from secrets.json</p></li>
+<li><p><strong>robot_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Replaces “{robot_id}” in ssid, defaults to value from secrets.json</p></li>
+<li><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The password of the access point, defaults to value from secrets.json</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.start_server">
+<span class="sig-name descname"><span class="pre">start_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.start_server" title="Link to this definition">¶</a></dt>
+<dd><p>Begin the webserver in either access point or bridge mode. The IP is printed to the console.</p>
+<p>Preconditions: Either start_network or connect_to_network must be called before this method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="XRPLib.webserver.Webserver.stop_server">
+<span class="sig-name descname"><span class="pre">stop_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#XRPLib.webserver.Webserver.stop_server" title="Link to this definition">¶</a></dt>
+<dd><p>Shuts off the webserver and network and stops handling requests</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="XRPLib - Table of Contents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="defaults.html" class="btn btn-neutral float-right" title="XRPLib.defaults" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Open STEM Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
