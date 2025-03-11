@@ -21,7 +21,7 @@
       ["XRPExamples/__init__.py", "github:Open-STEM/XRP_Micropython/XRPExamples/__init__.py"],
       ["XRPExamples/drive_examples.py", "github:Open-STEM/XRP_Micropython/XRPExamples/drive_examples.py"],
       ["XRPExamples/installation_verification.py", "github:Open-STEM/XRP_Micropython/XRPExamples/installation_verification.py"],
-      ["XRPExamples/led_example.py", "github:Open-STEM/XRP_Micropython/XRPExamples/misc_examples.py"],
+      ["XRPExamples/led_example.py", "github:Open-STEM/XRP_Micropython/XRPExamples/led_example.py"],
       ["XRPExamples/sensor_examples.py", "github:Open-STEM/XRP_Micropython/XRPExamples/sensor_examples.py"],
       ["XRPExamples/webserver_example.py", "github:Open-STEM/XRP_Micropython/XRPExamples/webserver_example.py"]
     ],
