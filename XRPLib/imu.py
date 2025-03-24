@@ -28,7 +28,7 @@ class IMU():
             cls._DEFAULT_IMU_INSTANCE.calibrate()
         return cls._DEFAULT_IMU_INSTANCE
 
-    def __init__(self, scl_pin: int|str = "I2C_SCL_1", sda_pin: int|str = "I2C_SDA_1", addr=LSM_ADDR_PRIMARY):
+    def __init__(self, scl_pin: int|str = "SCL1", sda_pin: int|str = "SDA1", addr=LSM_ADDR_PRIMARY):
         # I2C values
         self.i2c = I2C(id=1, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=400000)
         self.addr = addr

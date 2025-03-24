@@ -14,7 +14,7 @@ class Rangefinder:
             cls._DEFAULT_RANGEFINDER_INSTANCE = cls()
         return cls._DEFAULT_RANGEFINDER_INSTANCE
 
-    def __init__(self, trigger_pin: int|str = "RANGE_TRIGGER", echo_pin: int|str = "RANGE_ECHO", timeout_us:int=500*2*30):
+    def __init__(self, trigger_pin: int|str = "DIST_TRIG", echo_pin: int|str = "DIST_ECHO", timeout_us:int=500*2*30):
         """
         A basic class for using the HC-SR04 Ultrasonic Rangefinder.
         The sensor range is between 2cm and 4m.

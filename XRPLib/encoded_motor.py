@@ -33,29 +33,29 @@ class EncodedMotor:
         if index == 1:
             if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_LEFT_MOTOR_INSTANCE = cls(
-                    MotorImplementation("MOTOR_L_IN_1", "MOTOR_L_IN_2", flip_dir=True),
-                    Encoder(0, "MOTOR_L_ENCODER_A", "MOTOR_L_ENCODER_B")
+                    MotorImplementation("MOTOR_L_IN1", "MOTOR_L_IN2", flip_dir=True),
+                    Encoder(0, "ENCODER_LA", "ENCODER_LB")
                 )
             motor = cls._DEFAULT_LEFT_MOTOR_INSTANCE
         elif index == 2:
             if cls._DEFAULT_RIGHT_MOTOR_INSTANCE is None:
                 cls._DEFAULT_RIGHT_MOTOR_INSTANCE = cls(
-                    MotorImplementation("MOTOR_R_IN_1", "MOTOR_R_IN_2"),
-                    Encoder(1, "MOTOR_R_ENCODER_A", "MOTOR_R_ENCODER_B")
+                    MotorImplementation("MOTOR_R_IN1", "MOTOR_R_IN2"),
+                    Encoder(1, "ENCODER_RA", "ENCODER_RB")
                 )
             motor = cls._DEFAULT_RIGHT_MOTOR_INSTANCE
         elif index == 3:
             if cls._DEFAULT_MOTOR_THREE_INSTANCE is None:
                 cls._DEFAULT_MOTOR_THREE_INSTANCE = cls(
-                    MotorImplementation("MOTOR_3_IN_1", "MOTOR_3_IN_2", flip_dir=True),
-                    Encoder(2, "MOTOR_3_ENCODER_A", "MOTOR_3_ENCODER_B")
+                    MotorImplementation("MOTOR_3_IN1", "MOTOR_3_IN2", flip_dir=True),
+                    Encoder(2, "ENCODER_3A", "ENCODER_3B")
                 )
             motor = cls._DEFAULT_MOTOR_THREE_INSTANCE
         elif index == 4:
             if cls._DEFAULT_MOTOR_FOUR_INSTANCE is None:
                 cls._DEFAULT_MOTOR_FOUR_INSTANCE = cls(
-                    MotorImplementation("MOTOR_4_IN_1", "MOTOR_4_IN_2"),
-                    Encoder(3, "MOTOR_4_ENCODER_A", "MOTOR_4_ENCODER_B")
+                    MotorImplementation("MOTOR_4_IN1", "MOTOR_4_IN2"),
+                    Encoder(3, "ENCODER_4A", "ENCODER_4B")
                 )
             motor = cls._DEFAULT_MOTOR_FOUR_INSTANCE
         else:
