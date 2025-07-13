@@ -36,7 +36,7 @@ def reset_webserver():
 def reset_gamepad():
     from XRPLib.gamepad import Gamepad
     # Stop the browser from sending more gamepad data
-    Gamepad.get_default_gamepad.stop()
+    Gamepad.get_default_gamepad().stop()
 
 def reset_hard():
     reset_gamepad()
