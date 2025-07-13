@@ -33,11 +33,20 @@ def reset_webserver():
     # Shut off the webserver and close network connections
     Webserver.get_default_webserver().stop_server()
 
+def reset_gamepad():
+    from XRPLib.gamepad import Gamepad
+    # Stop the browser from sending more gamepad data
+    Gamepad.get_default_gamepad().stop()
+
 def reset_hard():
+    reset_gamepad()
     reset_motors()
     reset_led()
     reset_servos()
     reset_webserver()
+
+if "XRPLib.gamepad" in sys.modules:
+    reset_gamepad()
 
 if "XRPLib.encoded_motor" in sys.modules:
     reset_motors()
@@ -50,3 +59,4 @@ if "XRPLib.servo" in sys.modules:
 
 if "XRPLib.webserver" in sys.modules:
     reset_webserver()
+

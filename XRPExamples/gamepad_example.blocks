@@ -1,0 +1,15 @@
+from XRPLib.gamepad import *
+from XRPLib.differential_drive import DifferentialDrive
+
+gp = Gamepad.get_default_gamepad()
+
+differentialDrive = DifferentialDrive.get_default_differential_drive()
+
+
+while not (gp.is_button_pressed(gp.BACK)):
+  differentialDrive.arcade((gp.get_value(gp.Y1)), (gp.get_value(gp.X1)))
+
+
+
+## [2025-07-13 01:36:24]
+##XRPBLOCKS {"blocks":{"languageVersion":0,"blocks":[{"type":"controls_whileUntil","id":"#/DDnbE2JxVsLQo`C`e^","x":-363,"y":16,"fields":{"MODE":"UNTIL"},"inputs":{"BOOL":{"block":{"type":"xrp_gp_button_pressed","id":"DtLypJc;SU2xT4A~S3nV","fields":{"GPBUTTON":"BACK"}}},"DO":{"block":{"type":"xrp_arcade","id":"(|]Iln#JYa9hzgEz+(4g","inputs":{"STRAIGHT":{"shadow":{"type":"math_number","id":"FOj1uvC$:~x/+cX}d(:|","fields":{"NUM":0.8}},"block":{"type":"xrp_gp_get_value","id":"s#GS_Dt)B8Cb9+4ctpwk","fields":{"GPVALUE":"Y1"}}},"TURN":{"shadow":{"type":"math_number","id":"n1jAKrjST!+3#bfChh$d","fields":{"NUM":0.2}},"block":{"type":"xrp_gp_get_value","id":"*]`U9XHyYnA?Gp%U;$NF","fields":{"GPVALUE":"X1"}}}}}}}}]}}
