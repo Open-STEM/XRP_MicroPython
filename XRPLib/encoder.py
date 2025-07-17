@@ -9,7 +9,7 @@ class Encoder:
     _counts_per_motor_shaft_revolution = 12
     resolution = _counts_per_motor_shaft_revolution * _gear_ratio # 585
     
-    def __init__(self, index, encAPin: int|str, encBPin: int|str):
+    def __init__(self, index, encAPin: int|str, encBPin: int|str, flip_dir:bool=False):
         """
         Uses the on board PIO State Machine to keep track of encoder positions. 
         Only 4 encoders can be instantiated this way.
@@ -28,6 +28,7 @@ class Encoder:
         self.sm = rp2.StateMachine(index, self._encoder, in_base=basePin)
         self.reset_encoder_position()
         self.sm.active(1)
+        self.flip_dir = flip_dir
     
     def reset_encoder_position(self):
         """
@@ -52,6 +53,10 @@ class Encoder:
         counts = self.sm.get()
         if(counts > 2**31):
             counts -= 2**32
+        
+        if self.flip_dir:
+            counts *= -1
+        
         return counts
     
     def get_position(self):
