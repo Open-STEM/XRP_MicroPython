@@ -50,6 +50,16 @@ class DifferentialDrive:
         self.wheel_diam = wheel_diam
         self.track_width = wheel_track
 
+        self.heading_pid = None
+        self.current_heading = None
+        self.reset_heading = True
+        self.turning = False
+
+        if self.imu:
+            # if the IMU is initialized, then create a PID controller that can be used
+            # to maintain a constant heading when driving
+            self.heading_pid = PID( kp = 0.075, kd=0.001, )
+
     def set_effort(self, left_effort: float, right_effort: float) -> None:
         """
         Set the raw effort of both motors individually
@@ -110,7 +120,33 @@ class DifferentialDrive:
             scale = max(abs(straight), abs(turn))/(abs(straight) + abs(turn))
             left_speed = (straight - turn)*scale
             right_speed = (straight + turn)*scale
-            self.set_effort(left_speed, right_speed)
+
+            if not self.heading_pid:
+                # if not using IMU assist to maintain heading, just pass down the left and right motor
+                # speeds to control movement
+                self.set_effort(left_speed, right_speed)
+            else:
+                # else if IMU assist is enabled, then use the IMU with PID to
+                # maintain a constant heading while driving.
+                if turn == 0:
+                    # straight drive requested, then maintain the current heading
+                    if self.turning:
+                        # if previously turning, then clear the turn indicator and reset the course heading
+                        self.reset_heading = True
+                        self.turning = False
+
+                    if self.reset_heading:
+                        self.reset_heading = False
+                        self.current_heading = self.imu.get_yaw()
+
+                    # use the PID to set the heading correction based on the current heading
+                    heading_correction = self.heading_pid.update(self.current_heading - self.imu.get_yaw())
+
+                    self.set_effort(left_speed - heading_correction, right_speed + heading_correction)
+                else:
+                    # set the turning indicator and apply the left and right speeds
+                    self.turning = True
+                    self.set_effort(left_speed, right_speed)
 
     def reset_encoder_position(self) -> None:
         """
