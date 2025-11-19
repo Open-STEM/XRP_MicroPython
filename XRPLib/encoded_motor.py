@@ -1,6 +1,6 @@
 from .motor import SinglePWMMotor, DualPWMMotor
 from .encoder import Encoder
-from machine import Timer
+from machine import Timer, Pin
 from .controller import Controller
 from .pid import PID
 import sys
@@ -51,7 +51,7 @@ class EncodedMotor:
                     Encoder(2, "MOTOR_3_ENCODER_A", "MOTOR_3_ENCODER_B")
                 )
             motor = cls._DEFAULT_MOTOR_THREE_INSTANCE
-        elif index == 4:
+        elif index == 4 and hasattr(Pin.board, "MOTOR_4_IN_1"):
             if cls._DEFAULT_MOTOR_FOUR_INSTANCE is None:
                 cls._DEFAULT_MOTOR_FOUR_INSTANCE = cls(
                     MotorImplementation("MOTOR_4_IN_1", "MOTOR_4_IN_2"),
