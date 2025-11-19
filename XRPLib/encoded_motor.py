@@ -25,10 +25,10 @@ class EncodedMotor:
         :type index: int
         """
         
-        if "RP2350" in sys.implementation._machine:
-            MotorImplementation = DualPWMMotor
-        else:
+        if "Beta" in sys.implementation._machine:
             MotorImplementation = SinglePWMMotor
+        else:
+            MotorImplementation = DualPWMMotor
 
         if index == 1:
             if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
