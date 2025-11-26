@@ -13,7 +13,7 @@ class Reflectance:
             cls._DEFAULT_REFLECTANCE_INSTANCE = cls()
         return cls._DEFAULT_REFLECTANCE_INSTANCE
 
-    def __init__(self, leftPin: int|str = "LINE_L", rightPin: int|str = "LINE_R"):
+    def __init__(self, leftPin: int|str = "LINE_L", middlePin: int|str = "LINE_M", rightPin: int|str = "LINE_R"):
         """
         Implements for a reflectance sensor using the built in 12-bit ADC.
         Reads from analog in and converts to a float from 0 (white) to 1 (black)
@@ -24,6 +24,7 @@ class Reflectance:
         :type rightPin: int
         """
         self._leftReflectance = ADC(Pin(leftPin))
+        self._middleReflectance = ADC(Pin(middlePin))
         self._rightReflectance = ADC(Pin(rightPin))
 
         self.MAX_ADC_VALUE: int = 65536
@@ -39,6 +40,14 @@ class Reflectance:
         : rtype: float
         """
         return self._get_value(self._leftReflectance)
+        
+    def get_middle(self) -> float:
+        """
+        Gets the the reflectance of the left reflectance sensor
+        : return: The reflectance ranging from 0 (white) to 1 (black)
+        : rtype: float
+        """
+        return self._get_value(self._middleReflectance)
 
     def get_right(self) -> float:
         """
