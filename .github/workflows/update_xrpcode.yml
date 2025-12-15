@@ -1,0 +1,55 @@
+name: Update XRPCode
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger the workflow on push events to tags that start with 'v'
+
+jobs:
+  update-lib:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout XRP_MicroPython
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.ref }}  # Checkout the specific tag that triggered the workflow
+      
+    - name: Prepare files for XRPCode
+      run: |
+        mkdir -p temp/lib
+        cp -R XRPLib temp/lib/XRPLib
+        cp -R Examples temp/lib/Examples
+        cp package.json temp/lib/package.json
+        
+    - name: Get tag name
+      id: tag_name
+      run: echo "::set-output name=tag_name::$(echo ${GITHUB_REF#refs/tags/})"
+      
+    - name: Checkout XRPCode
+      uses: actions/checkout@v2
+      with:
+        repository: Open-STEM/XRPCode
+        token: ${{ secrets.XRPCODE_KEY }}
+        ssh-key: ${{ secrets.XRPCODE_KEY }}
+
+    - name: Create branch for changes
+      run: |
+        tag_name=${{ steps.tag_name.outputs.tag_name }}
+        git checkout -b update-lib-${tag_name}
+        git config user.name "GitHub Actions"
+        git config user.email "actions@users.noreply.github.com"
+        rm -rf lib/XRPCode lib/Examples lib/package.json
+        cp -R ../temp/lib/* lib/
+        git add lib
+        git commit -m "Update to XRPLib ${tag_name}"
+        git push origin update-lib-${tag_name}
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: update-lib-${{ steps.tag_name.outputs.tag_name }}
+        title: Update XRPLib for ${{ steps.tag_name.outputs.tag_name }}
+        body: |
+          This pull request updates the lib folder with changes from Open-STEM/XRP_MicroPython for tag ${{ steps.tag_name.outputs.tag_name }}.
