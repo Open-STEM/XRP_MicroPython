@@ -1,5 +1,4 @@
-from ble.blerepl import uart
-import sys
+from .puppet import Puppet, VAR_TYPE_FLOAT, VAR_TYPE_INT, VAR_TYPE_BOOL, PERM_WRITE_ONLY, PERM_READ_ONLY
 from micropython import const
 
 class Gamepad:
@@ -25,12 +24,27 @@ class Gamepad:
     DPAD_L = const(16)
     DPAD_R = const(17)
 
-    _joyData = [
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    # Mapping from index to variable name
+    _VAR_NAMES = {
+        0: '$gamepad.x1',
+        1: '$gamepad.y1',
+        2: '$gamepad.x2',
+        3: '$gamepad.y2',
+        4: '$gamepad.button_a',
+        5: '$gamepad.button_b',
+        6: '$gamepad.button_x',
+        7: '$gamepad.button_y',
+        8: '$gamepad.bumper_l',
+        9: '$gamepad.bumper_r',
+        10: '$gamepad.trigger_l',
+        11: '$gamepad.trigger_r',
+        12: '$gamepad.back',
+        13: '$gamepad.start',
+        14: '$gamepad.dpad_up',
+        15: '$gamepad.dpad_dn',
+        16: '$gamepad.dpad_l',
+        17: '$gamepad.dpad_r',
+    }
 
     @classmethod
     def get_default_gamepad(cls):
@@ -44,28 +58,72 @@ class Gamepad:
 
     def __init__(self):
         """
-        Manages communication with gamepad data coming from a remote computer via bluetooth
-
+        Manages communication with gamepad data coming from a remote computer via XPP protocol.
         """
+        self._puppet = Puppet.get_default_puppet()
+        self._started = False
+        
+        # Register all gamepad variables
+        self._register_variables()
+
+    def _register_variables(self):
+        """
+        Register all gamepad variables with the XPP protocol.
+        """
+        # Joystick axes are floats
+        for idx in [self.X1, self.Y1, self.X2, self.Y2]:
+            var_name = self._VAR_NAMES[idx]
+            self._puppet.define_variable(var_name, VAR_TYPE_FLOAT, PERM_WRITE_ONLY)
+        
+        # Buttons are integers (1 or 0)
+        for idx in range(4, 18):
+            var_name = self._VAR_NAMES[idx]
+            self._puppet.define_variable(var_name, VAR_TYPE_INT, PERM_WRITE_ONLY)
+        
+        # Register gamepad enabled variable (read-only from XRP side)
+        self._puppet.define_variable('$gamepad.enabled', VAR_TYPE_BOOL, PERM_READ_ONLY)
+
     def start(self):
         """
         Signals the remote computer to begin sending gamepad data packets.
+        Subscribes to all gamepad variables at a high rate (50 Hz).
         """
-        for i in range(len(self._joyData)):
-            self._joyData[i] = 0.0
-        uart.set_data_callback(self._data_callback)
-        sys.stdout.write(chr(27))
-        sys.stdout.write(chr(101))
+        
+        self._puppet.send_program_start()
 
+        if self._started:
+            return
+        
+        # Enable gamepad - signal to client to start sending
+        self._puppet.set_variable('$gamepad.enabled', True)
+        
+        # Subscribe to all gamepad variables at 50 Hz
+        for var_name in self._VAR_NAMES.values():
+            self._puppet.subscribe_variable(var_name, 50)
+        
+        self._started = True
 
     def stop(self):
         """
-        Signals the remote computer to stop sending gamepad data packets. 
+        Signals the remote computer to stop sending gamepad data packets.
+        Unsubscribes from all gamepad variables.
         """
-        sys.stdout.write(chr(27))
-        sys.stdout.write(chr(102))
 
-    def get_value(self, index:int) -> float:
+        self._puppet.send_program_end()
+
+        if not self._started:
+            return
+        
+        # Disable gamepad - signal to client to stop sending
+        self._puppet.set_variable('$gamepad.enabled', False)
+        
+        # Unsubscribe from all gamepad variables
+        for var_name in self._VAR_NAMES.values():
+            self._puppet.subscribe_variable(var_name, 0)
+        
+        self._started = False
+
+    def get_value(self, index: int) -> float:
         """
         Get the current value of a joystick axis
 
@@ -75,9 +133,19 @@ class Gamepad:
         :returns: The value of the joystick between -1 and 1
         :rtype: float
         """
-        return -self._joyData[index] #returning the negative to make normal for user 
+        if index not in self._VAR_NAMES:
+            return 0.0
+        
+        var_name = self._VAR_NAMES[index]
+        try:
+            value = self._puppet.get_variable(var_name)
+            # Return negative to make normal for user (backward compatibility)
+            return -value
+        except:
+            # Return default if variable not available
+            return 0.0
 
-    def is_button_pressed(self, index:int) -> bool:
+    def is_button_pressed(self, index: int) -> bool:
         """
         Checks if a specific button is currently pressed.
 
@@ -87,11 +155,14 @@ class Gamepad:
         :returns: The value of the button 1 or 0
         :rtype: bool
         """
-        return self._joyData[index] > 0      
-
-    def _data_callback(self, data):
-        if(data[0] == 0x55 and len(data) == data[1] + 2):
-            for i in range(2, data[1] + 2, 2):
-                self._joyData[data[i]] = round(data[i + 1]/127.5 - 1, 2)
-            
+        if index not in self._VAR_NAMES:
+            return False
         
+        var_name = self._VAR_NAMES[index]
+        try:
+            value = self._puppet.get_variable(var_name)
+            # Works for both int and float
+            return value > 0
+        except:
+            # Return default if variable not available
+            return False
