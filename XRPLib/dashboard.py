@@ -124,6 +124,11 @@ class Dashboard:
         """
         Send an integer value (backward compatibility method).
         Now uses XPP protocol.
+        
+        :param index: Variable index constant
+        :type index: int
+        :param value: Integer value to send
+        :type value: int
         """
         if index not in self._VAR_NAMES:
             return
@@ -138,6 +143,11 @@ class Dashboard:
         """
         Send a float value (backward compatibility method).
         Now uses XPP protocol.
+        
+        :param index: Variable index constant
+        :type index: int
+        :param value: Float value to send
+        :type value: float
         """
         if index not in self._VAR_NAMES:
             return
@@ -216,12 +226,16 @@ class Dashboard:
         # Stop timer
         self.update_timer.deinit()
 
-    def set_value(self, name, value, rate_hz=3):   #name is the variable name, value is the value to set
+    def set_value(self, name, value, rate_hz=3):
         """
         Define a variable and subscribe to it at the specified rate.
-        name: the variable name (string)
-        value: the value to set (float)
-        rate_hz: the update rate in Hz (int)
+        
+        :param name: The variable name
+        :type name: str
+        :param value: The value to set
+        :type value: float
+        :param rate_hz: The update rate in Hz (default: 3)
+        :type rate_hz: int
         """
         self._puppet.define_variable(name, VAR_TYPE_FLOAT, PERM_READ_ONLY)
         try:
@@ -233,7 +247,9 @@ class Dashboard:
     def get_value(self, name):
         """
         Get the value of a variable.
-        name: the variable name (string)
+        
+        :param name: The variable name
+        :type name: str
         """
         self._puppet.define_variable(name, VAR_TYPE_FLOAT, PERM_WRITE_ONLY)
         return self._puppet.get_variable(name)
