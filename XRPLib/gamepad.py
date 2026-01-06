@@ -91,11 +91,11 @@ class Gamepad:
         
         self._puppet.send_program_start()
 
-        if self._started:
-            return
-        
         # Enable gamepad - signal to client to start sending
         self._puppet.set_variable('$gamepad.enabled', True)
+
+        if self._started:
+            return
         
         # Subscribe to all gamepad variables at 50 Hz
         for var_name in self._VAR_NAMES.values():

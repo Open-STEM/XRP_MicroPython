@@ -13,6 +13,13 @@ class Dashboard:
 
     _DEFAULT_DASHBOARD_INSTANCE = None
 
+    # Variable type constants
+    VAR_TYPE_FLOAT = const(2)
+
+    # Permission constants
+    PERM_READ_ONLY = const(1)
+    PERM_WRITE_ONLY = const(2)
+
     # Backward compatibility constants
     YAW = const(0)
     ROLL = const(1)
@@ -209,4 +216,24 @@ class Dashboard:
         # Stop timer
         self.update_timer.deinit()
 
+    def set_value(self, name, value, rate_hz=3):   #name is the variable name, value is the value to set
+        """
+        Define a variable and subscribe to it at the specified rate.
+        name: the variable name (string)
+        value: the value to set (float)
+        rate_hz: the update rate in Hz (int)
+        """
+        self._puppet.define_variable(name, VAR_TYPE_FLOAT, PERM_READ_ONLY)
+        try:
+            self._puppet.subscribe_variable(name, rate_hz)
+        except:
+            pass
+        self._puppet.set_variable(name, value)
 
+    def get_value(self, name):
+        """
+        Get the value of a variable.
+        name: the variable name (string)
+        """
+        self._puppet.define_variable(name, VAR_TYPE_FLOAT, PERM_WRITE_ONLY)
+        return self._puppet.get_variable(name)

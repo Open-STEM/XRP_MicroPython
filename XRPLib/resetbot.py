@@ -38,8 +38,14 @@ def reset_gamepad():
     # Stop the browser from sending more gamepad data
     Gamepad.get_default_gamepad().stop()
 
+def reset_dashboard():
+    from XRPLib.dashboard import Dashboard
+    # Stop the dashboard from sending more data
+    Dashboard.get_default_dashboard().stop()
+
 def reset_hard():
     reset_gamepad()
+    reset_dashboard()
     reset_motors()
     reset_led()
     reset_servos()
@@ -47,6 +53,9 @@ def reset_hard():
 
 if "XRPLib.gamepad" in sys.modules:
     reset_gamepad()
+
+if "XRPLib.dashboard" in sys.modules:
+    reset_dashboard()
 
 if "XRPLib.encoded_motor" in sys.modules:
     reset_motors()

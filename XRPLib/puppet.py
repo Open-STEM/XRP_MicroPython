@@ -25,8 +25,7 @@ MSG_TYPE_VAR_SUBSCRIBE = const(3)
 MSG_TYPE_VAR_UNSUBSCRIBE = const(4)
 MSG_TYPE_PROGRAM_START = const(5)
 MSG_TYPE_PROGRAM_END = const(6)
-MSG_TYPE_COMMAND = const(7)
-MSG_TYPE_HEARTBEAT = const(8)
+MSG_TYPE_HEARTBEAT = const(7)
 
 # Variable type constants
 VAR_TYPE_INT = const(1)
@@ -38,100 +37,53 @@ PERM_READ_ONLY = const(1)
 PERM_WRITE_ONLY = const(2)
 PERM_READ_WRITE = const(3)
 
-# Command type constants
-CMD_DRIVE_STRAIGHT = const(1)
-CMD_TURN = const(2)
-
-# Standard Variable IDs (1-37)
-# Gamepad variables (1-19)
-STD_VAR_GAMEPAD_X1 = const(1)
-STD_VAR_GAMEPAD_Y1 = const(2)
-STD_VAR_GAMEPAD_X2 = const(3)
-STD_VAR_GAMEPAD_Y2 = const(4)
-STD_VAR_GAMEPAD_BUTTON_A = const(5)
-STD_VAR_GAMEPAD_BUTTON_B = const(6)
-STD_VAR_GAMEPAD_BUTTON_X = const(7)
-STD_VAR_GAMEPAD_BUTTON_Y = const(8)
-STD_VAR_GAMEPAD_BUMPER_L = const(9)
-STD_VAR_GAMEPAD_BUMPER_R = const(10)
-STD_VAR_GAMEPAD_TRIGGER_L = const(11)
-STD_VAR_GAMEPAD_TRIGGER_R = const(12)
-STD_VAR_GAMEPAD_BACK = const(13)
-STD_VAR_GAMEPAD_START = const(14)
-STD_VAR_GAMEPAD_DPAD_UP = const(15)
-STD_VAR_GAMEPAD_DPAD_DN = const(16)
-STD_VAR_GAMEPAD_DPAD_L = const(17)
-STD_VAR_GAMEPAD_DPAD_R = const(18)
-STD_VAR_GAMEPAD_ENABLED = const(19)
-
-# IMU variables (20-25)
-STD_VAR_IMU_YAW = const(20)
-STD_VAR_IMU_ROLL = const(21)
-STD_VAR_IMU_PITCH = const(22)
-STD_VAR_IMU_ACC_X = const(23)
-STD_VAR_IMU_ACC_Y = const(24)
-STD_VAR_IMU_ACC_Z = const(25)
-
-# Encoder variables (26-29)
-STD_VAR_ENCODER_LEFT = const(26)
-STD_VAR_ENCODER_RIGHT = const(27)
-STD_VAR_ENCODER_3 = const(28)
-STD_VAR_ENCODER_4 = const(29)
-
-# Current sensor variables (30-33)
-STD_VAR_CURRENT_LEFT = const(30)
-STD_VAR_CURRENT_RIGHT = const(31)
-STD_VAR_CURRENT_3 = const(32)
-STD_VAR_CURRENT_4 = const(33)
-
-# Other sensor variables (34-37)
-STD_VAR_RANGEFINDER_DISTANCE = const(34)
-STD_VAR_REFLECTANCE_LEFT = const(35)
-STD_VAR_REFLECTANCE_RIGHT = const(36)
-STD_VAR_VOLTAGE = const(37)
-
 # First custom variable ID
 FIRST_CUSTOM_VAR_ID = const(38)
 
-# Mapping of standard variable names to IDs
+# Mapping of standard variable names to IDs (1-37)
 _STANDARD_VAR_IDS = {
-    '$gamepad.x1': STD_VAR_GAMEPAD_X1,
-    '$gamepad.y1': STD_VAR_GAMEPAD_Y1,
-    '$gamepad.x2': STD_VAR_GAMEPAD_X2,
-    '$gamepad.y2': STD_VAR_GAMEPAD_Y2,
-    '$gamepad.button_a': STD_VAR_GAMEPAD_BUTTON_A,
-    '$gamepad.button_b': STD_VAR_GAMEPAD_BUTTON_B,
-    '$gamepad.button_x': STD_VAR_GAMEPAD_BUTTON_X,
-    '$gamepad.button_y': STD_VAR_GAMEPAD_BUTTON_Y,
-    '$gamepad.bumper_l': STD_VAR_GAMEPAD_BUMPER_L,
-    '$gamepad.bumper_r': STD_VAR_GAMEPAD_BUMPER_R,
-    '$gamepad.trigger_l': STD_VAR_GAMEPAD_TRIGGER_L,
-    '$gamepad.trigger_r': STD_VAR_GAMEPAD_TRIGGER_R,
-    '$gamepad.back': STD_VAR_GAMEPAD_BACK,
-    '$gamepad.start': STD_VAR_GAMEPAD_START,
-    '$gamepad.dpad_up': STD_VAR_GAMEPAD_DPAD_UP,
-    '$gamepad.dpad_dn': STD_VAR_GAMEPAD_DPAD_DN,
-    '$gamepad.dpad_l': STD_VAR_GAMEPAD_DPAD_L,
-    '$gamepad.dpad_r': STD_VAR_GAMEPAD_DPAD_R,
-    '$gamepad.enabled': STD_VAR_GAMEPAD_ENABLED,
-    '$imu.yaw': STD_VAR_IMU_YAW,
-    '$imu.roll': STD_VAR_IMU_ROLL,
-    '$imu.pitch': STD_VAR_IMU_PITCH,
-    '$imu.acc_x': STD_VAR_IMU_ACC_X,
-    '$imu.acc_y': STD_VAR_IMU_ACC_Y,
-    '$imu.acc_z': STD_VAR_IMU_ACC_Z,
-    '$encoder.left': STD_VAR_ENCODER_LEFT,
-    '$encoder.right': STD_VAR_ENCODER_RIGHT,
-    '$encoder.3': STD_VAR_ENCODER_3,
-    '$encoder.4': STD_VAR_ENCODER_4,
-    '$current.left': STD_VAR_CURRENT_LEFT,
-    '$current.right': STD_VAR_CURRENT_RIGHT,
-    '$current.3': STD_VAR_CURRENT_3,
-    '$current.4': STD_VAR_CURRENT_4,
-    '$rangefinder.distance': STD_VAR_RANGEFINDER_DISTANCE,
-    '$reflectance.left': STD_VAR_REFLECTANCE_LEFT,
-    '$reflectance.right': STD_VAR_REFLECTANCE_RIGHT,
-    '$voltage': STD_VAR_VOLTAGE,
+    # Gamepad variables (1-19)
+    '$gamepad.x1': 1,
+    '$gamepad.y1': 2,
+    '$gamepad.x2': 3,
+    '$gamepad.y2': 4,
+    '$gamepad.button_a': 5,
+    '$gamepad.button_b': 6,
+    '$gamepad.button_x': 7,
+    '$gamepad.button_y': 8,
+    '$gamepad.bumper_l': 9,
+    '$gamepad.bumper_r': 10,
+    '$gamepad.trigger_l': 11,
+    '$gamepad.trigger_r': 12,
+    '$gamepad.back': 13,
+    '$gamepad.start': 14,
+    '$gamepad.dpad_up': 15,
+    '$gamepad.dpad_dn': 16,
+    '$gamepad.dpad_l': 17,
+    '$gamepad.dpad_r': 18,
+    '$gamepad.enabled': 19,
+    # IMU variables (20-25)
+    '$imu.yaw': 20,
+    '$imu.roll': 21,
+    '$imu.pitch': 22,
+    '$imu.acc_x': 23,
+    '$imu.acc_y': 24,
+    '$imu.acc_z': 25,
+    # Encoder variables (26-29)
+    '$encoder.left': 26,
+    '$encoder.right': 27,
+    '$encoder.3': 28,
+    '$encoder.4': 29,
+    # Current sensor variables (30-33)
+    '$current.left': 30,
+    '$current.right': 31,
+    '$current.3': 32,
+    '$current.4': 33,
+    # Other sensor variables (34-37)
+    '$rangefinder.distance': 34,
+    '$reflectance.left': 35,
+    '$reflectance.right': 36,
+    '$voltage': 37,
 }
 
 
@@ -379,8 +331,6 @@ class Puppet:
             self._handle_program_start()
         elif msg_type == MSG_TYPE_PROGRAM_END:
             self._handle_program_end()
-        elif msg_type == MSG_TYPE_COMMAND:
-            self._handle_command(payload_data)
         elif msg_type == MSG_TYPE_HEARTBEAT:
             self._handle_heartbeat(payload_data)
     
@@ -534,57 +484,22 @@ class Puppet:
     def _handle_program_start(self):
         """
         Handle program start message.
+        Resends variable definitions for all custom variables.
         """
         self._program_running = True
+        
+        # Resend variable definitions for all custom variables
+        for name, var_info in self._variables.items():
+            # Only resend custom variables (not standard variables)
+            if name not in _STANDARD_VAR_IDS:
+                var_id, var_type, permissions, value, update_rate, last_sent = var_info
+                self._send_var_def(name, var_type, permissions, var_id)
     
     def _handle_program_end(self):
         """
         Handle program end message.
         """
         self._program_running = False
-    
-    def _handle_command(self, payload):
-        """
-        Handle command message.
-        Format: cmd_type(1) cmd_data(variable)
-        """
-        if len(payload) < 1:
-            return
-        
-        cmd_type = payload[0]
-        cmd_data = payload[1:]
-        
-        # Parse common command types
-        if cmd_type == CMD_DRIVE_STRAIGHT:
-            if len(cmd_data) >= 8:
-                distance_cm, effort = struct.unpack('<ff', cmd_data[0:8])
-                if hasattr(self, '_drive_straight_handler'):
-                    self._drive_straight_handler(distance_cm, effort)
-        elif cmd_type == CMD_TURN:
-            if len(cmd_data) >= 8:
-                degrees, effort = struct.unpack('<ff', cmd_data[0:8])
-                if hasattr(self, '_turn_handler'):
-                    self._turn_handler(degrees, effort)
-        
-        # Also call generic callback if set
-        if hasattr(self, '_command_callback'):
-            self._command_callback(cmd_type, cmd_data)
-    
-    def set_drive_straight_handler(self, handler):
-        """
-        Set handler for drive_straight commands.
-        
-        :param handler: Function that takes (distance_cm, effort)
-        """
-        self._drive_straight_handler = handler
-    
-    def set_turn_handler(self, handler):
-        """
-        Set handler for turn commands.
-        
-        :param handler: Function that takes (degrees, effort)
-        """
-        self._turn_handler = handler
     
     def _handle_heartbeat(self, payload_data):
         """
@@ -886,45 +801,6 @@ class Puppet:
                             self.packets_dropped)
         self._send_message(MSG_TYPE_HEARTBEAT, payload)
     
-    def set_command_callback(self, callback):
-        """
-        Set callback for handling commands.
-        
-        :param callback: Function that takes (cmd_type, cmd_data)
-        """
-        self._command_callback = callback
-    
-    def send_command(self, cmd_type, cmd_data):
-        """
-        Send a command message to the client.
-        
-        :param cmd_type: Command type (CMD_DRIVE_STRAIGHT, CMD_TURN, etc.)
-        :param cmd_data: Command data (packed bytes)
-        """
-        payload = bytearray([cmd_type])
-        payload.extend(cmd_data)
-        self._send_message(MSG_TYPE_COMMAND, payload)
-    
-    def send_drive_straight_command(self, distance_cm, effort):
-        """
-        Send a drive straight command.
-        
-        :param distance_cm: Distance to drive in cm
-        :param effort: Effort value (-1 to 1)
-        """
-        cmd_data = struct.pack('<ff', distance_cm, effort)
-        self.send_command(CMD_DRIVE_STRAIGHT, cmd_data)
-    
-    def send_turn_command(self, degrees, effort):
-        """
-        Send a turn command.
-        
-        :param degrees: Degrees to turn
-        :param effort: Effort value (-1 to 1)
-        """
-        cmd_data = struct.pack('<ff', degrees, effort)
-        self.send_command(CMD_TURN, cmd_data)
-    
     def get_stats(self):
         """
         Get protocol statistics.
@@ -938,26 +814,4 @@ class Puppet:
             'transport_type': self._transport_type,
             'program_running': self._program_running
         }
-
-
-def setup_differential_drive_commands(differential_drive, puppet=None):
-    """
-    Helper function to connect differential_drive commands to XPP.
-    
-    :param differential_drive: DifferentialDrive instance
-    :param puppet: Puppet instance (defaults to get_default_puppet())
-    """
-    if puppet is None:
-        puppet = Puppet.get_default_puppet()
-    
-    def drive_straight_handler(distance_cm, effort):
-        """Handle drive_straight command."""
-        differential_drive.straight(distance_cm, max_effort=effort)
-    
-    def turn_handler(degrees, effort):
-        """Handle turn command."""
-        differential_drive.turn(degrees, max_effort=effort)
-    
-    puppet.set_drive_straight_handler(drive_straight_handler)
-    puppet.set_turn_handler(turn_handler)
 
