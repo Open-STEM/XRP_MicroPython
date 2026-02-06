@@ -83,10 +83,10 @@ class Dashboard:
         self.rangefinder = Rangefinder.get_default_rangefinder()
         self.reflectance = Reflectance.get_default_reflectance()
         self.VoltageADC = ADC(Pin('BOARD_VIN_MEASURE'))
-        self.CurrLADC = ADC(Pin('ML_CUR'))
-        self.CurrRADC = ADC(Pin('MR_CUR'))
-        self.Curr3ADC = ADC(Pin('M3_CUR'))
-        self.Curr4ADC = ADC(Pin('M4_CUR'))
+        #self.CurrLADC = ADC(Pin('ML_CUR'))
+        #self.CurrRADC = ADC(Pin('MR_CUR'))
+        #self.Curr3ADC = ADC(Pin('M3_CUR'))
+        #self.Curr4ADC = ADC(Pin('M4_CUR'))
 
         # Get XPP instance
         self._puppet = Puppet.get_default_puppet()
@@ -177,10 +177,10 @@ class Dashboard:
         self._puppet.set_variable('$encoder.4', self.motor_four.get_position_counts())
         
         # Current sensor data
-        self._puppet.set_variable('$current.left', self.CurrLADC.read_u16())
-        self._puppet.set_variable('$current.right', self.CurrRADC.read_u16())
-        self._puppet.set_variable('$current.3', self.Curr3ADC.read_u16())
-        self._puppet.set_variable('$current.4', self.Curr4ADC.read_u16())
+        #self._puppet.set_variable('$current.left', self.CurrLADC.read_u16())
+        #self._puppet.set_variable('$current.right', self.CurrRADC.read_u16())
+        #self._puppet.set_variable('$current.3', self.Curr3ADC.read_u16())
+        #self._puppet.set_variable('$current.4', self.Curr4ADC.read_u16())
         
         # Other sensors
         self._puppet.set_variable('$rangefinder.distance', self.rangefinder.distance())
@@ -211,6 +211,7 @@ class Dashboard:
         period_ms = int(1000 / rate_hz)
         self.update_timer.init(period=period_ms, mode=Timer.PERIODIC, 
                                callback=lambda t: self._dashboard_update())
+        self._puppet.start()
 
     def stop(self):
         """
@@ -225,6 +226,7 @@ class Dashboard:
         
         # Stop timer
         self.update_timer.deinit()
+        self._puppet.stop()
 
     def set_value(self, name, value, rate_hz=3):
         """

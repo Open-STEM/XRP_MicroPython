@@ -88,7 +88,7 @@ class Gamepad:
         Signals the remote computer to begin sending gamepad data packets.
         Subscribes to all gamepad variables at a high rate (50 Hz).
         """
-        
+        self._puppet.start()
         self._puppet.send_program_start()
 
         # Enable gamepad - signal to client to start sending
@@ -120,7 +120,8 @@ class Gamepad:
         # Unsubscribe from all gamepad variables
         for var_name in self._VAR_NAMES.values():
             self._puppet.subscribe_variable(var_name, 0)
-        
+            
+        self._puppet.stop()
         self._started = False
 
     def get_value(self, index: int) -> float:

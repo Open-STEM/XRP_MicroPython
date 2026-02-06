@@ -5,11 +5,12 @@ A bidirectional protocol for communicating with the XRP robot remotely.
 Uses a Network Tables-like architecture with variable ID mapping.
 """
 
+import select
 import struct
 import sys
 import time
 from machine import Timer
-from micropython import const
+from micropython import const,kbd_intr
 
 # Message framing constants
 MSG_START_1 = const(0xAA)
@@ -129,6 +130,11 @@ class Puppet:
         self._update_timer = Timer(-1)
         self._update_timer_running = False
         
+        # STDIO polling (for USB_STDIO transport)
+        self._poll_timer = Timer(-1)
+        self._poll_timer_running = False
+        self._poll_stdin_poll = None
+        
         # Program state
         self._program_running = False
         
@@ -142,46 +148,86 @@ class Puppet:
         # Try BLE first
         try:
             from ble.blerepl import uart
-            self._transport = uart
-            self._transport_type = 'BLE'
-            self._transport.set_data_callback(self._data_callback)
-            return
-        except (ImportError, AttributeError):
-            pass
-        
-        # Fallback to USB serial
-        try:
-            # For USB serial, we'll use sys.stdin/sys.stdout or machine.UART
-            # Check if we can use UART
-            try:
-                from machine import UART
-                # Try to open UART for USB serial (typically UART(0))
-                self._transport = UART(0, baudrate=115200)
-                self._transport_type = 'USB'
-                # For USB serial, we'll need to poll in a timer
-                self._usb_poll_timer = Timer(-2)
-                self._usb_poll_timer.init(period=10, mode=Timer.PERIODIC, 
-                                         callback=lambda t: self._poll_usb())
+            if len(uart._connections) > 0:
+                self._transport = uart
+                self._transport_type = 'BLE'
+                self._transport.set_data_callback(self._data_callback)
                 return
-            except:
-                # Last resort: use sys.stdin/stdout
-                self._transport = sys
+            else:
                 self._transport_type = 'USB_STDIO'
+                self._start_poll_timer()
                 return
-        except:
-            pass
+        except ImportError:
+            self._transport_type = 'USB_STDIO'
+            self._start_poll_timer()
+            return
+       
+
+    def _poll_stdio(self):
+        """
+        Poll STDIO for incoming data using select.poll.
+        Reads raw bytes from the stdin buffer.
+        """
+        data_read = False
+        while True:
+            events = self._stdin_poll.poll(0)
+            if not events:
+                if data_read:
+                    self._process_rx_buffer()
+                break
+            data = sys.stdin.buffer.read(1)
+            self._rx_buffer.extend(data)
+            data_read = True
+            
+            #if data:
+                #print(f"Received data: {data}")
+                #self._data_callback(data)
+
+    def _start_poll_timer(self):
+        """
+        Start STDIO polling for USB_STDIO transport.
+        Uses select.poll on the raw stdin buffer and a timer to check it.
+        """
+        if self._transport_type != 'USB_STDIO' or self._poll_timer_running:
+            return
+        self._stdin_poll = select.poll()
+        self._stdin_poll.register(sys.stdin.buffer, select.POLLIN)
+
+        kbd_intr(-1) #the data will have 03 in it, don't do a ctrl-c for that data.
+
+        self._poll_timer.init(period=20, mode=Timer.PERIODIC,
+                              callback=lambda t: self._poll_stdio())
+        self._poll_timer_running = True
+
+    def _stop_poll_timer(self):
+        """
+        Stop the STDIO polling timer and unregister from poll.
+        """
+        if self._poll_timer_running:
+            self._poll_timer.deinit()
+            kbd_intr(03) #start watching for ctrl-c again
+            self._poll_timer_running = False
+        if self._stdin_poll is not None:
+            try:
+                self._stdin_poll.unregister(sys.stdin.buffer)
+            except (OSError, AttributeError):
+                pass
+            self._stdin_poll = None
+    def start(self):
+        """
+        Start the STDIO polling.
+        """
+        if self._transport_type == 'USB_STDIO':
+            self._start_poll_timer()
+
+    def stop(self):
+        """
+        Stop the STDIO polling.
+        """
+        if self._transport_type == 'USB_STDIO':
+            self._stop_poll_timer()
         
-        raise RuntimeError("No transport available (BLE or USB serial)")
-    
-    def _poll_usb(self):
-        """
-        Poll USB serial for incoming data.
-        """
-        if self._transport_type == 'USB' and self._transport.any():
-            data = self._transport.read(self._transport.any())
-            if data:
-                self._data_callback(data)
-    
+
     def _data_callback(self, data):
         """
         Handle incoming data from transport layer.
@@ -209,11 +255,19 @@ class Puppet:
                 if idx == -1:
                     # No start sequence found, clear buffer except last byte
                     if len(self._rx_buffer) > 1:
+                        #see if anything in the buffer is a ctrl-c
+                        for i in range(len(self._rx_buffer) - 1):
+                            if self._rx_buffer[i] == 0x03:
+                                self.stop() #stop the USB handler if that is what is running and that will reenable the ctrl-c handler
                         self._rx_buffer = self._rx_buffer[-1:]
                     return
                 
                 # Remove everything before start sequence
                 if idx > 0:
+                    #check for a ctrl-c in the non packet parts
+                    for i in range(idx - 1):
+                        if self._rx_buffer[i] == 0x03:
+                            self.stop() #stop the USB handler if that is what is running and that will reenable the ctrl-c handler
                     self._rx_buffer = self._rx_buffer[idx:]
                 
                 # Found start, move to length
@@ -275,11 +329,9 @@ class Puppet:
         """
         if self._transport_type == 'BLE':
             self._transport.write_data(data)
-        elif self._transport_type == 'USB':
-            self._transport.write(data)
+        
         elif self._transport_type == 'USB_STDIO':
             sys.stdout.buffer.write(data)
-            sys.stdout.buffer.flush()
     
     def _pack_message(self, msg_type, payload_data):
         """
