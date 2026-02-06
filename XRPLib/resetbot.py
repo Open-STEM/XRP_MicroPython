@@ -27,6 +27,11 @@ def reset_servos():
     # Turn off both Servos
     Servo.get_default_servo(1).free()
     Servo.get_default_servo(2).free()
+    try: #if 2350 then there are 4 servos
+        Servo.get_default_servo(3).free()
+        Servo.get_default_servo(4).free()
+    except:
+        pass
 
 def reset_webserver():
     from XRPLib.webserver import Webserver
