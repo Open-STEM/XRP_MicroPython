@@ -50,7 +50,7 @@ class Rangefinder:
         # Start a virtual timer to periodically send trigger pulses
         # 60ms period matches the HC-SR04 recommended minimum cycle time
         self._timer = Timer(-1)
-        self._timer.init(period=60, callback=self._trigger_ping)
+        self._timer.init(mode=Timer.PERIODIC, period=60, callback=self._trigger_ping)
 
     def _trigger_ping(self, t):
         """
