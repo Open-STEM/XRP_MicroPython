@@ -164,6 +164,7 @@ class EncodedMotor:
         if speed_rpm is None or speed_rpm == 0:
             self.target_speed = None
             self.set_effort(0)
+            self.speedController.clear_history()
             return
         # Convert from rev per min to counts per 20ms (60 sec/min, 50 Hz)
         self.target_speed = speed_rpm*self._encoder.resolution/(60*50)
