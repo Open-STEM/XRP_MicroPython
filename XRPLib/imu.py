@@ -89,10 +89,17 @@ class IMU():
         self._acc_scale_factor = 1
         self._gyro_scale_factor = 1
 
-        # Angle integrators
-        self.running_pitch = 0
-        self.running_yaw = 0
-        self.running_roll = 0
+        # Angles
+        self.pitch = 0
+        self.yaw = 0
+        self.roll = 0
+        self.pitchComputed = True
+        self.yawComputed = True
+        self.rollComputed = True
+
+        # Madgwick values
+        self.beta = 0.1
+        self.q = [1, 0, 0, 0]
 
     def _int16(self, d):
         return d if d < 0x8000 else d - 0x10000
@@ -317,8 +324,11 @@ class IMU():
         :return: The pitch of the IMU in degrees
         :rtype: float
         """
-        return self.running_pitch
-    
+        if self.pitchComputed == False:
+            self.pitch = math.asin(-2 * (self.q[1]*self.q[3] - self.q[0]*self.q[2])) * 57.23
+            self.pitchComputed = True
+        return self.pitch
+
     def get_yaw(self):
         """
         Get the yaw (heading) of the IMU in degrees. Unbounded in range
@@ -326,7 +336,10 @@ class IMU():
         :return: The yaw (heading) of the IMU in degrees
         :rtype: float
         """
-        return self.running_yaw
+        if self.yawComputed == False:
+            self.yaw = math.atan2(self.q[1]*self.q[2] + self.q[0]*self.q[3], 0.5 - self.q[2]*self.q[2] - self.q[3]*self.q[3]) * 57.23
+            self.yawComputed = True
+        return self.yaw
     
     def get_heading(self):
         """
@@ -335,7 +348,7 @@ class IMU():
         :return: The heading of the IMU in degrees, bound between [0, 360)
         :rtype: float
         """
-        return self.running_yaw % 360
+        return self.get_yaw() % 360
     
     def get_roll(self):
         """
@@ -344,52 +357,16 @@ class IMU():
         :return: The roll of the IMU in degrees
         :rtype: float
         """
-        return self.running_roll
-    
-    def reset_pitch(self):
-        """
-        Reset the pitch to 0
-        """
-        self.running_pitch = 0
+        if self.rollComputed == False:
+            self.roll = math.atan2(self.q[0]*self.q[1] + self.q[2]*self.q[3], 0.5 - self.q[1]*self.q[1] - self.q[2]*self.q[2]) * 57.23
+            self.rollComputed = True
+        return self.roll
 
-    def reset_yaw(self):
+    def reset_angles(self):
         """
-        Reset the yaw (heading) to 0
+        Reset all angles to 0
         """
-        self.running_yaw = 0
-    
-    def reset_roll(self):
-        """
-        Reset the roll to 0
-        """
-        self.running_roll = 0
-
-    def set_pitch(self, pitch):
-        """
-        Set the pitch to a specific angle in degrees
-
-        :param pitch: The pitch to set the IMU to
-        :type pitch: float
-        """
-        self.running_pitch = pitch
-
-    def set_yaw(self, yaw):
-        """
-        Set the yaw (heading) to a specific angle in degrees
-
-        :param yaw: The yaw (heading) to set the IMU to
-        :type yaw: float
-        """
-        self.running_yaw = yaw
-
-    def set_roll(self, roll):
-        """
-        Set the roll to a specific angle in degrees
-
-        :param roll: The roll to set the IMU to
-        :type roll: float
-        """
-        self.running_roll = roll
+        self.q = [1, 0, 0, 0]
 
     def temperature(self):
         """
@@ -490,6 +467,7 @@ class IMU():
 
             # Update timer frequency
             self.timer_frequency = int(value.rstrip('Hz'))
+            self.timer_period = 1 / self.timer_frequency
             self._start_timer()
 
     def calibrate(self, calibration_time:float=1, vertical_axis:int= 2):
@@ -545,15 +523,93 @@ class IMU():
     def _stop_timer(self):
         self.update_timer.deinit()
 
+    def _invSqrt(self, x):
+        return x ** -0.5
+
     def _update_imu_readings(self):
         # Called every tick through a callback timer
-        self.get_gyro_rates()
-        delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
-        delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
-        delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
+        # Function converted to Python from https://github.com/arduino-libraries/MadgwickAHRS
 
-        state = disable_irq()
-        self.running_pitch += delta_pitch
-        self.running_roll += delta_roll
-        self.running_yaw += delta_yaw
-        enable_irq(state)
+        # Get IMU measurements
+        cur_vals = self.get_acc_gyro_rates()
+
+        # Acceleration, from mg's to g's
+        ax = cur_vals[0][0] * 0.001
+        ay = cur_vals[0][1] * 0.001
+        az = cur_vals[0][2] * 0.001
+        
+        # Rotation rate, from mdps to rad/sec
+        gx = cur_vals[1][0] * 0.0000174533
+        gy = cur_vals[1][1] * 0.0000174533
+        gz = cur_vals[1][2] * 0.0000174533
+
+        # Roll and pitch are measured about the x and y axes respectively. The
+        # IMU on the XRP has the x and y axes pionting to the right and forwards,
+        # meaning roll and pitch are swapped from what's intuitive. This axis swap
+        # effectively rotates the x and y axes by -90 degrees
+        ax, ay = (-ay, ax)
+        gx, gy = (-gy, gx)
+    
+        # Rate of change of quaternion from gyroscope
+        qDot1 = 0.5 * (-self.q[1] * gx - self.q[2] * gy - self.q[3] * gz)
+        qDot2 = 0.5 * (self.q[0] * gx + self.q[2] * gz - self.q[3] * gy)
+        qDot3 = 0.5 * (self.q[0] * gy - self.q[1] * gz + self.q[3] * gx)
+        qDot4 = 0.5 * (self.q[0] * gz + self.q[1] * gy - self.q[2] * gx)
+
+        # Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
+        if(not ((ax == 0) and (ay == 0) and (az == 0))):
+            # Norm`alise accelerometer measurement
+            recipNorm = self._invSqrt(ax * ax + ay * ay + az * az)
+            ax *= recipNorm
+            ay *= recipNorm
+            az *= recipNorm
+
+            # Auxiliary variables to avoid repeated arithmetic
+            _2q0 = 2 * self.q[0]
+            _2q1 = 2 * self.q[1]
+            _2q2 = 2 * self.q[2]
+            _2q3 = 2 * self.q[3]
+            _4q0 = 4 * self.q[0]
+            _4q1 = 4 * self.q[1]
+            _4q2 = 4 * self.q[2]
+            _8q1 = 8 * self.q[1]
+            _8q2 = 8 * self.q[2]
+            q0q0 = self.q[0] * self.q[0]
+            q1q1 = self.q[1] * self.q[1]
+            q2q2 = self.q[2] * self.q[2]
+            q3q3 = self.q[3] * self.q[3]
+
+            # Gradient decent algorithm corrective step
+            s0 = _4q0 * q2q2 + _2q2 * ax + _4q0 * q1q1 - _2q1 * ay
+            s1 = _4q1 * q3q3 - _2q3 * ax + 4 * q0q0 * self.q[1] - _2q0 * ay - _4q1 + _8q1 * q1q1 + _8q1 * q2q2 + _4q1 * az
+            s2 = 4 * q0q0 * self.q[2] + _2q0 * ax + _4q2 * q3q3 - _2q3 * ay - _4q2 + _8q2 * q1q1 + _8q2 * q2q2 + _4q2 * az
+            s3 = 4 * q1q1 * self.q[3] - _2q1 * ax + 4 * q2q2 * self.q[3] - _2q2 * ay
+            recipNorm = self._invSqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3) # normalise step magnitude
+            s0 *= recipNorm
+            s1 *= recipNorm
+            s2 *= recipNorm
+            s3 *= recipNorm
+
+            # Apply feedback step
+            qDot1 -= self.beta * s0
+            qDot2 -= self.beta * s1
+            qDot3 -= self.beta * s2
+            qDot4 -= self.beta * s3
+
+        # Integrate rate of change of quaternion to yield quaternion
+        self.q[0] += qDot1 * self.timer_period
+        self.q[1] += qDot2 * self.timer_period
+        self.q[2] += qDot3 * self.timer_period
+        self.q[3] += qDot4 * self.timer_period
+
+        # Normalise quaternion
+        recipNorm = self._invSqrt(self.q[0] * self.q[0] + self.q[1] * self.q[1] + self.q[2] * self.q[2] + self.q[3] * self.q[3])
+        self.q[0] *= recipNorm
+        self.q[1] *= recipNorm
+        self.q[2] *= recipNorm
+        self.q[3] *= recipNorm
+        
+        # Update RPY flags
+        self.pitchComputed = False
+        self.yawComputed = False
+        self.rollComputed = False
