@@ -3,10 +3,16 @@
 import machine
 import rp2
 import time
+from sys import implementation
 
 class Encoder:
-    _gear_ratio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
-    _counts_per_motor_shaft_revolution = 12
+    if "NanoXRP" in implementation._machine:
+        _gear_ratio = (68/1)
+        _counts_per_motor_shaft_revolution = 12
+    else:
+        _gear_ratio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
+        _counts_per_motor_shaft_revolution = 12
+
     resolution = _counts_per_motor_shaft_revolution * _gear_ratio # 585
     
     def __init__(self, index, encAPin: int|str, encBPin: int|str, flip_dir:bool=False):

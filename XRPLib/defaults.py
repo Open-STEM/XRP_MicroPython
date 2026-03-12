@@ -25,7 +25,7 @@ if hasattr(Pin.board, "MOTOR_4_IN_1"):
 imu = IMU.get_default_imu()
 
 if "NanoXRP" in implementation._machine:
-    drivetrain = DifferentialDrive.get_default_differential_drive(wheel_diam:float = 3.2, wheel_track:float = 7.8)
+    drivetrain = DifferentialDrive(left_motor, right_motor, imu, wheel_diam=3.46, wheel_track=7.8)
 else:
     drivetrain = DifferentialDrive.get_default_differential_drive()
 
