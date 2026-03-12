@@ -3,7 +3,7 @@ from .encoder import Encoder
 from machine import Timer, Pin
 from .controller import Controller
 from .pid import PID
-import sys
+from sys import implementation
 
 class EncodedMotor:
 
@@ -25,7 +25,7 @@ class EncodedMotor:
         :type index: int
         """
         
-        if "Beta" in sys.implementation._machine:
+        if "Beta" in implementation._machine:
             MotorImplementation = SinglePWMMotor
         else:
             MotorImplementation = DualPWMMotor
