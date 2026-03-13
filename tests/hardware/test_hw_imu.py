@@ -1,9 +1,10 @@
 """
 Hardware integration test for IMU.
-Setup: Robot on flat, stable surface. Do not move during tests.
+Setup: Board on flat, stable surface. Do not move during tests.
 """
 from XRPLib.imu import IMU
 from XRPLib.board import Board
+from teststand import is_teststand, wait_if_manual
 import time
 
 imu = IMU.get_default_imu()
@@ -72,10 +73,11 @@ def test_acc_gyro_batch():
 
 print("=" * 40)
 print("IMU HARDWARE TESTS")
-print("Keep robot flat and still.")
-print("Press button to start.")
+if not is_teststand():
+    print("Keep board flat and still.")
+    print("Press button to start.")
 print("=" * 40)
-board.wait_for_button()
+wait_if_manual(board)
 
 test_connected()
 test_gravity_z()

@@ -1,9 +1,11 @@
 """
 Hardware integration test for reflectance sensors.
-Setup: Have white paper and dark surface available.
+Manual mode: Have white paper and dark surface available.
+Test stand: Sliding plate with white/black halves is actuated automatically.
 """
 from XRPLib.reflectance import Reflectance
 from XRPLib.board import Board
+from teststand import is_teststand, wait_if_manual, move_reflectance_slide
 import time
 
 ref = Reflectance.get_default_reflectance()
@@ -33,8 +35,11 @@ def test_values_in_range():
 
 def test_white_surface():
     """On white paper, readings should be low."""
-    print("  Place sensor over WHITE surface, press button...")
-    board.wait_for_button()
+    if is_teststand():
+        move_reflectance_slide("white")
+    else:
+        print("  Place sensor over WHITE surface, press button...")
+        board.wait_for_button()
     time.sleep(0.1)
     left = ref.get_left()
     right = ref.get_right()
@@ -44,8 +49,11 @@ def test_white_surface():
 
 def test_dark_surface():
     """On dark surface, readings should be high."""
-    print("  Place sensor over DARK surface, press button...")
-    board.wait_for_button()
+    if is_teststand():
+        move_reflectance_slide("black")
+    else:
+        print("  Place sensor over DARK surface, press button...")
+        board.wait_for_button()
     time.sleep(0.1)
     left = ref.get_left()
     right = ref.get_right()

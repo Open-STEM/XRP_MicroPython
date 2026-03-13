@@ -1,9 +1,11 @@
 """
 Hardware integration test for rangefinder.
 Setup: Place a flat surface (wall/book) at a known distance from the sensor.
+On test stand: wall is fixed at ~20cm.
 """
 from XRPLib.rangefinder import Rangefinder
 from XRPLib.board import Board
+from teststand import is_teststand, wait_if_manual
 import time
 
 rf = Rangefinder.get_default_rangefinder()
@@ -64,10 +66,11 @@ def test_non_blocking_speed():
 
 print("=" * 40)
 print("RANGEFINDER HARDWARE TESTS")
-print("Point sensor at a surface ~20cm away.")
-print("Press button to start.")
+if not is_teststand():
+    print("Point sensor at a surface ~20cm away.")
+    print("Press button to start.")
 print("=" * 40)
-board.wait_for_button()
+wait_if_manual(board)
 
 test_first_reading()
 test_reasonable_range()

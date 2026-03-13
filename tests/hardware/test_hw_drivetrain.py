@@ -7,6 +7,7 @@ from XRPLib.encoded_motor import EncodedMotor
 from XRPLib.imu import IMU
 from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
+from teststand import is_teststand, wait_if_manual
 import time
 
 left = EncodedMotor.get_default_encoded_motor(1)
@@ -95,10 +96,11 @@ def test_square():
 
 print("=" * 40)
 print("DRIVETRAIN HARDWARE TESTS")
-print("Place robot on flat surface.")
-print("Press button to start.")
+if not is_teststand():
+    print("Place robot on flat surface.")
+    print("Press button to start.")
 print("=" * 40)
-board.wait_for_button()
+wait_if_manual(board)
 
 test_straight()
 test_straight_reverse()

@@ -6,6 +6,7 @@ from XRPLib.encoded_motor import EncodedMotor
 from XRPLib.imu import IMU
 from XRPLib.rangefinder import Rangefinder
 from XRPLib.board import Board
+from teststand import is_teststand, wait_if_manual
 import time
 
 board = Board.get_default_board()
@@ -80,9 +81,10 @@ def test_all_timers_simultaneously():
 
 print("=" * 40)
 print("TIMING HARDWARE TESTS")
-print("Press button to start.")
+if not is_teststand():
+    print("Press button to start.")
 print("=" * 40)
-board.wait_for_button()
+wait_if_manual(board)
 
 test_motor_update_rate()
 test_imu_update_rate()
