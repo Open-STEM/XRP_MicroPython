@@ -6,4 +6,5 @@ docs/_build/
 secrets.json
 venv
 .temp_xrplib
-XRPLib/__pycache__
+__pycache__/
+.pytest_cache/
