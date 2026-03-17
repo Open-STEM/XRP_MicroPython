@@ -8,7 +8,10 @@ class Timeout:
         :param timeout: The timeout, in seconds
         :type timeout: float
         """
-        self.timeout = timeout*1000
+        self.timeout = timeout
+        if self.timeout != None:
+            self.timeout = timeout*1000
+        
         self.start_time = time.ticks_ms()
     
     def is_done(self):
