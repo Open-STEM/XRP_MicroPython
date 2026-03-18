@@ -95,13 +95,21 @@ class Puppet:
     """
     
     _DEFAULT_PUPPET_INSTANCE = None
+    _DEFAULT_TRANSPORT_MODE = 'AUTO'
     
     @classmethod
-    def get_default_puppet(cls):
+    def get_default_puppet(cls, transport_mode='AUTO'):
         """
         Get the default XPP instance. This is a singleton.
+
+        :param transport_mode: 'AUTO', 'BLE', or 'USB_STDIO'.
+            Only used when creating the singleton for the first time.
         """
+        transport_mode = transport_mode.upper()
+        if transport_mode not in ('AUTO', 'BLE', 'USB_STDIO'):
+            raise ValueError("transport_mode must be 'AUTO', 'BLE', or 'USB_STDIO'")
         if cls._DEFAULT_PUPPET_INSTANCE is None:
+            cls._DEFAULT_TRANSPORT_MODE = transport_mode
             cls._DEFAULT_PUPPET_INSTANCE = cls()
         return cls._DEFAULT_PUPPET_INSTANCE
     
@@ -109,6 +117,8 @@ class Puppet:
         """
         Initialize the XPP protocol handler.
         """
+        self._transport_mode = self.__class__._DEFAULT_TRANSPORT_MODE
+
         # Variable registry: name -> (id, type, permissions, value, update_rate, last_sent_time)
         self._variables = {}
         self._variable_ids = {}  # id -> name (reverse mapping)
@@ -143,11 +153,26 @@ class Puppet:
     
     def _init_transport(self):
         """
-        Auto-detect and initialize transport (BLE or USB serial).
+        Initialize transport based on selected mode:
+        - AUTO: BLE if currently connected, otherwise USB_STDIO
+        - BLE: force BLE transport even without active connections
+        - USB_STDIO: force USB STDIO transport
         """
-        # Try BLE first
+        if self._transport_mode == 'USB_STDIO':
+            self._transport_type = 'USB_STDIO'
+            self._start_poll_timer()
+            return
+
         try:
             from ble.blerepl import uart
+
+            if self._transport_mode == 'BLE':
+                self._transport = uart
+                self._transport_type = 'BLE'
+                self._transport.set_data_callback(self._data_callback)
+                return
+
+            # AUTO mode: prefer BLE only when already connected
             if len(uart._connections) > 0:
                 self._transport = uart
                 self._transport_type = 'BLE'
@@ -158,6 +183,8 @@ class Puppet:
                 self._start_poll_timer()
                 return
         except ImportError:
+            if self._transport_mode == 'BLE':
+                raise RuntimeError("BLE transport requested but ble.blerepl.uart is unavailable")
             self._transport_type = 'USB_STDIO'
             self._start_poll_timer()
             return
