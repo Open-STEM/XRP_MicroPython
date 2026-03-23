@@ -23,23 +23,43 @@ class Encoder:
         :param index: The index of the state machine to be used, indexed 0-3.
         :type index: int
         :param encAPin: The pin the left reflectance sensor is connected to
-        :type encAPin: int
+        :type encAPin: int/str
         :param encBPin: The pin the right reflectance sensor is connected to
-        :type encBPin: int
+        :type encBPin: int/str
         """
         
-        basePin = machine.Pin(encAPin, machine.Pin.IN)
-        nextPin = machine.Pin(encBPin, machine.Pin.IN)
+        pA = machine.Pin(encAPin, machine.Pin.IN)
+        pB = machine.Pin(encBPin, machine.Pin.IN)
         
-        #nextPin must be higher than basePin. Pins must be successive.
-        if (str(basePin) > str(nextPin)):
-            basePin = machine.Pin(encBPin, machine.Pin.IN)
-            nextPin = machine.Pin(encAPin, machine.Pin.IN)
+        # PIO in_base requires successive pins. We must ensure basePin is the lower GPIO number.
+        # We extract the GPIO number from the Pin object to perform a reliable numeric comparison.
+        if self._get_pin_id(pA) > self._get_pin_id(pB):
+            basePin = pB
+            nextPin = pA
+        else:
+            basePin = pA
+            nextPin = pB
 
         self.sm = rp2.StateMachine(index, self._encoder, in_base=basePin)
         self.reset_encoder_position()
         self.sm.active(1)
         self.flip_dir = flip_dir
+
+    def _get_pin_id(self, pin):
+        """
+        Helper to extract the numeric GPIO ID from a machine.Pin object.
+        Works across different MicroPython port string representations.
+        """
+        # String representation is usually "Pin(GPIO16, mode=IN)" or "Pin(16)"
+        # We look for the numeric part associated with the GPIO.
+        s = str(pin)
+        import re
+        match = re.search(r'(\d+)', s)
+        if match:
+            return int(match.group(1))
+        # Fallback to a basic hash or id if regex fails, though 
+        # on RP2/MicroPython, the numeric ID is standard.
+        return id(pin)
 
     def reset_encoder_position(self):
         """
