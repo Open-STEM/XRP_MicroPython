@@ -19,13 +19,22 @@ class Reflectance:
         Reads from analog in and converts to a float from 0 (white) to 1 (black)
         
         :param leftPin: The pin the left reflectance sensor is connected to
-        :type leftPin: int
+        :type leftPin: int|str
+        :param middlePin: The pin the middle reflectance sensor is connected to
+        :type middlePin: int|str
         :param rightPin: The pin the right reflectance sensor is connected to
-        :type rightPin: int
+        :type rightPin: int|str
         """
         self._leftReflectance = ADC(Pin(leftPin))
-        self._middleReflectance = ADC(Pin(middlePin))
         self._rightReflectance = ADC(Pin(rightPin))
+
+        # Guard for middlePin to prevent crashes on older XRP boards where LINE_M isn't defined
+        self._middleReflectance = None
+        if isinstance(middlePin, int):
+            self._middleReflectance = ADC(Pin(middlePin))
+        elif hasattr(Pin.board, middlePin):
+            self._middleReflectance = ADC(Pin(middlePin))
+
 
         self.MAX_ADC_VALUE: int = 65536
 
