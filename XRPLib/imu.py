@@ -11,6 +11,7 @@ except (TypeError, ModuleNotFoundError):
     # Import wrapped in a try/except so that autodoc generation can process properly
     pass
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
+from sys import implementation
 import time, math
 
 class IMU():
@@ -551,6 +552,10 @@ class IMU():
         delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
         delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
         delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
+
+        # Flip and swap for NanoXRP
+        if "NanoXRP" in implementation._machine:
+            delta_yaw = -delta_yaw
 
         state = disable_irq()
         self.running_pitch += delta_pitch

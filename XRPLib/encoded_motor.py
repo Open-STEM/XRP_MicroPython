@@ -70,12 +70,21 @@ class EncodedMotor:
         self.brake_at_zero = False
 
         self.target_speed = None
-        self.DEFAULT_SPEED_CONTROLLER = PID(
-            kp=0.035,
-            ki=0.03,
-            kd=0,
-            max_integral=50
-        )
+        if "NanoXRP" in implementation._machine:
+            self.DEFAULT_SPEED_CONTROLLER = PID(
+                kp=0.015,
+                ki=0.06,
+                kd=0,
+                max_integral=1/0.06
+            )
+        else:
+            self.DEFAULT_SPEED_CONTROLLER = PID(
+                kp=0.035,
+                ki=0.03,
+                kd=0,
+                max_integral=50
+            )
+
         self.speedController = self.DEFAULT_SPEED_CONTROLLER
         self.prev_position = 0
         self.speed = 0
