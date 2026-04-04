@@ -549,13 +549,16 @@ class IMU():
     def _update_imu_readings(self):
         # Called every tick through a callback timer
         self.get_gyro_rates()
-        delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
-        delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
-        delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
 
         # Flip and swap for NanoXRP
         if "NanoXRP" in implementation._machine:
-            delta_yaw = -delta_yaw
+            delta_pitch = self.irq_v[1][1] / 1000 / self.timer_frequency
+            delta_roll = self.irq_v[1][0] / 1000 / self.timer_frequency
+            delta_yaw = -1 * self.irq_v[1][2] / 1000 / self.timer_frequency
+        else:
+            delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
+            delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
+            delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
 
         state = disable_irq()
         self.running_pitch += delta_pitch
