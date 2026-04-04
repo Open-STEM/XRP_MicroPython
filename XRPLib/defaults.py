@@ -8,6 +8,7 @@ from .imu import IMU
 from .reflectance import Reflectance
 from .servo import Servo
 from .webserver import Webserver
+from .buzzer import Buzzer
 from machine import Pin
 from sys import implementation
 
@@ -40,3 +41,6 @@ if hasattr(Pin.board, "SERVO_3"):
     servo_three = Servo.get_default_servo(index=3)
 if hasattr(Pin.board, "SERVO_4"):
     servo_four = Servo.get_default_servo(index=4)
+
+if "NanoXRP" in implementation._machine:
+    buzzer = Buzzer.get_default_buzzer()
