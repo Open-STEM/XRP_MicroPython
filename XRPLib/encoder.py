@@ -84,7 +84,6 @@ class Encoder:
         counts = self.sm.get()
         if(counts > 2**31):
             counts -= 2**32
-
         if self.flip_dir:
             counts *= -1
         
