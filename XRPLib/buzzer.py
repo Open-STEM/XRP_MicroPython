@@ -59,7 +59,7 @@ class Buzzer:
             if hasattr(machine.Pin.board, "BOARD_BUZZER"):
                 pin = "BOARD_BUZZER"
             else:
-                raise Exception("No buzzer pin defined, are you sure this board has a buzzer?")
+                raise Exception("No buzzer pin defined")
 
         self._pin = machine.Pin(pin)
         self._pwm = machine.PWM(self._pin)
@@ -306,6 +306,23 @@ class Buzzer:
             self._timer.init(freq=100, callback=lambda t: self._update(t))
             self._timer_in_use = True
     
+    def reset_buzzer(self):
+        """
+        Stops all sounds and timers immediately. 
+        Resets the buzzer to a silent state.
+        """
+        # Stop PWM output
+        self._pwm.duty_u16(0)
+        
+        # Stop background timers
+        if self._timer_in_use:
+            self._timer.deinit()
+            self._timer_in_use = False
+            
+        # Reset song state
+        self._song = []
+        self._song_index = 0
+
     def play_move_it(self, blocking: bool = True):
         """
         Play "I Like to Move It" song.

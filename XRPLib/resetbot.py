@@ -28,6 +28,15 @@ def reset_led():
     except:
         pass
 
+def reset_buzzer():
+    from XRPLib.buzzer import Buzzer
+    # Turn off the buzzer
+    try:
+        # Turn off the Buzzer if the board has one
+        Buzzer.reset_buzzer()
+    except:
+        pass
+
 def reset_servos():
     from XRPLib.servo import Servo
     # Turn off both Servos
@@ -48,6 +57,7 @@ def reset_hard():
     reset_gamepad()
     reset_motors()
     reset_led()
+    reset_buzzer()
     reset_servos()
     reset_webserver()
 
@@ -59,6 +69,9 @@ if "XRPLib.encoded_motor" in sys.modules:
 
 if "XRPLib.board" in sys.modules:
     reset_led()
+
+if "XRPLib.buzzer" in sys.modules:
+    reset_buzzer()
 
 if "XRPLib.servo" in sys.modules:
     reset_servos()
