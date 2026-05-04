@@ -52,10 +52,14 @@ class Reflectance:
         
     def get_middle(self) -> float:
         """
-        Gets the the reflectance of the left reflectance sensor
-        : return: The reflectance ranging from 0 (white) to 1 (black)
+        Gets the reflectance of the middle sensor if available.
+        :raises RuntimeError: If the middle pin is not supported on this board.
+        :return: Reflectance from 0 (white) to 1 (black)
         : rtype: float
         """
+        if self._middleReflectance is None:
+            raise RuntimeError(f"Middle reflectance sensor is not available on this board configuration.")
+        
         return self._get_value(self._middleReflectance)
 
     def get_right(self) -> float:
