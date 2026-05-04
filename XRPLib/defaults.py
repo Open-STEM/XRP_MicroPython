@@ -42,5 +42,5 @@ if hasattr(Pin.board, "SERVO_3"):
 if hasattr(Pin.board, "SERVO_4"):
     servo_four = Servo.get_default_servo(index=4)
 
-if "NanoXRP" in implementation._machine:
+if hasattr(Pin.board, "BOARD_BUZZER"):
     buzzer = Buzzer.get_default_buzzer()

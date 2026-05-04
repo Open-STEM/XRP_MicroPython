@@ -4,7 +4,6 @@
 
 import machine
 import time
-import urandom
 from machine import Timer
 
 class Buzzer:
@@ -15,9 +14,6 @@ class Buzzer:
     Allows for playing individual notes or songs with various durations and tempos.
     Supports natural notes, sharps, and flats.
     """
-
-    # Pin configuration for the buzzer
-    BUZZER_PIN = 13
 
     # Duration constants (based on a default 120 BPM tempo)
     WHOLE = 4
@@ -50,15 +46,21 @@ class Buzzer:
             cls._DEFAULT_BUZZER_INSTANCE = cls()
         return cls._DEFAULT_BUZZER_INSTANCE
 
-    def __init__(self, pin: int = None):
+    def __init__(self, buzzer_pin: int|str = None):
         """
         Initialize the buzzer.
 
-        :param pin: The pin number for the buzzer
-        :type pin: int
+        :param buzzer_pin: The pin number for the buzzer
+        :type buzzer_pin: int|str
         """
-        if pin is None:
-            pin = self.BUZZER_PIN
+        if buzzer_pin is not None:
+            pin = buzzer_pin
+        else:
+            if hasattr(machine.Pin.board, "BOARD_BUZZER"):
+                pin = "BOARD_BUZZER"
+            else:
+                raise Exception("No buzzer pin defined, are you sure this board has a buzzer?")
+
         self._pin = machine.Pin(pin)
         self._pwm = machine.PWM(self._pin)
         self._pwm.duty_u16(0)  # Start silent
