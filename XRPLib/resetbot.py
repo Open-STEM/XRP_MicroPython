@@ -33,7 +33,7 @@ def reset_buzzer():
     # Turn off the buzzer
     try:
         # Turn off the Buzzer if the board has one
-        Buzzer.reset_buzzer()
+        Buzzer.get_default_buzzer().reset_buzzer()
     except:
         pass
 

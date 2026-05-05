@@ -58,7 +58,7 @@ class Reflectance:
         : rtype: float
         """
         if self._middleReflectance is None:
-            raise RuntimeError(f"Middle reflectance sensor is not available on this board configuration.")
+            raise RuntimeError("Middle reflectance sensor is not available on this board configuration.")
         
         return self._get_value(self._middleReflectance)
 
