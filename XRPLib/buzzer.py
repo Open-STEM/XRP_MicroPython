@@ -61,6 +61,8 @@ class Buzzer:
         # State variables for non-blocking playback
         self._note_end_time = 0
         self._tempo = 120  # Default BPM
+        self._in_gap = False
+        self._gap_end_time = 0
         
         # Song playback state
         self._song = []
@@ -124,6 +126,7 @@ class Buzzer:
         if note_letter in "ABCDEFG":
             # Check for sharp (#) or flat (b) modifier
             note_with_modifier = note_letter
+            octave_pos = 1
             if len(note_str) > 1:
                 if note_str[1] == "#":
                     note_with_modifier = note_letter + "#"
@@ -131,8 +134,6 @@ class Buzzer:
                 elif note_str[1] == "B":
                     note_with_modifier = note_letter + "B"
                     octave_pos = 2
-                else:
-                    octave_pos = 1
             
             try:
                 if octave_pos < len(note_str):
@@ -150,24 +151,25 @@ class Buzzer:
         Internal callback for non-blocking playback.
         Called by the timer when running in non-blocking mode.
         """
-            
-        # Check if current note is done
-        if time.ticks_diff(self._note_end_time, time.ticks_ms()) <= 0:
-            # Note done - stop the tone
+        now = time.ticks_ms()
+
+        if self._in_gap:
+            # Waiting for the inter-note silence to pass before advancing
+            if time.ticks_diff(self._gap_end_time, now) <= 0:
+                self._in_gap = False
+                self._song_index += 1
+                if self._song_index < len(self._song):
+                    note, duration = self._song[self._song_index]
+                    self._start_note(note, duration, self._song_tempo)
+                else:
+                    # Song finished
+                    self._timer.deinit()
+                    self._timer_in_use = False
+        elif time.ticks_diff(self._note_end_time, now) <= 0:
+            # Note done - silence and schedule a short gap before next note
             self._pwm.duty_u16(0)
-            
-            # Small gap between notes
-            time.sleep_ms(20)
-            
-            # Play next note in song
-            self._song_index += 1
-            if self._song_index < len(self._song):
-                note, duration = self._song[self._song_index]
-                self._start_note(note, duration, self._song_tempo)
-            else:
-                # Song finished
-                self._timer.deinit()
-                self._timer_in_use = False
+            self._in_gap = True
+            self._gap_end_time = time.ticks_add(now, 20)
     
     def _start_note(self, note: str, duration: str = "quarter", tempo: int = None):
         """Start playing a note (non-blocking helper)."""
@@ -231,14 +233,17 @@ class Buzzer:
         if blocking:
             self._play_tone_blocking(frequency, duration_ms)
         else:
-            # Non-blocking - start the note and set up timer if needed
+            # Non-blocking - clear any active song so _update won't advance it
+            self._song = []
+            self._song_index = 0
+            self._in_gap = False
+
             if frequency > 0:
                 self._pwm.freq(frequency)
                 self._pwm.duty_u16(32768)
-            
+
             self._note_end_time = time.ticks_add(time.ticks_ms(), duration_ms)
-            
-            # Start timer if not already running
+
             if not self._timer_in_use:
                 self._timer.init(freq=100, callback=lambda t: self._update(t))
                 self._timer_in_use = True
@@ -284,17 +289,21 @@ class Buzzer:
                 duration_ms = self._duration_to_ms(duration, tempo)
                 self._play_tone_blocking(frequency, duration_ms)
         else:
-            # Non-blocking - store song and start playing with timer
+            # Non-blocking - stop any existing playback before starting new song
+            if self._timer_in_use:
+                self._timer.deinit()
+                self._timer_in_use = False
+            self._in_gap = False
+
             self._song = song
             self._song_index = 0
             self._song_tempo = tempo
-            self._timer_in_use = False
-            
+
             # Start playing first note
             note, duration = song[0]
             self._start_note(note, duration, tempo)
             self._song_index = 1
-            
+
             # Start the timer for non-blocking playback
             self._timer.init(freq=100, callback=lambda t: self._update(t))
             self._timer_in_use = True
@@ -315,6 +324,7 @@ class Buzzer:
         # Reset song state
         self._song = []
         self._song_index = 0
+        self._in_gap = False
 
     def play_move_it(self, blocking: bool = True):
         """
