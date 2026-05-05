@@ -4,6 +4,7 @@ import machine
 import rp2
 import time
 from sys import implementation
+import re
 
 class Encoder:
     if "NanoXRP" in implementation._machine:
@@ -53,7 +54,6 @@ class Encoder:
         # String representation is usually "Pin(GPIO16, mode=IN)" or "Pin(16)"
         # We look for the numeric part associated with the GPIO.
         s = str(pin)
-        import re
         match = re.search(r'(\d+)', s)
         if match:
             return int(match.group(1))

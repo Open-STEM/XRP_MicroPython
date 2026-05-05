@@ -58,7 +58,7 @@ class DualPWMMotor:
     def __init__(self, in1_pwm_forward: int|str, in2_pwm_backward: int|str, flip_dir:bool=False):
 
         if "NanoXRP" in implementation._machine:
-            self.flip_dir = flip_dir ^ True
+            self.flip_dir = not flip_dir
         else:
             self.flip_dir = flip_dir
 
