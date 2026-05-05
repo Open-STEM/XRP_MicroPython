@@ -30,6 +30,8 @@ class IMU():
         return cls._DEFAULT_IMU_INSTANCE
 
     def __init__(self, scl_pin: int|str = "I2C_SCL_1", sda_pin: int|str = "I2C_SDA_1", addr=LSM_ADDR_PRIMARY):
+        self._is_nanoxrp = "NanoXRP" in implementation._machine
+
         # I2C values
         self.i2c = I2C(id=1, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=400000)
         self.addr = addr
@@ -551,7 +553,7 @@ class IMU():
         self.get_gyro_rates()
 
         # Flip and swap for NanoXRP
-        if "NanoXRP" in implementation._machine:
+        if self._is_nanoxrp:
             delta_pitch = self.irq_v[1][1] / 1000 / self.timer_frequency
             delta_roll = self.irq_v[1][0] / 1000 / self.timer_frequency
             delta_yaw = -1 * self.irq_v[1][2] / 1000 / self.timer_frequency

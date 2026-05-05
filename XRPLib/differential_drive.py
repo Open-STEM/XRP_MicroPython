@@ -57,10 +57,7 @@ class DifferentialDrive:
         self.turning = False
 
         if self.imu:
-            # if the IMU is initialized, then create a PID controller that can be used
-            # to maintain a constant heading when driving
-            if not "NanoXRP" in implementation._machine:
-                self.heading_pid = PID( kp = 0.075, kd=0.001, )
+            self.heading_pid = PID( kp = 0.075, kd=0.001, )
 
     def set_effort(self, left_effort: float, right_effort: float) -> None:
         """
@@ -313,7 +310,7 @@ class DifferentialDrive:
                     tolerance = 1,
                     tolerance_count = 3
                 )
-                    # Secondary controller to keep encoder values in sync
+            # Secondary controller to keep encoder values in sync
             if secondary_controller is None:
                 secondary_controller = PID(
                     kp = 0.32,
@@ -335,7 +332,7 @@ class DifferentialDrive:
                     tolerance = 1,
                     tolerance_count = 3
                 )
-                    # Secondary controller to keep encoder values in sync
+            # Secondary controller to keep encoder values in sync
             if secondary_controller is None:
                 secondary_controller = PID(
                     kp = 0.25,

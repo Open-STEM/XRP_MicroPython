@@ -15,13 +15,6 @@ class Buzzer:
     Supports natural notes, sharps, and flats.
     """
 
-    # Duration constants (based on a default 120 BPM tempo)
-    WHOLE = 4
-    HALF = 2
-    QUARTER = 1
-    EIGHTH = 0.5
-    SIXTEENTH = 0.25
-
     # Note names to semitone offset (semitones from C4 = 0)
     NOTE_OFFSETS = {
         # Natural notes

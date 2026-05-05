@@ -1,4 +1,3 @@
-from lib.XRPLib.buzzer import Buzzer
 from XRPLib.defaults import *
 import time
 
@@ -7,9 +6,6 @@ import time
     to play individual notes, custom songs, and how to make the robot 
     play music while it is moving.
 """
-
-# Get the singleton instance of the buzzer
-buzzer = Buzzer.get_default_buzzer()
 
 def simple_scale():
     """Plays a basic C major scale."""
