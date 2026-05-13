@@ -1,9 +1,9 @@
 from .motor import SinglePWMMotor, DualPWMMotor
 from .encoder import Encoder
-from machine import Timer
+from machine import Timer, Pin
 from .controller import Controller
 from .pid import PID
-import sys
+from sys import implementation
 
 class EncodedMotor:
 
@@ -25,10 +25,10 @@ class EncodedMotor:
         :type index: int
         """
         
-        if "RP2350" in sys.implementation._machine:
-            MotorImplementation = DualPWMMotor
-        else:
+        if "Beta" in implementation._machine:
             MotorImplementation = SinglePWMMotor
+        else:
+            MotorImplementation = DualPWMMotor
 
         if index == 1:
             if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
@@ -51,7 +51,7 @@ class EncodedMotor:
                     Encoder(2, "MOTOR_3_ENCODER_A", "MOTOR_3_ENCODER_B")
                 )
             motor = cls._DEFAULT_MOTOR_THREE_INSTANCE
-        elif index == 4:
+        elif index == 4 and hasattr(Pin.board, "MOTOR_4_IN_1"):
             if cls._DEFAULT_MOTOR_FOUR_INSTANCE is None:
                 cls._DEFAULT_MOTOR_FOUR_INSTANCE = cls(
                     MotorImplementation("MOTOR_4_IN_1", "MOTOR_4_IN_2"),
@@ -70,12 +70,21 @@ class EncodedMotor:
         self.brake_at_zero = False
 
         self.target_speed = None
-        self.DEFAULT_SPEED_CONTROLLER = PID(
-            kp=0.035,
-            ki=0.03,
-            kd=0,
-            max_integral=50
-        )
+        if "NanoXRP" in implementation._machine:
+            self.DEFAULT_SPEED_CONTROLLER = PID(
+                kp=0.015,
+                ki=0.06,
+                kd=0,
+                max_integral=1/0.06
+            )
+        else:
+            self.DEFAULT_SPEED_CONTROLLER = PID(
+                kp=0.035,
+                ki=0.03,
+                kd=0,
+                max_integral=50
+            )
+
         self.speedController = self.DEFAULT_SPEED_CONTROLLER
         self.prev_position = 0
         self.speed = 0

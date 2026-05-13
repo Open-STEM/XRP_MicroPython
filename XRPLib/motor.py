@@ -1,4 +1,5 @@
 from machine import Pin, PWM
+from sys import implementation
 
 class SinglePWMMotor:
 
@@ -55,7 +56,12 @@ class DualPWMMotor:
     """
 
     def __init__(self, in1_pwm_forward: int|str, in2_pwm_backward: int|str, flip_dir:bool=False):
-        self.flip_dir = flip_dir
+
+        if "NanoXRP" in implementation._machine:
+            self.flip_dir = not flip_dir
+        else:
+            self.flip_dir = flip_dir
+
         self._MAX_PWM = 65535 # Motor holds when actually at full power
 
         self._in1ForwardPin = PWM(Pin(in1_pwm_forward, Pin.OUT))

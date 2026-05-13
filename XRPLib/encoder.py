@@ -3,13 +3,20 @@
 import machine
 import rp2
 import time
+from sys import implementation
+import re
 
 class Encoder:
-    _gear_ratio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
-    _counts_per_motor_shaft_revolution = 12
+    if "NanoXRP" in implementation._machine:
+        _gear_ratio = (68/1)
+        _counts_per_motor_shaft_revolution = 12
+    else:
+        _gear_ratio = (30/14) * (28/16) * (36/9) * (26/8) # 48.75
+        _counts_per_motor_shaft_revolution = 12
+
     resolution = _counts_per_motor_shaft_revolution * _gear_ratio # 585
     
-    def __init__(self, index, encAPin: int|str, encBPin: int|str):
+    def __init__(self, index, encAPin: int|str, encBPin: int|str, flip_dir:bool=False):
         """
         Uses the on board PIO State Machine to keep track of encoder positions. 
         Only 4 encoders can be instantiated this way.
@@ -17,18 +24,43 @@ class Encoder:
         :param index: The index of the state machine to be used, indexed 0-3.
         :type index: int
         :param encAPin: The pin the left reflectance sensor is connected to
-        :type encAPin: int
+        :type encAPin: int/str
         :param encBPin: The pin the right reflectance sensor is connected to
-        :type encBPin: int
+        :type encBPin: int/str
         """
-        # if(abs(encAPin - encBPin) != 1):
-        #     raise Exception("Encoder pins must be successive!")
-        basePin = machine.Pin(min(encAPin, encBPin), machine.Pin.IN)
-        nextPin = machine.Pin(max(encAPin, encBPin), machine.Pin.IN)
+        
+        pA = machine.Pin(encAPin, machine.Pin.IN)
+        pB = machine.Pin(encBPin, machine.Pin.IN)
+        
+        # PIO in_base requires successive pins. We must ensure basePin is the lower GPIO number.
+        # We extract the GPIO number from the Pin object to perform a reliable numeric comparison.
+        if self._get_pin_id(pA) > self._get_pin_id(pB):
+            basePin = pB
+            nextPin = pA
+        else:
+            basePin = pA
+            nextPin = pB
+
         self.sm = rp2.StateMachine(index, self._encoder, in_base=basePin)
         self.reset_encoder_position()
         self.sm.active(1)
-    
+        self.flip_dir = flip_dir
+
+    def _get_pin_id(self, pin):
+        """
+        Helper to extract the numeric GPIO ID from a machine.Pin object.
+        Works across different MicroPython port string representations.
+        """
+        # String representation is usually "Pin(GPIO16, mode=IN)" or "Pin(16)"
+        # We look for the numeric part associated with the GPIO.
+        s = str(pin)
+        match = re.search(r'(\d+)', s)
+        if match:
+            return int(match.group(1))
+        # Fallback to a basic hash or id if regex fails, though 
+        # on RP2/MicroPython, the numeric ID is standard.
+        return id(pin)
+
     def reset_encoder_position(self):
         """
         Resets the encoder position to 0
@@ -52,6 +84,9 @@ class Encoder:
         counts = self.sm.get()
         if(counts > 2**31):
             counts -= 2**32
+        if self.flip_dir:
+            counts *= -1
+        
         return counts
     
     def get_position(self):

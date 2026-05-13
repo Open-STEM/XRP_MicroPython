@@ -1,3 +1,4 @@
+from machine import Pin
 import sys
 """
 A simple file for shutting off all of the motors after a program gets interrupted from the REPL.
@@ -6,8 +7,13 @@ Run this file after interrupting a program to stop the robot by running "import 
 
 def reset_motors():
     from XRPLib.encoded_motor import EncodedMotor
+
+    number_of_motors = 3
+    if hasattr(Pin.board, "MOTOR_4_IN_1"):
+        number_of_motors = 4
+
     # using the EncodedMotor since the default drivetrain uses the IMU and takes 3 seconds to init
-    for i in range(4):
+    for i in range(number_of_motors):
         motor = EncodedMotor.get_default_encoded_motor(i+1)
         motor.set_speed(0)
         motor.reset_encoder_position()
@@ -19,6 +25,15 @@ def reset_led():
     try:
         # Turn off the RGB LED for boards that have it
         Board.get_default_board().set_rgb_led(0, 0, 0)
+    except:
+        pass
+
+def reset_buzzer():
+    from XRPLib.buzzer import Buzzer
+    # Turn off the buzzer
+    try:
+        # Turn off the Buzzer if the board has one
+        Buzzer.get_default_buzzer().reset_buzzer()
     except:
         pass
 
@@ -42,6 +57,7 @@ def reset_hard():
     reset_gamepad()
     reset_motors()
     reset_led()
+    reset_buzzer()
     reset_servos()
     reset_webserver()
 
@@ -54,9 +70,14 @@ if "XRPLib.encoded_motor" in sys.modules:
 if "XRPLib.board" in sys.modules:
     reset_led()
 
+if "XRPLib.buzzer" in sys.modules:
+    reset_buzzer()
+
 if "XRPLib.servo" in sys.modules:
     reset_servos()
 
 if "XRPLib.webserver" in sys.modules:
     reset_webserver()
 
+if "NanoXRP" in sys.implementation._machine:
+    Pin("BOARD_VIN_MEASURE", Pin.OUT)
