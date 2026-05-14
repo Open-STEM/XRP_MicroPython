@@ -5,6 +5,7 @@ from .pid import PID
 from .timeout import Timeout
 import time
 import math
+from sys import implementation
 
 class DifferentialDrive:
 
@@ -56,8 +57,6 @@ class DifferentialDrive:
         self.turning = False
 
         if self.imu:
-            # if the IMU is initialized, then create a PID controller that can be used
-            # to maintain a constant heading when driving
             self.heading_pid = PID( kp = 0.075, kd=0.001, )
 
     def set_effort(self, left_effort: float, right_effort: float) -> None:
@@ -198,24 +197,40 @@ class DifferentialDrive:
         starting_left = self.get_left_encoder_position()
         starting_right = self.get_right_encoder_position()
 
+        if "NanoXRP" in implementation._machine:
+            if main_controller is None:
+                main_controller = PID(
+                    kp = 0.32,
+                    kd = 0.0184,
+                    min_output = 0.1,
+                    max_output = max_effort,
+                    tolerance = 0.25,
+                    tolerance_count = 3,
+                )
 
-        if main_controller is None:
-            main_controller = PID(
-                kp = 0.1,
-                ki = 0.04,
-                kd = 0.04,
-                min_output = 0.3,
-                max_output = max_effort,
-                max_integral = 10,
-                tolerance = 0.25,
-                tolerance_count = 3,
-            )
+            # Secondary controller to keep encoder values in sync
+            if secondary_controller is None:
+                secondary_controller = PID(
+                    kp = 0.012, kd=0.00129,
+                )
+        else:
+            if main_controller is None:
+                main_controller = PID(
+                    kp = 0.1,
+                    ki = 0.04,
+                    kd = 0.04,
+                    min_output = 0.3,
+                    max_output = max_effort,
+                    max_integral = 10,
+                    tolerance = 0.25,
+                    tolerance_count = 3,
+                )
 
-        # Secondary controller to keep encoder values in sync
-        if secondary_controller is None:
-            secondary_controller = PID(
-                kp = 0.075, kd=0.001,
-            )
+            # Secondary controller to keep encoder values in sync
+            if secondary_controller is None:
+                secondary_controller = PID(
+                    kp = 0.075, kd=0.001,
+                )
 
         if self.imu is not None:
             # record current heading to maintain it
@@ -284,28 +299,44 @@ class DifferentialDrive:
         time_out = Timeout(timeout)
         starting_left = self.get_left_encoder_position()
         starting_right = self.get_right_encoder_position()
-
-        if main_controller is None:
-            main_controller = PID(
-                # kp = 0.2,
-                # ki = 0.004,
-                # kd = 0.0036,
-                kd = 0.0036 + 0.0034 * (max(max_effort, 0.5) - 0.5) * 2,
-                kp = 0.2,
-                ki = 0.004,
-                #kd = 0.007,
-                min_output = 0.1,
-                max_output = max_effort,
-                max_integral = 30,
-                tolerance = 1,
-                tolerance_count = 3
-            )
-
-        # Secondary controller to keep encoder values in sync
-        if secondary_controller is None:
-            secondary_controller = PID(
-                kp = 0.25,
-            )
+                
+        if "NanoXRP" in implementation._machine:
+            if main_controller is None:
+                main_controller = PID(
+                    kp = 0.016,
+                    kd = 0.0008,
+                    min_output = 0.05,
+                    max_output = max_effort,
+                    tolerance = 1,
+                    tolerance_count = 3
+                )
+            # Secondary controller to keep encoder values in sync
+            if secondary_controller is None:
+                secondary_controller = PID(
+                    kp = 0.32,
+                    kd = 0.0184,
+                )
+        else:
+            if main_controller is None:
+                main_controller = PID(
+                    # kp = 0.2,
+                    # ki = 0.004,
+                    # kd = 0.0036,
+                    kd = 0.0036 + 0.0034 * (max(max_effort, 0.5) - 0.5) * 2,
+                    kp = 0.2,
+                    ki = 0.004,
+                    #kd = 0.007,
+                    min_output = 0.1,
+                    max_output = max_effort,
+                    max_integral = 30,
+                    tolerance = 1,
+                    tolerance_count = 3
+                )
+            # Secondary controller to keep encoder values in sync
+            if secondary_controller is None:
+                secondary_controller = PID(
+                    kp = 0.25,
+                )
  
         if use_imu and (self.imu is not None):
             turn_degrees += self.imu.get_yaw()

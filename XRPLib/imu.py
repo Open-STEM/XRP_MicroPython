@@ -11,6 +11,7 @@ except (TypeError, ModuleNotFoundError):
     # Import wrapped in a try/except so that autodoc generation can process properly
     pass
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
+from sys import implementation
 import time, math
 
 class IMU():
@@ -29,6 +30,8 @@ class IMU():
         return cls._DEFAULT_IMU_INSTANCE
 
     def __init__(self, scl_pin: int|str = "I2C_SCL_1", sda_pin: int|str = "I2C_SDA_1", addr=LSM_ADDR_PRIMARY):
+        self._is_nanoxrp = "NanoXRP" in implementation._machine
+
         # I2C values
         self.i2c = I2C(id=1, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=400000)
         self.addr = addr
@@ -548,9 +551,16 @@ class IMU():
     def _update_imu_readings(self):
         # Called every tick through a callback timer
         self.get_gyro_rates()
-        delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
-        delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
-        delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
+
+        # Flip and swap for NanoXRP
+        if self._is_nanoxrp:
+            delta_pitch = self.irq_v[1][1] / 1000 / self.timer_frequency
+            delta_roll = self.irq_v[1][0] / 1000 / self.timer_frequency
+            delta_yaw = -1 * self.irq_v[1][2] / 1000 / self.timer_frequency
+        else:
+            delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
+            delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
+            delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
 
         state = disable_irq()
         self.running_pitch += delta_pitch
