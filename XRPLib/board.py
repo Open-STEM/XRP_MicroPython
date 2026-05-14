@@ -46,7 +46,11 @@ class Board:
         :return: Returns true if the batteries are connected and powering the motors, false otherwise
         :rytpe: bool
         """
-        return self.on_switch.read_u16() > 20000
+        if "NanoXRP" in sys.implementation._machine:
+            return True
+        
+        threshold_voltage = 4.272
+        return self.get_battery_voltage() > threshold_voltage
 
     def is_button_pressed(self) -> bool:
         """
@@ -125,3 +129,27 @@ class Board:
             self.rgb_led.write()
         else:
             raise NotImplementedError("Board.set_rgb_led not implemented for the XRP Beta")
+
+    def get_battery_voltage(self, vin_pin="BOARD_VIN_MEASURE") -> float:
+        """
+        Returns the current battery voltage in volts.
+
+        :param vin_pin: The pin the on/off switch is connected to
+        :type vin_pin: int
+        :return: Battery voltage in volts
+        :rtype: float
+        """
+
+        if "NanoXRP" in sys.implementation._machine:
+            # VIN pin on NanoXRP is also used for RM2.
+            self.on_switch = ADC(Pin(vin_pin))
+
+            battery_voltage = self.on_switch.read_u16() * (4.09 / 26000.0)
+
+            Pin(vin_pin, Pin.OUT)
+        else:
+            # RP2040 ADC is 0-4095, MicroPython scales it to 0-65535.
+            # The voltage divider is calibrated to a 14V full-scale reading.
+            battery_voltage = self.on_switch.read_u16() / ((1024 * 64) / 14)
+
+        return battery_voltage
