@@ -92,6 +92,3 @@ if "XRPLib.servo" in sys.modules:
 
 if "XRPLib.webserver" in sys.modules:
     reset_webserver()
-
-if "NanoXRP" in sys.implementation._machine:
-    Pin("BOARD_VIN_MEASURE", Pin.OUT)
