@@ -2,6 +2,7 @@
     "urls": [
       ["XRPLib/__init__.py", "github:Open-STEM/XRP_Micropython/XRPLib/__init__.py"],
       ["XRPLib/board.py", "github:Open-STEM/XRP_Micropython/XRPLib/board.py"],
+      ["XRPLib/buzzer.py", "github:Open-STEM/XRP_Micropython/XRPLib/buzzer.py"],
       ["XRPLib/controller.py", "github:Open-STEM/XRP_Micropython/XRPLib/controller.py"],
       ["XRPLib/defaults.py", "github:Open-STEM/XRP_Micropython/XRPLib/defaults.py"],
       ["XRPLib/differential_drive.py", "github:Open-STEM/XRP_Micropython/XRPLib/differential_drive.py"],
@@ -20,6 +21,7 @@
       ["XRPLib/timeout.py", "github:Open-STEM/XRP_Micropython/XRPLib/timeout.py"],
       ["XRPLib/webserver.py", "github:Open-STEM/XRP_Micropython/XRPLib/webserver.py"],
       ["XRPExamples/__init__.py", "github:Open-STEM/XRP_Micropython/XRPExamples/__init__.py"],
+      ["XRPExamples/buzzer_examples.py", "github:Open-STEM/XRP_Micropython/XRPExamples/buzzer_examples.py"],
       ["XRPExamples/drive_examples.py", "github:Open-STEM/XRP_Micropython/XRPExamples/drive_examples.py"],
       ["XRPExamples/gamepad_example.blocks", "github:Open-STEM/XRP_Micropython/XRPExamples/gamepad_example.blocks"],
       ["XRPExamples/installation_verification.py", "github:Open-STEM/XRP_Micropython/XRPExamples/installation_verification.py"],
@@ -30,5 +32,5 @@
     "deps": [
       ["github:pimoroni/phew", "latest"]
     ],
-    "version": "2.1.3"
+    "version": "2.1.4"
   }
