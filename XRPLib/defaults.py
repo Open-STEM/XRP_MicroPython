@@ -10,7 +10,6 @@ from .servo import Servo
 from .webserver import Webserver
 from .buzzer import Buzzer
 from machine import Pin
-from sys import implementation
 
 """
 A simple file that constructs all of the default objects for the XRP robot
@@ -24,12 +23,7 @@ if hasattr(Pin.board, "MOTOR_4_IN_1"):
     motor_four = EncodedMotor.get_default_encoded_motor(index=4)
 
 imu = IMU.get_default_imu()
-
-if "NanoXRP" in implementation._machine:
-    drivetrain = DifferentialDrive(left_motor, right_motor, imu, wheel_diam=3.46, wheel_track=7.8)
-else:
-    drivetrain = DifferentialDrive.get_default_differential_drive()
-
+drivetrain = DifferentialDrive.get_default_differential_drive()
 rangefinder = Rangefinder.get_default_rangefinder()
 reflectance = Reflectance.get_default_reflectance()
 servo_one = Servo.get_default_servo(index=1)

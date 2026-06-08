@@ -27,7 +27,7 @@ class DifferentialDrive:
             
         return cls._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE
 
-    def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, imu: IMU = None, wheel_diam:float = 6.0, wheel_track:float = 15.5):
+    def __init__(self, left_motor: EncodedMotor, right_motor: EncodedMotor, imu: IMU = None, wheel_diam:float = 0.0, wheel_track:float = 0.0):
         """
         A Differential Drive class designed for the XRP two-wheeled drive robot.
 
@@ -48,8 +48,18 @@ class DifferentialDrive:
         self.imu = imu
 
         self.brake_at_zero_power = False
-        self.wheel_diam = wheel_diam
-        self.track_width = wheel_track
+
+        if (wheel_diam == 0.0):
+            if "NanoXRP" in implementation._machine:
+                self.wheel_diam = 3.46
+            else:
+                self.wheel_diam = 6.0
+
+        if (wheel_track == 0.0):
+            if "NanoXRP" in implementation._machine:
+                self.wheel_track = 7.8
+            else:
+                self.wheel_track = 15.5
 
         self.heading_pid = None
         self.current_heading = None
