@@ -84,7 +84,7 @@ if "XRPLib.encoded_motor" in sys.modules:
 if "XRPLib.board" in sys.modules:
     reset_led()
 
-if "XRPLib.buzzer" in sys.modules:
+if hasattr(Pin.board, "BOARD_BUZZER"):
     reset_buzzer()
 
 if "XRPLib.servo" in sys.modules:
