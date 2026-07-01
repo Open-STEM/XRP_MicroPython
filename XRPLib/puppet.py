@@ -232,7 +232,7 @@ class Puppet:
         """
         if self._poll_timer_running:
             self._poll_timer.deinit()
-            kbd_intr(03) #start watching for ctrl-c again
+            kbd_intr(3) #start watching for ctrl-c again 
             self._poll_timer_running = False
         if self._stdin_poll is not None:
             try:
@@ -247,13 +247,32 @@ class Puppet:
         if self._transport_type == 'USB_STDIO':
             self._start_poll_timer()
 
+    def _clear_custom_variables(self):
+        """
+        Remove all custom variables from the registry.
+        Standard variables (IDs 1-37) are retained.
+        """
+        custom_names = [name for name in self._variables if name not in _STANDARD_VAR_IDS]
+        for name in custom_names:
+            var_id = self._variables[name][0]
+            del self._variables[name]
+            if var_id in self._variable_ids:
+                del self._variable_ids[var_id]
+        self._next_var_id = FIRST_CUSTOM_VAR_ID
+        self._start_update_timer()
+
     def stop(self):
         """
-        Stop the STDIO polling.
+        Stop the STDIO polling and clear custom variables from the table.
+
+        Removes all user-defined variables (IDs 38+) from the registry and
+        resets the custom variable ID pool. Standard variables ($gamepad.*,
+        $imu.*, $encoder.*, etc.) are retained.
         """
         if self._transport_type == 'USB_STDIO':
             self._stop_poll_timer()
-        
+        self._clear_custom_variables()
+
 
     def _data_callback(self, data):
         """
