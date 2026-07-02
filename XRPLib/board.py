@@ -30,6 +30,7 @@ class Board:
         self.on_switch = ADC(Pin(vin_pin))
         
         self.button = Pin(button_pin, Pin.IN, Pin.PULL_UP)
+        time.sleep(.01) # give some time for the pull up to get to the proper voltage, otherwise the button could read as pressed
 
         self.led = Pin(led_pin, Pin.OUT)
 
