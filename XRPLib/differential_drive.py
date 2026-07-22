@@ -49,17 +49,23 @@ class DifferentialDrive:
 
         self.brake_at_zero_power = False
 
-        if (wheel_diam == 0.0):
+        # Resolve hardware defaults when the caller leaves the arg at its 0.0 sentinel;
+        # honor any explicit non-zero value that is passed in.
+        if wheel_diam == 0.0:
             if "NanoXRP" in implementation._machine:
                 self.wheel_diam = 3.46
             else:
                 self.wheel_diam = 6.0
+        else:
+            self.wheel_diam = wheel_diam
 
-        if (wheel_track == 0.0):
+        if wheel_track == 0.0:
             if "NanoXRP" in implementation._machine:
                 self.wheel_track = 7.8
             else:
                 self.wheel_track = 15.5
+        else:
+            self.wheel_track = wheel_track
 
         self.heading_pid = None
         self.current_heading = None
@@ -267,7 +273,7 @@ class DifferentialDrive:
                 # record current heading to maintain it
                 current_heading = self.imu.get_yaw()
             else:
-                current_heading = ((right_delta-left_delta)/2)*360/(self.track_width*math.pi)
+                current_heading = ((right_delta-left_delta)/2)*360/(self.wheel_track*math.pi)
 
             headingCorrection = secondary_controller.update(initial_heading - current_heading)
             
@@ -363,7 +369,7 @@ class DifferentialDrive:
                 turn_error = turn_degrees - self.imu.get_yaw()
             else:
                 # calculate turn error (in degrees) from the encoder counts
-                turn_error = turn_degrees - ((right_delta-left_delta)/2)*360/(self.track_width*math.pi)
+                turn_error = turn_degrees - ((right_delta-left_delta)/2)*360/(self.wheel_track*math.pi)
 
             # Pass the turn error to the main controller to get a turn speed
             turn_speed = main_controller.update(turn_error)
