@@ -214,7 +214,8 @@ class DifferentialDrive:
         return self.right_motor.get_position()*math.pi*self.wheel_diam
 
 
-    def _move(self, distance_target: float, heading_target: float, max_effort: float, min_effort: float, timeout: float, use_imu: bool) -> bool:
+    def _move(self, distance_target: float, heading_target: float, max_effort: float, min_effort: float, timeout: float, use_imu: bool,
+              distance_controller: Controller = None, heading_controller: Controller = None) -> bool:
         """
         Shared translation/rotation controller for straight() and turn().
         """
@@ -223,40 +224,48 @@ class DifferentialDrive:
             if min_effort is None:
                 min_effort = 0.05
 
-            distance_controller = PID(
-                kp = 0.32,
-                kd = 0.0184,
-                max_output = max_effort,
-                tolerance = 0.25,
-                tolerance_count = 3,
-            )
+            if distance_controller is None:
+                distance_controller = PID(
+                    kp = 0.32,
+                    kd = 0.0184,
+                    max_output = max_effort,
+                    tolerance = 0.25,
+                    tolerance_count = 3,
+                )
 
-            heading_controller = PID(
-                kp = 0.016,
-                kd = 0.0008,
-                max_output = max_effort,
-                tolerance = 1,
-                tolerance_count = 3,
-            )
+            if heading_controller is None:
+                heading_controller = PID(
+                    kp = 0.016,
+                    kd = 0.0008,
+                    max_output = max_effort,
+                    tolerance = 1,
+                    tolerance_count = 3,
+                )
         else:
             if min_effort is None:
                 min_effort = 0.14
 
-            distance_controller = PID(
-                kp = 3.5,
-                kd = 0.1,
-                max_output = max_effort,
-                tolerance = 0.1,
-                tolerance_count = 10,
-            )
+            if distance_controller is None:
+                distance_controller = PID(
+                    kp = 3.5,
+                    kd = 0.1,
+                    max_output = max_effort,
+                    tolerance = 0.1,
+                    tolerance_count = 10,
+                )
 
-            heading_controller = PID(
-                kp = 0.064,
-                kd = 0.0045,
-                max_output = max_effort,
-                tolerance = 0.5,
-                tolerance_count = 10,
-            )
+            if heading_controller is None:
+                heading_controller = PID(
+                    kp = 0.064,
+                    kd = 0.0045,
+                    max_output = max_effort,
+                    tolerance = 0.5,
+                    tolerance_count = 10,
+                )
+
+        # a Controller that carries no tolerance keeps the effort floor on for the whole move
+        distance_tolerance = getattr(distance_controller, "tolerance", 0)
+        heading_tolerance = getattr(heading_controller, "tolerance", 0)
 
         min_effort = min(abs(min_effort), max_effort)
 
@@ -291,7 +300,7 @@ class DifferentialDrive:
             right = translation + rotation
 
             # only hold the effort floor while an axis is still outside its tolerance
-            correcting = abs(distance_error) > distance_controller.tolerance or abs(heading_error) > heading_controller.tolerance
+            correcting = abs(distance_error) > distance_tolerance or abs(heading_error) > heading_tolerance
 
             effort = max(abs(left), abs(right))
             if effort > max_effort:
@@ -336,7 +345,7 @@ class DifferentialDrive:
             max_effort *= -1
             distance *= -1
 
-        return self._move(distance, turn_degrees, max_effort, min_effort, timeout, True)
+        return self._move(distance, turn_degrees, max_effort, min_effort, timeout, True, main_controller, secondary_controller)
 
 
     def turn(self, turn_degrees: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True, min_effort: float = None) -> bool:
@@ -368,4 +377,4 @@ class DifferentialDrive:
             max_effort = -max_effort
             turn_degrees = -turn_degrees
 
-        return self._move(distance, turn_degrees, max_effort, min_effort, timeout, use_imu)
+        return self._move(distance, turn_degrees, max_effort, min_effort, timeout, use_imu, secondary_controller, main_controller)
