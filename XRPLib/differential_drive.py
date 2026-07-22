@@ -222,24 +222,24 @@ class DifferentialDrive:
 
         if "NanoXRP" in implementation._machine:
             if min_effort is None:
-                min_effort = 0.05
+                min_effort = 0.10   
 
             if distance_controller is None:
                 distance_controller = PID(
                     kp = 0.32,
                     kd = 0.0184,
                     max_output = max_effort,
-                    tolerance = 0.25,
-                    tolerance_count = 3,
+                    tolerance = 0.2,
+                    tolerance_count = 10,
                 )
 
             if heading_controller is None:
                 heading_controller = PID(
-                    kp = 0.016,
-                    kd = 0.0008,
+                    kp = 0.014,
+                    kd = 0.001,
                     max_output = max_effort,
                     tolerance = 1,
-                    tolerance_count = 3,
+                    tolerance_count = 10,
                 )
         else:
             if min_effort is None:
