@@ -39,9 +39,13 @@ def reset_buzzer():
 
 def reset_servos():
     from XRPLib.servo import Servo
-    # Turn off both Servos
+    # Turn off every Servo the board has
     Servo.get_default_servo(1).free()
     Servo.get_default_servo(2).free()
+    if hasattr(Pin.board, "SERVO_3"):
+        Servo.get_default_servo(3).free()
+    if hasattr(Pin.board, "SERVO_4"):
+        Servo.get_default_servo(4).free()
 
 def reset_webserver():
     from XRPLib.webserver import Webserver
