@@ -247,7 +247,7 @@ class IMU():
         self.irq_v[0][1] = self._raw_to_mg(raw_bytes[2:4]) - self.acc_offsets[1]
         self.irq_v[0][2] = self._raw_to_mg(raw_bytes[4:6]) - self.acc_offsets[2]
 
-        return self.irq_v[0]
+        return list(self.irq_v[0])
 
     def get_gyro_x_rate(self):
         """
@@ -292,14 +292,10 @@ class IMU():
         self.irq_v[1][1] = self._raw_to_mdps(raw_bytes[2:4]) - self.gyro_offsets[1]
         self.irq_v[1][2] = self._raw_to_mdps(raw_bytes[4:6]) - self.gyro_offsets[2]
 
-        return self.irq_v[1]
+        return list(self.irq_v[1])
 
-    def get_acc_gyro_rates(self):
-        """
-            Get the accelerometer and gyroscope values in mg and mdps in the form of a 2D array.
-            The first row is the acceleration values, the second row is the gyro values.
-            The order of the values is x, y, z.
-        """
+    def _read_acc_gyro(self):
+        # Updates irq_v in place. The timer uses this so that it allocates nothing per tick.
         # Burst read data registers
         raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 12)
 
@@ -311,7 +307,15 @@ class IMU():
         self.irq_v[1][1] = self._raw_to_mdps(raw_bytes[2:4]) - self.gyro_offsets[1]
         self.irq_v[1][2] = self._raw_to_mdps(raw_bytes[4:6]) - self.gyro_offsets[2]
 
-        return self.irq_v
+    def get_acc_gyro_rates(self):
+        """
+            Get the accelerometer and gyroscope values in mg and mdps in the form of a 2D array.
+            The first row is the acceleration values, the second row is the gyro values.
+            The order of the values is x, y, z.
+        """
+        self._read_acc_gyro()
+
+        return [list(self.irq_v[0]), list(self.irq_v[1])]
     
     def get_pitch(self):
         """
@@ -550,7 +554,7 @@ class IMU():
 
     def _update_imu_readings(self):
         # Called every tick through a callback timer
-        self.get_gyro_rates()
+        self._read_acc_gyro()
 
         # Flip and swap for NanoXRP
         if self._is_nanoxrp:
