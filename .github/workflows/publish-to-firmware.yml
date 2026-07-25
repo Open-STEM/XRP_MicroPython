@@ -1,0 +1,79 @@
+name: Publish XRPLib to Firmware
+
+# When a release is published here, assemble the released XRPLib as a new versioned
+# bundle in Open-STEM/XRP_Firmware and open a pull request against it for review.
+#
+# Requires a repository secret FIRMWARE_TOKEN: a fine-grained PAT (or GitHub App token)
+# with Contents: write and Pull requests: write on Open-STEM/XRP_Firmware. The default
+# GITHUB_TOKEN cannot push to or open PRs on another repository.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "XRPLib version to publish (e.g. 2.2.4). Defaults to the release tag."
+        required: false
+
+env:
+  FIRMWARE_REPO_SLUG: Open-STEM/XRP_Firmware
+
+jobs:
+  publish:
+    name: Add version to XRP_Firmware
+    runs-on: ubuntu-latest
+    # Skip pre-releases; only full releases become firmware versions.
+    if: ${{ github.event_name == 'workflow_dispatch' || !github.event.release.prerelease }}
+
+    steps:
+      - name: Resolve version
+        id: version
+        run: |
+          RAW="${{ github.event.inputs.version || github.event.release.tag_name }}"
+          if [ -z "$RAW" ]; then
+            echo "No version available from input or release tag." >&2
+            exit 1
+          fi
+          # Strip a leading 'v' (v2.2.4 -> 2.2.4)
+          VER="${RAW#v}"
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "Publishing XRPLib $VER"
+
+      - name: Checkout XRP_MicroPython at the released version
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+          path: source
+
+      - name: Checkout XRP_Firmware
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.FIRMWARE_REPO_SLUG }}
+          token: ${{ secrets.FIRMWARE_TOKEN }}
+          path: firmware
+
+      - name: Assemble version bundle
+        env:
+          XRPLIB_VERSION: ${{ steps.version.outputs.version }}
+          SRC_REPO: source
+          FIRMWARE_REPO: firmware
+        run: python source/.github/scripts/build_xrplib_version.py
+
+      - name: Open pull request against XRP_Firmware
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: firmware
+          token: ${{ secrets.FIRMWARE_TOKEN }}
+          add-paths: boards/XRPLib
+          branch: xrplib-${{ steps.version.outputs.version }}
+          delete-branch: true
+          commit-message: "Add XRPLib ${{ steps.version.outputs.version }} from XRP_MicroPython release"
+          title: "Add XRPLib ${{ steps.version.outputs.version }}"
+          body: |
+            Automated from the XRP_MicroPython release
+            [${{ github.event.release.tag_name || steps.version.outputs.version }}](${{ github.event.release.html_url }}).
+
+            Adds `boards/XRPLib/${{ steps.version.outputs.version }}/` (XRPLib + XRPExamples
+            from the release, `ble`/`phew` carried forward from the previous version) with a
+            generated `files.json`, and registers the version in `boards/XRPLib/index.json`.
