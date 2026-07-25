@@ -1,5 +1,6 @@
 from .encoded_motor import EncodedMotor
 from .imu import IMU
+from .board import Board
 from .controller import Controller
 from .pid import PID
 from .timeout import Timeout
@@ -67,6 +68,16 @@ class DifferentialDrive:
         else:
             self.wheel_track = wheel_track
 
+        # Effort is raw PWM duty, so torque scales with pack voltage. Gains are tuned against
+        # nominal_voltage and voltage_scale corrects the duty for the pack actually installed.
+        if "NanoXRP" in implementation._machine:
+            self.nominal_voltage = 4.2
+        else:
+            self.nominal_voltage = 6.0
+
+        self.voltage_scale = 1.0
+        self.update_voltage_compensation()
+
         self.heading_pid = None
         self.current_heading = None
         self.reset_heading = True
@@ -74,6 +85,23 @@ class DifferentialDrive:
 
         if self.imu:
             self.heading_pid = PID( kp = 0.075, kd=0.001, )
+
+    def update_voltage_compensation(self) -> float:
+        """
+        Re-measures the battery and updates the effort scale applied to straight() and turn().
+        Called at construction; call it again after a battery swap or a long run.
+
+        :return: The effort scale now in use
+        :rtype: float
+        """
+        if self.nominal_voltage is None:
+            return self.voltage_scale
+
+        board = Board.get_default_board()
+        voltage = sum(board.get_battery_voltage() for _ in range(8)) / 8
+        self.voltage_scale = min(max(self.nominal_voltage / max(voltage, 3.5), 0.7), 1.6)
+
+        return self.voltage_scale
 
     def set_effort(self, left_effort: float, right_effort: float) -> None:
         """
@@ -186,7 +214,110 @@ class DifferentialDrive:
         return self.right_motor.get_position()*math.pi*self.wheel_diam
 
 
-    def straight(self, distance: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None) -> bool:
+    def _move(self, distance_target: float, heading_target: float, max_effort: float, min_effort: float, timeout: float, use_imu: bool,
+              distance_controller: Controller = None, heading_controller: Controller = None) -> bool:
+        """
+        Shared translation/rotation controller for straight() and turn().
+        """
+
+        if "NanoXRP" in implementation._machine:
+            if min_effort is None:
+                min_effort = 0.10   
+
+            if distance_controller is None:
+                distance_controller = PID(
+                    kp = 0.32,
+                    kd = 0.0184,
+                    max_output = max_effort,
+                    tolerance = 0.2,
+                    tolerance_count = 10,
+                )
+
+            if heading_controller is None:
+                heading_controller = PID(
+                    kp = 0.014,
+                    kd = 0.001,
+                    max_output = max_effort,
+                    tolerance = 1,
+                    tolerance_count = 10,
+                )
+        else:
+            if min_effort is None:
+                min_effort = 0.14
+
+            if distance_controller is None:
+                distance_controller = PID(
+                    kp = 3.5,
+                    kd = 0.1,
+                    max_output = max_effort,
+                    tolerance = 0.1,
+                    tolerance_count = 10,
+                )
+
+            if heading_controller is None:
+                heading_controller = PID(
+                    kp = 0.064,
+                    kd = 0.0045,
+                    max_output = max_effort,
+                    tolerance = 0.5,
+                    tolerance_count = 10,
+                )
+
+        # a Controller that carries no tolerance keeps the effort floor on for the whole move
+        distance_tolerance = getattr(distance_controller, "tolerance", 0)
+        heading_tolerance = getattr(heading_controller, "tolerance", 0)
+
+        min_effort = min(abs(min_effort), max_effort)
+
+        time_out = Timeout(timeout)
+        starting_left = self.get_left_encoder_position()
+        starting_right = self.get_right_encoder_position()
+        use_imu = use_imu and (self.imu is not None)
+        starting_heading = self.imu.get_yaw() if use_imu else 0
+
+        while True:
+
+            left_delta = self.get_left_encoder_position() - starting_left
+            right_delta = self.get_right_encoder_position() - starting_right
+
+            if use_imu:
+                heading = self.imu.get_yaw() - starting_heading
+            else:
+                heading = ((right_delta - left_delta) / 2) * 360 / (self.wheel_track * math.pi)
+
+            distance_error = distance_target - (left_delta + right_delta) / 2
+            heading_error = heading_target - heading
+
+            translation = distance_controller.update(distance_error)
+            rotation = heading_controller.update(heading_error)
+
+            if (distance_controller.is_done() or distance_target == 0) and (heading_controller.is_done() or heading_target == 0):
+                break
+            if (time_out.is_done()):
+                break
+
+            left = translation - rotation
+            right = translation + rotation
+
+            # only hold the effort floor while an axis is still outside its tolerance
+            correcting = abs(distance_error) > distance_tolerance or abs(heading_error) > heading_tolerance
+
+            effort = max(abs(left), abs(right))
+            if effort > max_effort:
+                left, right = left * max_effort / effort, right * max_effort / effort
+            elif correcting and 0 < effort < min_effort:
+                left, right = left * min_effort / effort, right * min_effort / effort
+
+            self.set_effort(left * self.voltage_scale, right * self.voltage_scale)
+
+            time.sleep(0.01)
+
+        self.stop()
+
+        return not time_out.is_done()
+
+
+    def straight(self, distance: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, min_effort: float = None) -> bool:
         """
         Go forward the specified distance in centimeters, and exit function when distance has been reached.
         Max_effort is bounded from -1 (reverse at full speed) to 1 (forward at full speed)
@@ -201,92 +332,23 @@ class DifferentialDrive:
         :type main_controller: Controller
         :param secondary_controller: The secondary controller, for correcting heading error that may result during the drive.
         :type secondary_controller: Controller
+        :param min_effort: The minimum effort applied to the motors while moving. Defaults to a board specific value
+        :type min_effort: float
         :return: if the distance was reached before the timeout
         :rtype: bool
         """
+
+        turn_degrees = 0
+
         # ensure effort is always positive while distance could be either positive or negative
         if max_effort < 0:
             max_effort *= -1
             distance *= -1
 
-        time_out = Timeout(timeout)
-        starting_left = self.get_left_encoder_position()
-        starting_right = self.get_right_encoder_position()
-
-        if "NanoXRP" in implementation._machine:
-            if main_controller is None:
-                main_controller = PID(
-                    kp = 0.32,
-                    kd = 0.0184,
-                    min_output = 0.1,
-                    max_output = max_effort,
-                    tolerance = 0.25,
-                    tolerance_count = 3,
-                )
-
-            # Secondary controller to keep encoder values in sync
-            if secondary_controller is None:
-                secondary_controller = PID(
-                    kp = 0.012, kd=0.00129,
-                )
-        else:
-            if main_controller is None:
-                main_controller = PID(
-                    kp = 0.1,
-                    ki = 0.04,
-                    kd = 0.04,
-                    min_output = 0.3,
-                    max_output = max_effort,
-                    max_integral = 10,
-                    tolerance = 0.25,
-                    tolerance_count = 3,
-                )
-
-            # Secondary controller to keep encoder values in sync
-            if secondary_controller is None:
-                secondary_controller = PID(
-                    kp = 0.075, kd=0.001,
-                )
-
-        if self.imu is not None:
-            # record current heading to maintain it
-            initial_heading = self.imu.get_yaw()
-        else:
-            initial_heading = 0
-
-        while True:
-
-            # calculate the distance traveled
-            left_delta = self.get_left_encoder_position() - starting_left
-            right_delta = self.get_right_encoder_position() - starting_right
-            dist_traveled = (left_delta + right_delta) / 2
-
-            # PID for distance
-            distance_error = distance - dist_traveled
-            effort = main_controller.update(distance_error)
-            
-            if main_controller.is_done() or time_out.is_done():
-                break
-
-            # calculate heading correction
-            if self.imu is not None:
-                # record current heading to maintain it
-                current_heading = self.imu.get_yaw()
-            else:
-                current_heading = ((right_delta-left_delta)/2)*360/(self.wheel_track*math.pi)
-
-            headingCorrection = secondary_controller.update(initial_heading - current_heading)
-            
-            self.set_effort(effort - headingCorrection, effort + headingCorrection)
-
-            time.sleep(0.01)
-
-        self.stop()
-
-        return not time_out.is_done()
+        return self._move(distance, turn_degrees, max_effort, min_effort, timeout, True, main_controller, secondary_controller)
 
 
-    def turn(self, turn_degrees: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True) -> bool:
+    def turn(self, turn_degrees: float, max_effort: float = 0.5, timeout: float = None, main_controller: Controller = None, secondary_controller: Controller = None, use_imu:bool = True, min_effort: float = None) -> bool:
         """
         Turn the robot some relative heading given in turnDegrees, and exit function when the robot has reached that heading.
         effort is bounded from -1 (turn counterclockwise the relative heading at full speed) to 1 (turn clockwise the relative heading at full speed)
@@ -304,84 +366,15 @@ class DifferentialDrive:
         :type secondary_controller: Controller
         :param use_imu: A boolean flag that changes if the main controller bases its movement off of the imu (True) or the encoders (False)
         :type use_imu: bool
+        :param min_effort: The minimum effort applied to the motors while turning. Defaults to a board specific value
+        :type min_effort: float
         :return: if the distance was reached before the timeout
         :rtype: bool
         """
+        distance = 0
 
         if max_effort < 0:
             max_effort = -max_effort
             turn_degrees = -turn_degrees
 
-        time_out = Timeout(timeout)
-        starting_left = self.get_left_encoder_position()
-        starting_right = self.get_right_encoder_position()
-                
-        if "NanoXRP" in implementation._machine:
-            if main_controller is None:
-                main_controller = PID(
-                    kp = 0.016,
-                    kd = 0.0008,
-                    min_output = 0.05,
-                    max_output = max_effort,
-                    tolerance = 1,
-                    tolerance_count = 3
-                )
-            # Secondary controller to keep encoder values in sync
-            if secondary_controller is None:
-                secondary_controller = PID(
-                    kp = 0.32,
-                    kd = 0.0184,
-                )
-        else:
-            if main_controller is None:
-                main_controller = PID(
-                    # kp = 0.2,
-                    # ki = 0.004,
-                    # kd = 0.0036,
-                    kd = 0.0036 + 0.0034 * (max(max_effort, 0.5) - 0.5) * 2,
-                    kp = 0.2,
-                    ki = 0.004,
-                    #kd = 0.007,
-                    min_output = 0.1,
-                    max_output = max_effort,
-                    max_integral = 30,
-                    tolerance = 1,
-                    tolerance_count = 3
-                )
-            # Secondary controller to keep encoder values in sync
-            if secondary_controller is None:
-                secondary_controller = PID(
-                    kp = 0.25,
-                )
- 
-        if use_imu and (self.imu is not None):
-            turn_degrees += self.imu.get_yaw()
-
-        while True:
-            
-            # calculate encoder correction to minimize drift
-            left_delta = self.get_left_encoder_position() - starting_left
-            right_delta = self.get_right_encoder_position() - starting_right
-            encoder_correction = secondary_controller.update(left_delta + right_delta)
-
-            if use_imu and (self.imu is not None):
-                # calculate turn error (in degrees) from the imu
-                turn_error = turn_degrees - self.imu.get_yaw()
-            else:
-                # calculate turn error (in degrees) from the encoder counts
-                turn_error = turn_degrees - ((right_delta-left_delta)/2)*360/(self.wheel_track*math.pi)
-
-            # Pass the turn error to the main controller to get a turn speed
-            turn_speed = main_controller.update(turn_error)
-
-            # exit if timeout or tolerance reached
-            if main_controller.is_done() or time_out.is_done():
-                break
-
-            self.set_effort(-turn_speed - encoder_correction, turn_speed - encoder_correction)
-
-            time.sleep(0.01)
-
-        self.stop()
-
-        return not time_out.is_done()
+        return self._move(distance, turn_degrees, max_effort, min_effort, timeout, use_imu, secondary_controller, main_controller)
