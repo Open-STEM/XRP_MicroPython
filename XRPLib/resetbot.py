@@ -42,6 +42,11 @@ def reset_servos():
     # Turn off both Servos
     Servo.get_default_servo(1).free()
     Servo.get_default_servo(2).free()
+    try: #if 2350 then there are 4 servos
+        Servo.get_default_servo(3).free()
+        Servo.get_default_servo(4).free()
+    except:
+        pass
 
 def reset_webserver():
     from XRPLib.webserver import Webserver
@@ -53,8 +58,14 @@ def reset_gamepad():
     # Stop the browser from sending more gamepad data
     Gamepad.get_default_gamepad().stop()
 
+def reset_dashboard():
+    from XRPLib.dashboard import Dashboard
+    # Stop the dashboard from sending more data
+    Dashboard.get_default_dashboard().stop()
+
 def reset_hard():
     reset_gamepad()
+    reset_dashboard()
     reset_motors()
     reset_led()
     reset_buzzer()
@@ -63,6 +74,9 @@ def reset_hard():
 
 if "XRPLib.gamepad" in sys.modules:
     reset_gamepad()
+
+if "XRPLib.dashboard" in sys.modules:
+    reset_dashboard()
 
 if "XRPLib.encoded_motor" in sys.modules:
     reset_motors()
