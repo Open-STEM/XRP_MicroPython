@@ -37,6 +37,8 @@ request there for a maintainer to review and merge. The bundle contains:
 The version is taken from the release tag with any leading `v` stripped
 (`v2.2.4` → `2.2.4`), and becomes the directory name and the `xrplib-<version>` id.
 
+The library version number has been changed to YY.MM.N - ex. 26.07.1 is the first version released in July 2026.
+
 **One-time setup.** Add a repository secret named `FIRMWARE_TOKEN` — a fine-grained
 PAT or GitHub App token with **Contents: write** and **Pull requests: write** on
 Open-STEM/XRP_Firmware. Contents: write is needed to push the PR's branch (not to
