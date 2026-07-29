@@ -29,9 +29,9 @@ def reset_led():
         pass
 
 def reset_buzzer():
-    from XRPLib.buzzer import Buzzer
-    # Turn off the buzzer
+    # Turn off the buzzer, buzzer code is only loaded with the Nano board, so we need to put it in the try/except block
     try:
+        from XRPLib.buzzer import Buzzer
         # Turn off the Buzzer if the board has one
         Buzzer.get_default_buzzer().reset_buzzer()
     except:
