@@ -34,8 +34,8 @@ request there for a maintainer to review and merge. The bundle contains:
 - a generated `files.json`, and
 - a new entry in `boards/XRPLib/index.json`.
 
-The version is taken from the release tag with any leading `v` stripped
-(`v2.2.4` → `2.2.4`), and becomes the directory name and the `xrplib-<version>` id.
+The version is taken from the release tag with any leading `v` or `V` stripped
+(`V2026.07.1` → `2026.07.1`), and becomes the directory name and the `xrplib-<version>` id.
 
 The library version number has been changed to YY.MM.N - ex. 26.07.1 is the first version released in July 2026.
 
