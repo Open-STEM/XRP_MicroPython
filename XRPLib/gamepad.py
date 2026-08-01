@@ -88,6 +88,18 @@ class Gamepad:
         Signals the remote computer to begin sending gamepad data packets.
         Subscribes to all gamepad variables at a high rate (50 Hz).
         """
+
+        # Initialize all the variables to start with.
+
+        for idx in [self.X1, self.Y1, self.X2, self.Y2]:
+            var_name = self._VAR_NAMES[idx]
+            self._puppet.set_variable(var_name, 0.0)
+        
+        # Buttons are integers (1 or 0)
+        for idx in range(4, 18):
+            var_name = self._VAR_NAMES[idx]
+            self._puppet.set_variable(var_name, 0)
+
         self._puppet.start()
         self._puppet.send_program_start()
 
