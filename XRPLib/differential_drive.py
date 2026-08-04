@@ -158,6 +158,7 @@ class DifferentialDrive:
         :type turn: float
         """
         if straight == 0 and turn == 0:
+            self._holding_heading = False
             self.set_effort(0, 0)
             return
 
