@@ -84,7 +84,7 @@ class DifferentialDrive:
         self._holding_heading = False
 
         if self.imu:
-            self.heading_pid = PID( kp = 0.075, kd=0.001, )
+            self.heading_pid = PID(kp=0.075, kd=0.001)
 
     def update_voltage_compensation(self) -> float:
         """
@@ -156,7 +156,15 @@ class DifferentialDrive:
         :type straight: float
         :param turn: The modifier effort (Bounded from -1 to 1) used to skew robot left (positive) or right (negative).
         :type turn: float
+
         """
+        _deadband = 0.1
+        # Ignore small resting inputs from joystick drift so the robot sits still near center.
+        if abs(straight) < _deadband:
+            straight = 0
+        if abs(turn) < _deadband:
+            turn = 0
+
         if straight == 0 and turn == 0:
             self._holding_heading = False
             self.set_effort(0, 0)
@@ -182,6 +190,7 @@ class DifferentialDrive:
         # Straight with IMU assist: capture the heading once on entry, then hold it with PID.
         if not self._holding_heading:
             self.current_heading = self.imu.get_yaw()
+            self.heading_pid.clear_history()
             self._holding_heading = True
         correction = self.heading_pid.update(self.current_heading - self.imu.get_yaw())
         self.set_effort(left - correction, right + correction)
