@@ -84,7 +84,10 @@ class DifferentialDrive:
         self._holding_heading = False
 
         if self.imu:
-            self.heading_pid = PID(kp=0.075, kd=0.001)
+            if "NanoXRP" in implementation._machine:
+                self.heading_pid = PID(kp=0.014, kd=0.001)
+            else:
+                self.heading_pid = PID(kp=0.064, kd=0.0045)
 
     def update_voltage_compensation(self) -> float:
         """
