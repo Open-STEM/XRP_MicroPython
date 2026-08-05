@@ -173,6 +173,10 @@ class DifferentialDrive:
             self.set_effort(0, 0)
             return
 
+        # Flip the turn when reversing so the robot steers toward the stick either way.
+        if straight < 0:
+            turn = -turn
+
         # Mix straight and turn, then scale so the faster wheel's magnitude equals the larger
         # input. This keeps the straight-to-turn ratio while preventing the sum from clipping.
         scale = max(abs(straight), abs(turn)) / (abs(straight) + abs(turn))
