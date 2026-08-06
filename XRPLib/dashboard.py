@@ -2,6 +2,7 @@ from .encoded_motor import EncodedMotor
 from .rangefinder import Rangefinder
 from .imu import IMU
 from .reflectance import Reflectance
+from .board import Board
 from .puppet import Puppet, VAR_TYPE_INT, VAR_TYPE_FLOAT, PERM_READ_ONLY
 
 from machine import Timer, ADC, Pin
@@ -82,7 +83,7 @@ class Dashboard:
         self.imu = IMU.get_default_imu()
         self.rangefinder = Rangefinder.get_default_rangefinder()
         self.reflectance = Reflectance.get_default_reflectance()
-        self.VoltageADC = ADC(Pin('BOARD_VIN_MEASURE'))
+        self.board = Board.get_default_board()
         #self.CurrLADC = ADC(Pin('ML_CUR'))
         #self.CurrRADC = ADC(Pin('MR_CUR'))
         #self.Curr3ADC = ADC(Pin('M3_CUR'))
@@ -188,7 +189,7 @@ class Dashboard:
         self._puppet.set_variable('$reflectance.right', self.reflectance.get_right())
         
         # Voltage
-        voltage = self.VoltageADC.read_u16() / (1024*64/14)
+        voltage = self.board.get_battery_voltage()
         self._puppet.set_variable('$voltage', voltage)
 
     def start(self, rate_hz=3):
