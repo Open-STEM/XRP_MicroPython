@@ -3,7 +3,7 @@ from .encoder import Encoder
 from machine import Timer, Pin
 from .controller import Controller
 from .pid import PID
-from sys import implementation
+from .board import Board
 
 class EncodedMotor:
 
@@ -25,10 +25,7 @@ class EncodedMotor:
         :type index: int
         """
         
-        if "Beta" in implementation._machine:
-            MotorImplementation = SinglePWMMotor
-        else:
-            MotorImplementation = DualPWMMotor
+        MotorImplementation = SinglePWMMotor if Board.get_type() == Board.BETA else DualPWMMotor
 
         if index == 1:
             if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
@@ -70,7 +67,7 @@ class EncodedMotor:
         self.brake_at_zero = False
 
         self.target_speed = None
-        if "NanoXRP" in implementation._machine:
+        if Board.get_type() == Board.NANO:
             self.DEFAULT_SPEED_CONTROLLER = PID(
                 kp=0.015,
                 ki=0.06,
