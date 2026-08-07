@@ -126,9 +126,9 @@ class DifferentialDrive:
         :type rightSpeed: float
         """
         # Convert from cm/s to RPM
-        cmpsToRPM = 60 / (math.pi * self.wheel_diam)
-        self.left_motor.set_speed(left_speed*cmpsToRPM)
-        self.right_motor.set_speed(right_speed*cmpsToRPM)
+        cmps_to_rpm = 60 / (math.pi * self.wheel_diam)
+        self.left_motor.set_speed(left_speed*cmps_to_rpm)
+        self.right_motor.set_speed(right_speed*cmps_to_rpm)
 
     def set_zero_effort_behavior(self, brake_at_zero_effort):
 
