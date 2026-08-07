@@ -76,17 +76,15 @@ class EncodedMotor:
 
         self.target_speed = None
 
-        # Velocity control = feedforward (kS breaks stiction, kV per unit speed) plus a
-        # proportional trim. No integral for now; battery droop is handled by voltage
-        # compensation instead. kS/kV are in counts-per-update units and need per-robot tuning.
+        # Velocity control = feedforward (kS breaks stiction, kV per unit speed) plus a proportional trim.
         if "NanoXRP" in implementation._machine:
-            self.kS = 0.05
-            self.kV = 0.03
-            self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.015, ki=0, kd=0)
+            self.kS = 0.00
+            self.kV = 0.00
+            self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.015)
         else:
-            self.kS = 0.1
-            self.kV = 0.024
-            self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.035, ki=0, kd=0)
+            self.kS = 0.12
+            self.kV = 0.02
+            self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.1)
 
         self.speedController = self.DEFAULT_SPEED_CONTROLLER
 
@@ -187,6 +185,7 @@ class EncodedMotor:
         """
         if speed_rpm is None or speed_rpm == 0:
             self.target_speed = None
+            self.prev_speed = 0   # forget direction; the controller is cleared right below
             self.set_effort(0)
             self.speedController.clear_history()
             return
