@@ -161,13 +161,6 @@ class DifferentialDrive:
         :type turn: float
 
         """
-        _deadband = 0.1
-        # Ignore small resting inputs from joystick drift so the robot sits still near center.
-        if abs(straight) < _deadband:
-            straight = 0
-        if abs(turn) < _deadband:
-            turn = 0
-
         if straight == 0 and turn == 0:
             self._holding_heading = False
             self.set_effort(0, 0)
