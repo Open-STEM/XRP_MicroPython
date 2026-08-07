@@ -3,6 +3,7 @@ from .encoder import Encoder
 from machine import Timer, Pin
 from .controller import Controller
 from .pid import PID
+from .board import Board
 from sys import implementation
 
 class EncodedMotor:
@@ -74,22 +75,24 @@ class EncodedMotor:
         self.brake_at_zero = False
 
         self.target_speed = None
+
+        # Velocity control = feedforward (kS breaks stiction, kV per unit speed) plus a
+        # proportional trim. No integral for now; battery droop is handled by voltage
+        # compensation instead. kS/kV are in counts-per-update units and need per-robot tuning.
         if "NanoXRP" in implementation._machine:
-            self.DEFAULT_SPEED_CONTROLLER = PID(
-                kp=0.015,
-                ki=0.06,
-                kd=0,
-                max_integral=1/0.06
-            )
+            self.kS = 0.05
+            self.kV = 0.03
+            self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.015, ki=0, kd=0)
         else:
-            self.DEFAULT_SPEED_CONTROLLER = PID(
-                kp=0.035,
-                ki=0.03,
-                kd=0,
-                max_integral=50
-            )
+            self.kS = 0.1
+            self.kV = 0.024
+            self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.035, ki=0, kd=0)
 
         self.speedController = self.DEFAULT_SPEED_CONTROLLER
+
+        # voltage_scale is measured once when Board is constructed; just hold a reference.
+        self._board = Board.get_default_board()
+
         self.prev_position = 0
         self._counts_per_update = 0   # encoder counts moved in the last update period
         self.prev_speed = 0
@@ -213,6 +216,7 @@ class EncodedMotor:
         self._counts_per_update = current_position - self.prev_position
         if self.target_speed is not None:
             error = self.target_speed - self._counts_per_update
-            effort = self.speedController.update(error)
-            self._motor.set_effort(effort)
+            feedforward = (self.kS if self.target_speed > 0 else -self.kS) + self.kV * self.target_speed
+            effort = (feedforward + self.speedController.update(error)) * self._board.voltage_scale
+            self._motor.set_effort(max(-1.0, min(1.0, effort)))
         self.prev_position = current_position
