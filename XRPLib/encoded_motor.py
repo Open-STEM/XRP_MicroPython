@@ -78,9 +78,9 @@ class EncodedMotor:
 
         # Velocity control = feedforward (kS breaks stiction, kV per unit speed) plus a proportional trim.
         if "NanoXRP" in implementation._machine:
-            self.kS = 0.00
-            self.kV = 0.00
-            self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.015)
+            self.kS = 0.1
+            self.kV = 0.00122
+            self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.005)
         else:
             self.kS = 0.12
             self.kV = 0.02
