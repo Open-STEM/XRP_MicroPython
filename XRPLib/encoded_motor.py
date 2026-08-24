@@ -88,6 +88,7 @@ class EncodedMotor:
         self.speedController = self.DEFAULT_SPEED_CONTROLLER
         self.prev_position = 0
         self.speed = 0
+        self.prev_speed = 0
         # Use a virtual timer so we can leave the hardware timers up for the user
         self.updateTimer = Timer(-1)
         # If the update timer is not running, start it at 50 Hz (20ms updates)
@@ -173,7 +174,14 @@ class EncodedMotor:
         if speed_rpm is None or speed_rpm == 0:
             self.target_speed = None
             self.set_effort(0)
+            self.speedController.clear_history()
             return
+
+        if self.prev_speed * speed_rpm < 0:
+            self.speedController.clear_history()
+
+        self.prev_speed = speed_rpm
+
         # Convert from rev per min to counts per 20ms (60 sec/min, 50 Hz)
         self.target_speed = speed_rpm*self._encoder.resolution/(60*50)
 
