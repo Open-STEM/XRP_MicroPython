@@ -80,11 +80,14 @@ class DifferentialDrive:
 
         self.heading_pid = None
         self.current_heading = None
-        self.reset_heading = True
-        self.turning = False
+        # True while arcade() is holding a captured heading during straight driving.
+        self._holding_heading = False
 
         if self.imu:
-            self.heading_pid = PID( kp = 0.075, kd=0.001, )
+            if "NanoXRP" in implementation._machine:
+                self.heading_pid = PID(kp=0.014, kd=0.001)
+            else:
+                self.heading_pid = PID(kp=0.064, kd=0.0045)
 
     def update_voltage_compensation(self) -> float:
         """
@@ -156,40 +159,41 @@ class DifferentialDrive:
         :type straight: float
         :param turn: The modifier effort (Bounded from -1 to 1) used to skew robot left (positive) or right (negative).
         :type turn: float
+
         """
         if straight == 0 and turn == 0:
+            self._holding_heading = False
             self.set_effort(0, 0)
-        else:
-            scale = max(abs(straight), abs(turn))/(abs(straight) + abs(turn))
-            left_speed = (straight - turn)*scale
-            right_speed = (straight + turn)*scale
+            return
 
-            if not self.heading_pid:
-                # if not using IMU assist to maintain heading, just pass down the left and right motor
-                # speeds to control movement
-                self.set_effort(left_speed, right_speed)
-            else:
-                # else if IMU assist is enabled, then use the IMU with PID to
-                # maintain a constant heading while driving.
-                if turn == 0:
-                    # straight drive requested, then maintain the current heading
-                    if self.turning:
-                        # if previously turning, then clear the turn indicator and reset the course heading
-                        self.reset_heading = True
-                        self.turning = False
+        # Flip the turn when reversing so the robot steers toward the stick either way.
+        if straight < 0:
+            turn = -turn
 
-                    if self.reset_heading:
-                        self.reset_heading = False
-                        self.current_heading = self.imu.get_yaw()
+        # Mix straight and turn, then scale so the faster wheel's magnitude equals the larger
+        # input. This keeps the straight-to-turn ratio while preventing the sum from clipping.
+        scale = max(abs(straight), abs(turn)) / (abs(straight) + abs(turn))
+        left = (straight - turn) * scale
+        right = (straight + turn) * scale
 
-                    # use the PID to set the heading correction based on the current heading
-                    heading_correction = self.heading_pid.update(self.current_heading - self.imu.get_yaw())
+        if not self.heading_pid:
+            # No IMU assist: drive the mixed efforts directly.
+            self.set_effort(left, right)
+            return
 
-                    self.set_effort(left_speed - heading_correction, right_speed + heading_correction)
-                else:
-                    # set the turning indicator and apply the left and right speeds
-                    self.turning = True
-                    self.set_effort(left_speed, right_speed)
+        if turn != 0:
+            # Turning: drive directly, and force the next straight frame to recapture heading.
+            self._holding_heading = False
+            self.set_effort(left, right)
+            return
+
+        # Straight with IMU assist: capture the heading once on entry, then hold it with PID.
+        if not self._holding_heading:
+            self.current_heading = self.imu.get_yaw()
+            self.heading_pid.clear_history()
+            self._holding_heading = True
+        correction = self.heading_pid.update(self.current_heading - self.imu.get_yaw())
+        self.set_effort(left - correction, right + correction)
 
     def reset_encoder_position(self) -> None:
         """
