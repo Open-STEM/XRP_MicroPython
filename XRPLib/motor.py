@@ -1,5 +1,5 @@
 from machine import Pin, PWM
-from sys import implementation
+from .board import Board
 
 class SinglePWMMotor:
 
@@ -57,10 +57,7 @@ class DualPWMMotor:
 
     def __init__(self, in1_pwm_forward: int|str, in2_pwm_backward: int|str, flip_dir:bool=False):
 
-        if "NanoXRP" in implementation._machine:
-            self.flip_dir = not flip_dir
-        else:
-            self.flip_dir = flip_dir
+        self.flip_dir = (not flip_dir) if Board.get_type() == Board.NANO else flip_dir
 
         self._MAX_PWM = 65535 # Motor holds when actually at full power
 

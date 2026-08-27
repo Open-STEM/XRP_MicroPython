@@ -4,7 +4,6 @@ from machine import Timer, Pin
 from .controller import Controller
 from .pid import PID
 from .board import Board
-from sys import implementation
 
 class EncodedMotor:
 
@@ -30,10 +29,7 @@ class EncodedMotor:
         :type index: int
         """
         
-        if "Beta" in implementation._machine:
-            MotorImplementation = SinglePWMMotor
-        else:
-            MotorImplementation = DualPWMMotor
+        MotorImplementation = SinglePWMMotor if Board.get_type() == Board.BETA else DualPWMMotor
 
         if index == 1:
             if cls._DEFAULT_LEFT_MOTOR_INSTANCE is None:
@@ -77,7 +73,7 @@ class EncodedMotor:
         self.target_speed = None
 
         # Velocity control = feedforward (kS breaks stiction, kV per unit speed) plus a proportional trim.
-        if "NanoXRP" in implementation._machine:
+        if Board.get_type() == Board.NANO:
             self.kS = 0.1
             self.kV = 0.00122
             self.DEFAULT_SPEED_CONTROLLER = PID(kp=0.005)

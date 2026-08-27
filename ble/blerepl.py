@@ -77,6 +77,10 @@ class BLEUARTStream(io.IOBase):
         self._uart.write(data)
 
     def write(self, buf):
+        #if no connections, don't buffer data
+        if len(uart._connections) == 0:
+            return
+
         state = disable_irq()
         empty = not self._tx_buf
         self._tx_buf += buf

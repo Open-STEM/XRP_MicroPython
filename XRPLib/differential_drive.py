@@ -6,7 +6,6 @@ from .pid import PID
 from .timeout import Timeout
 import time
 import math
-from sys import implementation
 
 class DifferentialDrive:
 
@@ -38,9 +37,9 @@ class DifferentialDrive:
         :type rightMotor: EncodedMotor
         :param imu: The IMU of the robot. If None, the robot will not use the IMU for turning or maintaining heading.
         :type imu: IMU
-        :param wheelDiam: The diameter of the wheels in inches. Defaults to 6 cm.
+        :param wheelDiam: The diameter of the wheels in cm.
         :type wheelDiam: float
-        :param wheelTrack: The distance between the wheels in inches. Defaults to 15.5 cm.
+        :param wheelTrack: The distance between the wheels in cm.
         :type wheelTrack: float
         """
         
@@ -53,18 +52,12 @@ class DifferentialDrive:
         # Resolve hardware defaults when the caller leaves the arg at its 0.0 sentinel;
         # honor any explicit non-zero value that is passed in.
         if wheel_diam == 0.0:
-            if "NanoXRP" in implementation._machine:
-                self.wheel_diam = 3.46
-            else:
-                self.wheel_diam = 6.0
+            self.wheel_diam = 3.46 if Board.get_type() == Board.NANO else 6.0
         else:
             self.wheel_diam = wheel_diam
 
         if wheel_track == 0.0:
-            if "NanoXRP" in implementation._machine:
-                self.wheel_track = 7.8
-            else:
-                self.wheel_track = 15.5
+            self.wheel_track = 7.8 if Board.get_type() == Board.NANO else 15.5
         else:
             self.wheel_track = wheel_track
 
@@ -78,7 +71,7 @@ class DifferentialDrive:
         self._holding_heading = False
 
         if self.imu:
-            if "NanoXRP" in implementation._machine:
+            if Board.get_type() == Board.NANO:
                 self.heading_pid = PID(kp=0.014, kd=0.001)
             else:
                 self.heading_pid = PID(kp=0.064, kd=0.0045)
@@ -201,9 +194,9 @@ class DifferentialDrive:
         Shared translation/rotation controller for straight() and turn().
         """
 
-        if "NanoXRP" in implementation._machine:
+        if Board.get_type() == Board.NANO:
             if min_effort is None:
-                min_effort = 0.10   
+                min_effort = 0.10
 
             if distance_controller is None:
                 distance_controller = PID(
