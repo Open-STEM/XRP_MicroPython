@@ -3,6 +3,7 @@
 docs/_build/
 .micropico
 .picowgo
+.DS_Store
 secrets.json
 venv
 .temp_xrplib

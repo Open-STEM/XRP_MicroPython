@@ -271,6 +271,8 @@ class Puppet:
         """
         if self._transport_type == 'USB_STDIO':
             self._stop_poll_timer()
+        self._update_timer.deinit()
+        self._update_timer_running = False
         self._clear_custom_variables()
 
 
