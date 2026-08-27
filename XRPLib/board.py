@@ -49,7 +49,7 @@ class Board:
 
         self.on_switch = ADC(Pin(vin_pin))
 
-        # Measure the pack once so motor controllers can compensate effort for battery droop.
+        # Measure battery voltage so motor controllers can compensate effort for battery droop.
         self.voltage_scale = 1.0
         self.update_voltage_compensation()
 
@@ -158,13 +158,12 @@ class Board:
     def update_voltage_compensation(self) -> float:
         """
         Re-measure the battery and update voltage_scale, the factor motor controllers apply to
-        effort so torque stays consistent as the pack drains. Call again after a battery swap.
+        effort so torque stays consistent as the pack drains.
 
         :return: The effort scale now in use
         :rtype: float
         """
-        # Nominal pack voltage the motor gains are tuned against (effort is raw PWM duty, so
-        # torque scales with voltage); voltage_scale corrects for the pack actually installed.
+        # Nominal pack voltage the motor gains are tuned against.
         nominal_voltage = 4.2 if Board.get_type() == Board.NANO else 6.0
         voltage = sum(self.get_battery_voltage() for _ in range(8)) / 8
         self.voltage_scale = min(max(nominal_voltage / max(voltage, 3.5), 0.7), 1.6)
