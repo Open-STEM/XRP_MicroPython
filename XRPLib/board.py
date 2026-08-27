@@ -7,6 +7,26 @@ class Board:
 
     _DEFAULT_BOARD_INSTANCE = None
 
+    # Board identity. The one place a machine name is matched; everything else compares
+    # against these constants (see get_type).
+    XRP  = 0
+    BETA = 1
+    NANO = 2
+    _type = None
+
+    @classmethod
+    def get_type(cls) -> int:
+        """
+        Identify which XRP board this code is running on.
+
+        :return: One of Board.XRP, Board.BETA, or Board.NANO
+        :rtype: int
+        """
+        if cls._type is None:
+            machine = sys.implementation._machine
+            cls._type = cls.NANO if "NanoXRP" in machine else cls.BETA if "Beta" in machine else cls.XRP
+        return cls._type
+
     @classmethod
     def get_default_board(cls):
         """
@@ -47,9 +67,9 @@ class Board:
         :return: Returns true if the batteries are connected and powering the motors, false otherwise
         :rytpe: bool
         """
-        if "NanoXRP" in sys.implementation._machine:
+        if Board.get_type() == Board.NANO:
             return True
-        
+
         threshold_voltage = 4.272
         return self.get_battery_voltage() > threshold_voltage
 
@@ -141,7 +161,7 @@ class Board:
         :rtype: float
         """
 
-        if "NanoXRP" in sys.implementation._machine:
+        if Board.get_type() == Board.NANO:
             # VIN pin on NanoXRP is also used for RM2.
             self.on_switch = ADC(Pin(vin_pin))
 

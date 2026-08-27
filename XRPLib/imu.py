@@ -11,7 +11,7 @@ except (TypeError, ModuleNotFoundError):
     # Import wrapped in a try/except so that autodoc generation can process properly
     pass
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
-from sys import implementation
+from .board import Board
 import time, math
 
 class IMU():
@@ -30,7 +30,8 @@ class IMU():
         return cls._DEFAULT_IMU_INSTANCE
 
     def __init__(self, scl_pin: int|str = "I2C_SCL_1", sda_pin: int|str = "I2C_SDA_1", addr=LSM_ADDR_PRIMARY):
-        self._is_nanoxrp = "NanoXRP" in implementation._machine
+        # Cached once at construction so the hard-IRQ update handler never calls get_type().
+        self._is_nanoxrp = Board.get_type() == Board.NANO
 
         # I2C values
         self.i2c = I2C(id=1, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=400000)

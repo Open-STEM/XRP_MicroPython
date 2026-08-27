@@ -3,11 +3,11 @@
 import machine
 import rp2
 import time
-from sys import implementation
+from .board import Board
 import re
 
 class Encoder:
-    if "NanoXRP" in implementation._machine:
+    if Board.get_type() == Board.NANO:
         _gear_ratio = (68/1)
         _counts_per_motor_shaft_revolution = 12
     else:
