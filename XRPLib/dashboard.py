@@ -79,7 +79,8 @@ class Dashboard:
         self.left_motor = EncodedMotor.get_default_encoded_motor(index=1)
         self.right_motor = EncodedMotor.get_default_encoded_motor(index=2)
         self.motor_three = EncodedMotor.get_default_encoded_motor(index=3)
-        self.motor_four = EncodedMotor.get_default_encoded_motor(index=4)
+        # Motor 4 only exists on boards that expose it (not the Nano); leave it None otherwise.
+        self.motor_four = EncodedMotor.get_default_encoded_motor(index=4) if hasattr(Pin.board, "MOTOR_4_IN_1") else None
         self.imu = IMU.get_default_imu()
         self.rangefinder = Rangefinder.get_default_rangefinder()
         self.reflectance = Reflectance.get_default_reflectance()
@@ -175,7 +176,8 @@ class Dashboard:
         self._puppet.set_variable('$encoder.left', self.left_motor.get_position_counts())
         self._puppet.set_variable('$encoder.right', self.right_motor.get_position_counts())
         self._puppet.set_variable('$encoder.3', self.motor_three.get_position_counts())
-        self._puppet.set_variable('$encoder.4', self.motor_four.get_position_counts())
+        if self.motor_four is not None:
+            self._puppet.set_variable('$encoder.4', self.motor_four.get_position_counts())
         
         # Current sensor data
         #self._puppet.set_variable('$current.left', self.CurrLADC.read_u16())
