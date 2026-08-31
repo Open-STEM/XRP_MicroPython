@@ -1,0 +1,53 @@
+name: Hardware Integration Tests
+
+on:
+  push:
+    paths:
+      - 'XRPLib/**'
+      - 'tests/hardware/**'
+  pull_request:
+    paths:
+      - 'XRPLib/**'
+      - 'tests/hardware/**'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  hardware-tests:
+    name: Run XRP Hardware Tests
+    runs-on: self-hosted-xrp-teststand  # Self-hosted runner with XRP test stand
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install mpremote
+        run: pip install mpremote
+
+      - name: Run hardware tests
+        run: python scripts/ci_hardware_test.py
+
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Run unit tests
+        run: pytest tests/unit/ -v
