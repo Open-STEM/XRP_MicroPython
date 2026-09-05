@@ -41,6 +41,7 @@ class PID(Controller):
 
         self.prev_error = 0
         self.prev_integral = 0
+        self.prev_derivative = 0
         self.prev_output = 0
 
         self.start_time = None
@@ -84,10 +85,11 @@ class PID(Controller):
         if self.max_integral is not None:
             integral = max(-self.max_integral, min(self.max_integral, integral))
 
-        derivative = (error - self.prev_error) / timestep
+        if timestep != 0:
+            self.prev_derivative = (error - self.prev_error) / timestep
 
         # derive output
-        output = self.kp * error + self.ki * integral + self.kd * derivative
+        output = self.kp * error + self.ki * integral + self.kd * self.prev_derivative
         self.prev_error = error
         self.prev_integral = integral
 
@@ -110,7 +112,7 @@ class PID(Controller):
         self.prev_output = output
 
         if debug:
-            print(f"{output}: ({self.kp * error}, {self.ki * integral}, {self.kd * derivative})")
+            print(f"{output}: ({self.kp * error}, {self.ki * integral}, {self.kd * self.prev_derivative})")
 
         return output
     
@@ -124,6 +126,7 @@ class PID(Controller):
     def clear_history(self):
         self.prev_error = 0
         self.prev_integral = 0
+        self.prev_derivative = 0
         self.prev_output = 0
         self.prev_time = None
         self.times = 0
