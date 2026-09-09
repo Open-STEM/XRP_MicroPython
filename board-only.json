@@ -1,0 +1,7 @@
+{
+    "description": "XRPLib files that are installed only on boards with the matching hardware, rather than on every robot. Release tooling leaves these out of the shared bundle; a board opts in through the 'xrplibFiles' field of its project.json in XRP_Firmware. Paths are relative to the repository root.",
+    "boardOnly": [
+        "XRPLib/buzzer.py",
+        "XRPExamples/buzzer_examples.py"
+    ]
+}
