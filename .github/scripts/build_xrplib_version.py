@@ -7,6 +7,9 @@ It copies this release's XRPLib/ and XRPExamples/ into boards/XRPLib/<version>/,
 carries ble/ and phew/ forward from the previous version (they do not live in this
 repo), regenerates files.json, and registers the version in index.json.
 
+board-only.json travels with the release so consumers do not need their own list of
+which files are board-specific; see BOARD_ONLY_MANIFEST below.
+
 The files.json format and device-path convention are defined in the firmware repo's
 boards/spec.md; this reproduces the generator that normally lives in XRPWeb.
 """
@@ -21,6 +24,20 @@ LIB_DIRS = ("XRPLib", "AgXRPLib", "ble", "phew")
 # Never bundled: version.py is synthesized on-device from the registry version.
 EXCLUDE_NAMES = ("version.py",)
 EXCLUDE_DIRS = ("__pycache__",)
+
+# Declares which library files belong only on boards that have the hardware (the
+# NanoXRP's buzzer). Copied into the release so every consumer reads the list from
+# the release itself instead of hardcoding filenames.
+BOARD_ONLY_MANIFEST = "board-only.json"
+
+
+def read_board_only(src_repo):
+    """Return the set of release-relative paths that are not part of the shared bundle."""
+    path = os.path.join(src_repo, BOARD_ONLY_MANIFEST)
+    if not os.path.isfile(path):
+        return set()
+    with open(path) as f:
+        return set(json.load(f).get("boardOnly", []))
 
 
 def die(msg):
@@ -43,15 +60,19 @@ def device_path(rel_path):
     return "/lib/" + rel_path if top in LIB_DIRS else "/" + rel_path
 
 
-def generate_files_json(version_dir):
+def generate_files_json(version_dir, board_only):
     pairs = []
     for root, dirs, files in os.walk(version_dir):
-        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS and not d.startswith(".")]
         for name in files:
-            if name in EXCLUDE_NAMES or name.endswith(".pyc") or name == "files.json":
+            if name in EXCLUDE_NAMES or name.endswith(".pyc") or name.startswith("."):
+                continue
+            if name in ("files.json", BOARD_ONLY_MANIFEST):
                 continue
             abs_path = os.path.join(root, name)
             rel = os.path.relpath(abs_path, version_dir).replace(os.sep, "/")
+            if rel in board_only:
+                continue
             pairs.append([device_path(rel), rel])
     # files.json is a plain ascending sort by source path (see spec.md / existing releases).
     pairs.sort(key=lambda pair: pair[1])
@@ -91,7 +112,11 @@ def main():
     for carried in ("ble", "phew"):
         copy_tree(os.path.join(previous_dir, carried), os.path.join(version_dir, carried))
 
-    generate_files_json(version_dir)
+    board_only_src = os.path.join(src_repo, BOARD_ONLY_MANIFEST)
+    if os.path.isfile(board_only_src):
+        shutil.copyfile(board_only_src, os.path.join(version_dir, BOARD_ONLY_MANIFEST))
+
+    generate_files_json(version_dir, read_board_only(src_repo))
 
     index["versions"].insert(0, {
         "id": version_id,
