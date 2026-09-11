@@ -61,12 +61,9 @@ class DifferentialDrive:
         else:
             self.wheel_track = wheel_track
 
-        # Effort is raw PWM duty, so torque scales with pack voltage. Gains are tuned against
-        # nominal_voltage and voltage_scale corrects the duty for the pack actually installed.
-        self.nominal_voltage = 4.2 if Board.get_type() == Board.NANO else 6.0
-
-        self.voltage_scale = 1.0
-        self.update_voltage_compensation()
+        # Battery compensation lives on Board (measured once, shared). straight()/turn() read
+        # board.voltage_scale so effort tracks the pack as it drains.
+        self._board = Board.get_default_board()
 
         self.heading_pid = None
         self.current_heading = None
@@ -78,23 +75,6 @@ class DifferentialDrive:
                 self.heading_pid = PID(kp=0.014, kd=0.001)
             else:
                 self.heading_pid = PID(kp=0.064, kd=0.0045)
-
-    def update_voltage_compensation(self) -> float:
-        """
-        Re-measures the battery and updates the effort scale applied to straight() and turn().
-        Called at construction; call it again after a battery swap or a long run.
-
-        :return: The effort scale now in use
-        :rtype: float
-        """
-        if self.nominal_voltage is None:
-            return self.voltage_scale
-
-        board = Board.get_default_board()
-        voltage = sum(board.get_battery_voltage() for _ in range(8)) / 8
-        self.voltage_scale = min(max(self.nominal_voltage / max(voltage, 3.5), 0.7), 1.6)
-
-        return self.voltage_scale
 
     def set_effort(self, left_effort: float, right_effort: float) -> None:
         """
@@ -119,9 +99,9 @@ class DifferentialDrive:
         :type rightSpeed: float
         """
         # Convert from cm/s to RPM
-        cmpsToRPM = 60 / (math.pi * self.wheel_diam)
-        self.left_motor.set_speed(left_speed*cmpsToRPM)
-        self.right_motor.set_speed(right_speed*cmpsToRPM)
+        cmps_to_rpm = 60 / (math.pi * self.wheel_diam)
+        self.left_motor.set_speed(left_speed*cmps_to_rpm)
+        self.right_motor.set_speed(right_speed*cmps_to_rpm)
 
     def set_zero_effort_behavior(self, brake_at_zero_effort):
 
@@ -302,7 +282,7 @@ class DifferentialDrive:
             elif correcting and 0 < effort < min_effort:
                 left, right = left * min_effort / effort, right * min_effort / effort
 
-            self.set_effort(left * self.voltage_scale, right * self.voltage_scale)
+            self.set_effort(left * self._board.voltage_scale, right * self._board.voltage_scale)
 
             time.sleep(0.01)
 
