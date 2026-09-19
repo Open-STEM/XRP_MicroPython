@@ -230,10 +230,13 @@ class DifferentialDrive:
             if heading_controller is None:
                 heading_controller = PID(
                     kp = 0.014,
+                    ki = 0.084,
                     kd = 0.001,
                     max_output = max_effort,
                     tolerance = 1,
                     tolerance_count = 10,
+                    max_integral = 4,
+                    integral_zone = 8
                 )
         else:
             if min_effort is None:
