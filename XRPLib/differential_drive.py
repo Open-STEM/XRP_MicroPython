@@ -252,7 +252,7 @@ class DifferentialDrive:
                 heading_controller = PID(
                     kp = 0.064,
                     ki = 0.12,
-                    kd = 0.0055, #0.0045
+                    kd = 0.0055,
                     max_output = max_effort,
                     tolerance = 0.5,
                     tolerance_count = 10,
