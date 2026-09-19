@@ -251,13 +251,13 @@ class DifferentialDrive:
             if heading_controller is None:
                 heading_controller = PID(
                     kp = 0.064,
-                    ki = 0.16,
-                    kd = 0.0045,
+                    ki = 0.12,
+                    kd = 0.0055, #0.0045
                     max_output = max_effort,
                     tolerance = 0.5,
                     tolerance_count = 10,
-                    max_integral = 1,
-                    integral_zone = 5
+                    max_integral = 3,
+                    integral_zone = 4
                 )
 
         # a Controller that carries no tolerance keeps the effort floor on for the whole move
