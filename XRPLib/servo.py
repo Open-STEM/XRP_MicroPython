@@ -34,7 +34,7 @@ class Servo:
                 cls._DEFAULT_SERVO_FOUR_INSTANCE = cls("SERVO_4")
             servo = cls._DEFAULT_SERVO_FOUR_INSTANCE
         else:
-            return Exception("Invalid servo index")
+            raise Exception("Invalid servo index")
         return servo
 
     def __init__(self, signal_pin: int|str):
