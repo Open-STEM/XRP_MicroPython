@@ -16,7 +16,8 @@ class PID(Controller):
                  max_derivative = None,
                  max_integral = None,
                  tolerance = 0.1,
-                 tolerance_count = 1
+                 tolerance_count = 1,
+                 integral_zone = None,
                  ):
         """
         :param kp: proportional gain
@@ -28,6 +29,7 @@ class PID(Controller):
         :param max_integral: maximum integral windup allowed (will cap integral at this value)
         :param tolerance: tolerance for exit condition
         :param tolerance_count: number of times the error needs to be within tolerance for is_done to return True
+        :param integral_zone: the range in which the integral term will be used
         """
         self.kp = kp
         self.ki = ki
@@ -38,6 +40,7 @@ class PID(Controller):
         self.max_integral = max_integral
         self.tolerance = tolerance
         self.tolerance_count = tolerance_count
+        self.integral_zone = integral_zone
 
         self.prev_error = 0
         self.prev_integral = 0
@@ -80,10 +83,15 @@ class PID(Controller):
 
         self._handle_exit_condition(error)
 
-        integral = self.prev_integral + error * timestep
+        integral = 0
+
+        if (self.integral_zone is not None) and (abs(error) > self.integral_zone):
+            self.prev_integral = 0
+        else:
+            integral = self.prev_integral + error * timestep
         
-        if self.max_integral is not None:
-            integral = max(-self.max_integral, min(self.max_integral, integral))
+            if self.max_integral is not None:
+                integral = max(-self.max_integral, min(self.max_integral, integral))
 
         if timestep != 0:
             self.prev_derivative = (error - self.prev_error) / timestep
