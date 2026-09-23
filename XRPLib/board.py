@@ -48,7 +48,11 @@ class Board:
         """
 
         self.on_switch = ADC(Pin(vin_pin))
-        
+
+        # Measure battery voltage so motor controllers can compensate effort for battery droop.
+        self.voltage_scale = 1.0
+        self.update_voltage_compensation()
+
         self.button = Pin(button_pin, Pin.IN, Pin.PULL_UP)
         time.sleep(.01) # give some time for the pull up to get to the proper voltage, otherwise the button could read as pressed
 
@@ -150,6 +154,20 @@ class Board:
             self.rgb_led.write()
         else:
             raise NotImplementedError("Board.set_rgb_led not implemented for the XRP Beta")
+
+    def update_voltage_compensation(self) -> float:
+        """
+        Re-measure the battery and update voltage_scale, the factor motor controllers apply to
+        effort so torque stays consistent as the pack drains.
+
+        :return: The effort scale now in use
+        :rtype: float
+        """
+        # Nominal pack voltage the motor gains are tuned against.
+        nominal_voltage = 4.2 if Board.get_type() == Board.NANO else 6.0
+        voltage = sum(self.get_battery_voltage() for _ in range(8)) / 8
+        self.voltage_scale = min(max(nominal_voltage / max(voltage, 3.5), 0.7), 1.6)
+        return self.voltage_scale
 
     def get_battery_voltage(self, vin_pin="BOARD_VIN_MEASURE") -> float:
         """
