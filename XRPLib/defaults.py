@@ -8,7 +8,6 @@ from .imu import IMU
 from .reflectance import Reflectance
 from .servo import Servo
 from .webserver import Webserver
-from .buzzer import Buzzer
 from machine import Pin
 
 """
@@ -37,4 +36,5 @@ if hasattr(Pin.board, "SERVO_4"):
     servo_four = Servo.get_default_servo(index=4)
 
 if hasattr(Pin.board, "BOARD_BUZZER"):
+    from .buzzer import Buzzer
     buzzer = Buzzer.get_default_buzzer()
