@@ -670,7 +670,10 @@ class Puppet:
     
     def set_variable(self, name, value):
         """
-        Set a variable value and send update if subscribed.
+        Set a variable value.
+
+        On-demand variables (rate 0) are sent immediately. Subscribed
+        variables are stored and sent together by the update timer.
         
         :param name: Variable name
         :param value: Variable value
@@ -693,9 +696,8 @@ class Puppet:
         self._variables[name] = (var_info[0], var_info[1], var_info[2], 
                                 value, var_info[4], var_info[5])
         
-        # Send update if rate > 0 or if this is an on-demand update
-        # (on-demand updates are sent immediately when set)
-        if var_info[4] > 0 or var_info[4] == 0:
+        # On-demand (rate 0) send immediately. Subscribed vars are batched.
+        if var_info[4] == 0:
             self._send_var_update(name)
     
     def get_variable(self, name):
