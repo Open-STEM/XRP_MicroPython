@@ -98,7 +98,7 @@ class Dashboard:
         
         # Create timer for periodic updates
         self.update_timer = Timer(-1)
-        self._update_rate = 3  # Default 3 Hz
+        self._update_rate = 20  # Default 20 Hz
 
     def _register_variables(self):
         """
@@ -194,11 +194,11 @@ class Dashboard:
         voltage = self.board.get_battery_voltage()
         self._puppet.set_variable('$voltage', voltage)
 
-    def start(self, rate_hz=3):
+    def start(self, rate_hz=20):
         """
         Start sending dashboard packets to the remote computer at the specified rate.
         
-        :param rate_hz: Update rate in Hz (default: 3)
+        :param rate_hz: Update rate in Hz (default: 20)
         :type rate_hz: int
         """
         self._update_rate = rate_hz
@@ -231,7 +231,7 @@ class Dashboard:
         self.update_timer.deinit()
         self._puppet.stop()
 
-    def set_value(self, name, value, rate_hz=3):
+    def set_value(self, name, value, rate_hz=0):
         """
         Define a variable and subscribe to it at the specified rate.
         
@@ -239,7 +239,7 @@ class Dashboard:
         :type name: str
         :param value: The value to set
         :type value: float
-        :param rate_hz: The update rate in Hz (default: 3)
+        :param rate_hz: The update rate in Hz (default: 0)
         :type rate_hz: int
         """
         self._puppet.define_variable(name, VAR_TYPE_FLOAT, PERM_READ_ONLY)
