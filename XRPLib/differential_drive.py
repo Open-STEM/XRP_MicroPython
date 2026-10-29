@@ -146,24 +146,26 @@ class DifferentialDrive:
         left = (straight - turn) * scale
         right = (straight + turn) * scale
 
-        if not self.heading_pid:
-            # No IMU assist: drive the mixed efforts directly.
-            self.set_effort(left, right)
-            return
+        self.set_effort(left, right)
 
-        if turn != 0:
-            # Turning: drive directly, and force the next straight frame to recapture heading.
-            self._holding_heading = False
-            self.set_effort(left, right)
-            return
+        # if not self.heading_pid:
+        #     # No IMU assist: drive the mixed efforts directly.
+        #     self.set_effort(left, right)
+        #     return
 
-        # Straight with IMU assist: capture the heading once on entry, then hold it with PID.
-        if not self._holding_heading:
-            self.current_heading = self.imu.get_yaw()
-            self.heading_pid.clear_history()
-            self._holding_heading = True
-        correction = self.heading_pid.update(self.current_heading - self.imu.get_yaw())
-        self.set_effort(left - correction, right + correction)
+        # if turn != 0:
+        #     # Turning: drive directly, and force the next straight frame to recapture heading.
+        #     self._holding_heading = False
+        #     self.set_effort(left, right)
+        #     return
+
+        # # Straight with IMU assist: capture the heading once on entry, then hold it with PID.
+        # if not self._holding_heading:
+        #     self.current_heading = self.imu.get_yaw()
+        #     self.heading_pid.clear_history()
+        #     self._holding_heading = True
+        # correction = self.heading_pid.update(self.current_heading - self.imu.get_yaw())
+        # self.set_effort(left - correction, right + correction)
 
     def reset_encoder_position(self) -> None:
         """
