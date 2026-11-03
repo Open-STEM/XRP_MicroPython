@@ -117,6 +117,8 @@ class DifferentialDrive:
         """
         Stops both drivetrain motors by setting power to zero.
         """
+        # Drop any heading arcade() was holding so the next straight frame recaptures it.
+        self._holding_heading = False
         self.left_motor.set_speed()
         self.right_motor.set_speed()
         self.set_effort(0,0)
