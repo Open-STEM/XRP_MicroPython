@@ -11,6 +11,10 @@ class DifferentialDrive:
 
     _DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE =None
 
+    # If arcade() has not been asked to hold heading for longer than this, the hold is
+    # stale and the heading is recaptured on the next straight arcade() call.
+    _HOLD_TIMEOUT_MS = 200
+
     @classmethod
     def get_default_differential_drive(cls):
 
@@ -69,6 +73,8 @@ class DifferentialDrive:
         self.current_heading = None
         # True while arcade() is holding a captured heading during straight driving.
         self._holding_heading = False
+        # ticks_ms of the last straight arcade() call, used to detect a stale hold.
+        self._last_hold_ms = 0
 
         if self.imu:
             if Board.get_type() == Board.NANO:
@@ -160,10 +166,13 @@ class DifferentialDrive:
             return
 
         # Straight with IMU assist: capture the heading once on entry, then hold it with PID.
-        if not self._holding_heading:
+        # The hold is only valid while arcade() is being called continuously.
+        now = time.ticks_ms()
+        if not self._holding_heading or time.ticks_diff(now, self._last_hold_ms) > self._HOLD_TIMEOUT_MS:
             self.current_heading = self.imu.get_yaw()
             self.heading_pid.clear_history()
             self._holding_heading = True
+        self._last_hold_ms = now
         correction = self.heading_pid.update(self.current_heading - self.imu.get_yaw())
         self.set_effort(left - correction, right + correction)
 
