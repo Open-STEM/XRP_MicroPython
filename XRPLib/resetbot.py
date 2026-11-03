@@ -18,6 +18,11 @@ def reset_motors():
         motor.set_speed(0)
         motor.reset_encoder_position()
 
+    # stop() the drivetrain if one was already made, so arcade() drops its held heading
+    from XRPLib.differential_drive import DifferentialDrive
+    if DifferentialDrive._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE:
+        DifferentialDrive._DEFAULT_DIFFERENTIAL_DRIVE_INSTANCE.stop()
+
 def reset_led():
     from XRPLib.board import Board
     # Turn off the on-board LED
