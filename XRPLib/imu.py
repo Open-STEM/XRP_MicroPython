@@ -14,6 +14,15 @@ from machine import I2C, Pin, Timer, disable_irq, enable_irq
 from .board import Board
 import time, math
 
+# Gyro reads inside the update callback (see _update_imu_readings)
+_GYRO_BYTE_COUNT = 6
+_BYTES_PER_AXIS = 2
+_BYTE_BITS = 8
+_SIGN_BIT = 0x8000
+_WORD_RANGE = 0x10000
+# millidegrees per second to degrees
+_MDPS_TO_DEGREES = 1e-3
+
 class IMU():
 
     _DEFAULT_IMU_INSTANCE = None
@@ -43,6 +52,9 @@ class IMU():
         # Transmit and recieve buffers
         self.tb = bytearray(1)
         self.rb = bytearray(1)
+
+        # Gyro read buffer, so the update callback allocates no buffers per tick
+        self._gyro_rx = bytearray(_GYRO_BYTE_COUNT)
 
         # Copies of registers. Bytes and structs share the same memory
         # addresses, so changing one changes the other
@@ -298,7 +310,9 @@ class IMU():
         return list(self.irq_v[1])
 
     def _read_acc_gyro(self):
-        # Updates irq_v in place. The timer uses this so that it allocates nothing per tick.
+        # Updates irq_v in place (used by get_acc_gyro_rates() and calibrate())
+        #   The update timer reads the gyro directly (see _update_imu_readings), 
+        #   because this function allocates about 500 bytes per call
         # Burst read data registers
         raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 12)
 
@@ -557,22 +571,36 @@ class IMU():
     def _stop_timer(self):
         self.update_timer.deinit()
 
+    def _gyro_counts(self, axis):
+        # Signed 16-bit gyro reading for one axis from the preallocated buffer, without allocating
+        index = axis * _BYTES_PER_AXIS
+        value = self._gyro_rx[index] | (self._gyro_rx[index + 1] << _BYTE_BITS)
+        if value >= _SIGN_BIT:
+            return value - _WORD_RANGE
+        return value
+
+    def _gyro_degrees(self, axis, mdps_per_count, to_degrees):
+        # Degrees turned about one axis during the elapsed time, with the calibration offset (mdps) removed
+        return (self._gyro_counts(axis) * mdps_per_count - self.gyro_offsets[axis]) * to_degrees
+
     def _update_imu_readings(self):
         # Called every tick through a callback timer
-        self._read_acc_gyro()
+        to_degrees = _MDPS_TO_DEGREES / self.timer_frequency
 
-        # Flip and swap for NanoXRP
-        if self._is_nanoxrp:
-            delta_pitch = self.irq_v[1][1] / 1000 / self.timer_frequency
-            delta_roll = self.irq_v[1][0] / 1000 / self.timer_frequency
-            delta_yaw = -1 * self.irq_v[1][2] / 1000 / self.timer_frequency
-        else:
-            delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
-            delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
-            delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
+        self.i2c.readfrom_mem_into(self.addr, LSM_REG_OUTX_L_G, self._gyro_rx)
+        mdps_per_count = LSM_MDPS_PER_LSB_125DPS * self._gyro_scale_factor
+        delta_x = self._gyro_degrees(0, mdps_per_count, to_degrees)
+        delta_y = self._gyro_degrees(1, mdps_per_count, to_degrees)
+        delta_z = self._gyro_degrees(2, mdps_per_count, to_degrees)
 
         state = disable_irq()
-        self.running_pitch += delta_pitch
-        self.running_roll += delta_roll
-        self.running_yaw += delta_yaw
+        # Flip and swap for NanoXRP
+        if self._is_nanoxrp:
+            self.running_pitch += delta_y
+            self.running_roll += delta_x
+            self.running_yaw -= delta_z
+        else:
+            self.running_pitch += delta_x
+            self.running_roll += delta_y
+            self.running_yaw += delta_z
         enable_irq(state)
