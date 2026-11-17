@@ -14,6 +14,12 @@ from machine import I2C, Pin, Timer, disable_irq, enable_irq
 from .board import Board
 import time, math
 
+_MICROSECONDS_PER_SECOND = 1000000
+# A gap between callbacks longer than this (for example the first one after calibrate()) is not integrated
+_MAX_UPDATE_GAP_US = 250000
+# millidegrees per second times microseconds, converted to degrees
+_MDPS_US_TO_DEGREES = 1e-9
+
 class IMU():
 
     _DEFAULT_IMU_INSTANCE = None
@@ -43,6 +49,8 @@ class IMU():
         # Transmit and recieve buffers
         self.tb = bytearray(1)
         self.rb = bytearray(1)
+
+        self._last_update_us = time.ticks_us()
 
         # Copies of registers. Bytes and structs share the same memory
         # addresses, so changing one changes the other
@@ -552,24 +560,32 @@ class IMU():
         self._start_timer()
 
     def _start_timer(self):
+        self._last_update_us = time.ticks_us()
         self.update_timer.init(freq=self.timer_frequency, callback=lambda t:self._update_imu_readings())
 
     def _stop_timer(self):
         self.update_timer.deinit()
 
     def _update_imu_readings(self):
-        # Called every tick through a callback timer
+        # Called every tick through a callback timer. Integrates over the measured time since the previous tick
+        now_us = time.ticks_us()
+        elapsed_us = time.ticks_diff(now_us, self._last_update_us)
+        self._last_update_us = now_us
+        if elapsed_us <= 0 or elapsed_us > _MAX_UPDATE_GAP_US:
+            elapsed_us = _MICROSECONDS_PER_SECOND // self.timer_frequency
+        to_degrees = elapsed_us * _MDPS_US_TO_DEGREES
+
         self._read_acc_gyro()
 
         # Flip and swap for NanoXRP
         if self._is_nanoxrp:
-            delta_pitch = self.irq_v[1][1] / 1000 / self.timer_frequency
-            delta_roll = self.irq_v[1][0] / 1000 / self.timer_frequency
-            delta_yaw = -1 * self.irq_v[1][2] / 1000 / self.timer_frequency
+            delta_pitch = self.irq_v[1][1] * to_degrees
+            delta_roll = self.irq_v[1][0] * to_degrees
+            delta_yaw = -1 * self.irq_v[1][2] * to_degrees
         else:
-            delta_pitch = self.irq_v[1][0] / 1000 / self.timer_frequency
-            delta_roll = self.irq_v[1][1] / 1000 / self.timer_frequency
-            delta_yaw = self.irq_v[1][2] / 1000 / self.timer_frequency
+            delta_pitch = self.irq_v[1][0] * to_degrees
+            delta_roll = self.irq_v[1][1] * to_degrees
+            delta_yaw = self.irq_v[1][2] * to_degrees
 
         state = disable_irq()
         self.running_pitch += delta_pitch
